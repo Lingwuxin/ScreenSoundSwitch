@@ -265,12 +265,14 @@ namespace ScreenSoundSwitch
         {
             if(processIdHookDict.ContainsKey(processId))
             {
-
-    
+                if (processInfoDict.ContainsKey((uint)processId) && processInfoDict[(uint)processId].process.HasExited)
+                {
+                    UnhookWinEvent(processIdHookDict[processId]);
+                }
             }
             else
             {
-                //缺少定期卸载钩子的功能
+                //缺少定期卸载钩子的功能(已添加，待测试）
                 this.Invoke(new Action(() =>
                 {
                     CreateWinHook(processId);
