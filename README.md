@@ -1,1 +1,3 @@
 # ScreenSoundSwitch
+根据进程窗口所在的屏幕来切换播放设备
+播放设备切换的功能来自SoundSwitch/SoundSwitch.Audio.Manager提供给接口
