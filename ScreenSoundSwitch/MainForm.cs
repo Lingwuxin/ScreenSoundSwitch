@@ -103,13 +103,12 @@ namespace ScreenSoundSwitch
                     GetWindowThreadProcessId(hWnd, out uint processId);
                     try
                     {
-                        Process process = Process.GetProcessById((int)processId);
-                        IntPtr mainWindowHandle = process.MainWindowHandle;
-                        if (mainWindowHandle != IntPtr.Zero && mainWindowHandle == hWnd)
+                       
+                        if (hWnd!=IntPtr.Zero)
                         {
                             // 获取窗口所在的屏幕
 
-                            IntPtr hMonitor = MonitorFromWindow(mainWindowHandle, 0x00000002);
+                            IntPtr hMonitor = MonitorFromWindow(hWnd, 0x00000002);
                             if (hMonitor != IntPtr.Zero)
                             {
                                 // 获取屏幕信息
@@ -119,10 +118,10 @@ namespace ScreenSoundSwitch
 
                                 // 创建 ProcessInfo 对象并填充信息
                                 ProcessInfo processInfo = new ProcessInfo();
-                                processInfo.MainWindowHandle = mainWindowHandle;
+                                processInfo.MainWindowHandle = hWnd;
                                 processInfo.ProcessId = processId;
                                 RECT windowRect = new RECT();
-                                GetWindowRect(mainWindowHandle, ref windowRect);
+                                GetWindowRect(hWnd, ref windowRect);
 
                                 int closestMonitorIndex = -1;
                                 int closestDistance = int.MaxValue;
