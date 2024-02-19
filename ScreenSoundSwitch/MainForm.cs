@@ -140,7 +140,7 @@ namespace ScreenSoundSwitch
                                 }
 
                                 processInfo.MonitorIndex = closestMonitorIndex;
-
+                                
                                 // 将 ProcessInfo 对象添加到字典中
                                 if (processInfoDict.ContainsKey(processId) && processInfoDict[processId].MonitorIndex != processInfo.MonitorIndex)
                                 {
