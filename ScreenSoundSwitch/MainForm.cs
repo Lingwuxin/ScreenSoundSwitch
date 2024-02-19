@@ -95,9 +95,9 @@ namespace ScreenSoundSwitch
             // 检查事件类型是否为窗口位置改变
             if (eventType == EVENT_OBJECT_LOCATIONCHANGE)
             {
-                string winTitle = GetWindowTitle(hWnd);
+          
                 // 筛选可见窗口
-                if (IsWindowVisible(hWnd) && winTitle.Length > 0)
+                if (IsWindowVisible(hWnd))
                 {
                     // 获取窗口所属进程ID
                     GetWindowThreadProcessId(hWnd, out uint processId);
@@ -109,7 +109,7 @@ namespace ScreenSoundSwitch
                         {
                             // 获取窗口所在的屏幕
 
-                            IntPtr hMonitor = MonitorFromWindow(mainWindowHandle, 0x00000001);
+                            IntPtr hMonitor = MonitorFromWindow(mainWindowHandle, 0x00000002);
                             if (hMonitor != IntPtr.Zero)
                             {
                                 // 获取屏幕信息
@@ -172,14 +172,6 @@ namespace ScreenSoundSwitch
                                 // 输出屏幕编号
                                 //textBox1.Text += "Process " + processId + " title is " + winTitle + " on Screen: " + processInfo.MonitorIndex + "\r\n";
                             }
-                            else
-                            {
-                                Console.WriteLine("Failed to get monitor information.");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Process does not have a main window.");
                         }
                     }
                     catch (Exception ex) {
