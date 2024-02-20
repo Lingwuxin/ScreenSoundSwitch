@@ -9,8 +9,7 @@ namespace ScreenSoundSwitch
 {
     class ProcessInfo
     {
-        public IntPtr MainWindowHandle { get; set; }
-        public uint ProcessId { get; set; }
+        public Process process { get; set; }
         public int MonitorIndex { get; set; }
       
 
