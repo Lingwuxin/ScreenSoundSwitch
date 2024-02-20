@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SoundSwitch\SoundSwitch.Audio.Manager\SoundSwitch.Audio.Manager.csproj" />
+    <ProjectReference Include="..\SoundSwitch.Audio.Manager\SoundSwitch.Audio.Manager.csproj" />
   </ItemGroup>
 
 </Project>

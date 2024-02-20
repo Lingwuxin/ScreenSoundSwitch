@@ -5,9 +5,9 @@ VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScreenSoundSwitch", "ScreenSoundSwitch\ScreenSoundSwitch.csproj", "{51FC180F-42DA-4D20-8034-6FB83801278A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoundSwitch.Audio.Manager", "..\SoundSwitch\SoundSwitch.Audio.Manager\SoundSwitch.Audio.Manager.csproj", "{12CEF41C-CFE6-41D9-B782-679D09F856ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoundSwitch.Audio.Manager", "SoundSwitch.Audio.Manager\SoundSwitch.Audio.Manager.csproj", "{46453BFE-13B8-4D07-A5FE-F75B5842F542}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoundSwitch.Common", "..\SoundSwitch\SoundSwitch.Common\SoundSwitch.Common.csproj", "{56D064C9-4B4A-4FFD-BC21-EC982BED468D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoundSwitch.Common", "SoundSwitch.Common\SoundSwitch.Common.csproj", "{0BBA74D5-4148-4D9E-B0EF-414A24C42048}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,18 +22,18 @@ Global
 		{51FC180F-42DA-4D20-8034-6FB83801278A}.Nightly|Any CPU.Build.0 = Debug|Any CPU
 		{51FC180F-42DA-4D20-8034-6FB83801278A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51FC180F-42DA-4D20-8034-6FB83801278A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{12CEF41C-CFE6-41D9-B782-679D09F856ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{12CEF41C-CFE6-41D9-B782-679D09F856ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{12CEF41C-CFE6-41D9-B782-679D09F856ED}.Nightly|Any CPU.ActiveCfg = Nightly|Any CPU
-		{12CEF41C-CFE6-41D9-B782-679D09F856ED}.Nightly|Any CPU.Build.0 = Nightly|Any CPU
-		{12CEF41C-CFE6-41D9-B782-679D09F856ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{12CEF41C-CFE6-41D9-B782-679D09F856ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{56D064C9-4B4A-4FFD-BC21-EC982BED468D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56D064C9-4B4A-4FFD-BC21-EC982BED468D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56D064C9-4B4A-4FFD-BC21-EC982BED468D}.Nightly|Any CPU.ActiveCfg = Nightly|Any CPU
-		{56D064C9-4B4A-4FFD-BC21-EC982BED468D}.Nightly|Any CPU.Build.0 = Nightly|Any CPU
-		{56D064C9-4B4A-4FFD-BC21-EC982BED468D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56D064C9-4B4A-4FFD-BC21-EC982BED468D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46453BFE-13B8-4D07-A5FE-F75B5842F542}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46453BFE-13B8-4D07-A5FE-F75B5842F542}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46453BFE-13B8-4D07-A5FE-F75B5842F542}.Nightly|Any CPU.ActiveCfg = Nightly|Any CPU
+		{46453BFE-13B8-4D07-A5FE-F75B5842F542}.Nightly|Any CPU.Build.0 = Nightly|Any CPU
+		{46453BFE-13B8-4D07-A5FE-F75B5842F542}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46453BFE-13B8-4D07-A5FE-F75B5842F542}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BBA74D5-4148-4D9E-B0EF-414A24C42048}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BBA74D5-4148-4D9E-B0EF-414A24C42048}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BBA74D5-4148-4D9E-B0EF-414A24C42048}.Nightly|Any CPU.ActiveCfg = Nightly|Any CPU
+		{0BBA74D5-4148-4D9E-B0EF-414A24C42048}.Nightly|Any CPU.Build.0 = Nightly|Any CPU
+		{0BBA74D5-4148-4D9E-B0EF-414A24C42048}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BBA74D5-4148-4D9E-B0EF-414A24C42048}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
