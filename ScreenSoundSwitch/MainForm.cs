@@ -1,3 +1,4 @@
+//v0.0.1
 using SoundSwitch.Audio.Manager;
 using SoundSwitch.Audio.Manager.Interop.Enum;
 using NAudio.CoreAudioApi;
