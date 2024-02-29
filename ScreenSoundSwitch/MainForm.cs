@@ -102,7 +102,7 @@ namespace ScreenSoundSwitch
             // 筛选可见窗口
             if (!IsWindowVisible(hWnd))
             {
-                return;              
+                return;
             }
             // 获取窗口所属进程ID
             GetWindowThreadProcessId(hWnd, out uint processId);
@@ -122,7 +122,7 @@ namespace ScreenSoundSwitch
 
                 if (mainWindowHandle != hWnd||mainWindowHandle==IntPtr.Zero)
                 {
-                    return;                 
+                    return;
                 }
                 // 获取窗口所在的屏幕
 
@@ -239,7 +239,76 @@ namespace ScreenSoundSwitch
                 UnhookWinEvent(hook);
                 return true;
             }
-
+            return false;
+        }
+        bool GetAudioDeviceAllProcessId()
+        {
+            List<int> processIdList=new List<int>();
+            foreach (var deviceInfo in deviceInfoDict)
+            {
+                if (deviceInfo.Value.AudioSessionManager.Sessions == null)
+                {
+                    continue;
+                }
+                for (int i = deviceInfo.Value.AudioSessionManager.Sessions.Count; i > 0; i--)
+                {
+                    if (deviceInfo.Value.AudioSessionManager.Sessions[i - 1].State != AudioSessionState.AudioSessionStateActive)
+                    {
+                        continue;
+                    }
+                    if (deviceInfo.Value.AudioSessionManager.Sessions[i - 1].GetProcessID == 0)
+                    {
+                        continue;
+                    }
+                    //判断进程是否已经被添加到processInfoDict
+                    if (processInfoDict.ContainsKey((uint)deviceInfo.Value.AudioSessionManager.Sessions[i - 1].GetProcessID))
+                    {
+                        processInfoDict[(uint)deviceInfo.Value.AudioSessionManager.Sessions[i - 1].GetProcessID].IsUsing = true;
+                        continue;
+                    }
+                    else
+                    {
+                        Process process = Process.GetProcessById((int)deviceInfo.Value.AudioSessionManager.Sessions[i - 1].GetProcessID);
+                        ProcessInfo processInfo = new ProcessInfo();
+                        processInfo.IsUsing = true;
+                        processInfo.process = process;
+                        processIdList.Add(process.Id);
+                    }
+                }
+            }
+            foreach(var processId in processIdList)
+            {
+                if(!processInfoDict.ContainsKey((uint)processId))
+                {
+                    processInfoDict.Remove((uint)processId);
+                }
+            }
+            return true;
+        }
+        bool IsUsingAudioDeviceByProcessId(int processId)
+        {
+            foreach (var deviceInfo in deviceInfoDict)
+            {
+                if (deviceInfo.Value.AudioSessionManager.Sessions == null)
+                {
+                    continue;
+                }
+                for (int i = deviceInfo.Value.AudioSessionManager.Sessions.Count; i > 0; i--)
+                {
+                    if (deviceInfo.Value.AudioSessionManager.Sessions[i - 1].State != AudioSessionState.AudioSessionStateActive)
+                    {
+                        continue;
+                    }
+                    if (deviceInfo.Value.AudioSessionManager.Sessions[i - 1].GetProcessID == 0)
+                    {
+                        continue;
+                    }
+                    if (deviceInfo.Value.AudioSessionManager.Sessions[i - 1].GetProcessID == processId)
+                    {
+                        return true;
+                    }
+                }
+            }
             return false;
         }
         static int GetAudioDeviceProcessId(MMDevice device)
@@ -259,13 +328,23 @@ namespace ScreenSoundSwitch
                     }
                 }
             }
-
             return -1; // 如果没有进程正在使用音频设备，则返回 -1
         }
         private void Watcher_ForegroundProcessChanged(int processId)
         {
-            if(processIdHookDict.ContainsKey(processId))
+            //判断进程是否使用音频设备
+            if (!IsUsingAudioDeviceByProcessId(processId))
             {
+                //如果此时进程没有使用音频设备，判断是否已经添加到processInfoDict并卸载钩子
+                if(processIdHookDict.ContainsKey(processId))
+                {
+                    UnWinHook(processIdHookDict[processId]);
+                }
+                return;
+            }
+            //如果此时进程使用音频设备，判断是否已经添加到processInfoDict
+            if(processIdHookDict.ContainsKey(processId))
+            {   //如果已经添加到processInfoDict,判断当前进程是否已经退出，如果已经退出则卸载钩子
                 if (processInfoDict.ContainsKey((uint)processId) && processInfoDict[(uint)processId].process.HasExited)
                 {
                     UnhookWinEvent(processIdHookDict[processId]);

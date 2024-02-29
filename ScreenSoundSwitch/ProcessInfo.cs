@@ -11,8 +11,7 @@ namespace ScreenSoundSwitch
     {
         public Process process { get; set; }
         public int MonitorIndex { get; set; }
-      
-
+        public bool IsUsing { get; set; }
     }
 
     public class ForegroundProcessWatcher
