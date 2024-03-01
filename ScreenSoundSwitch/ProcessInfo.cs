@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using Windows.Media.Core;
 
 namespace ScreenSoundSwitch
 {
@@ -12,6 +13,25 @@ namespace ScreenSoundSwitch
         public Process process { get; set; }
         public int MonitorIndex { get; set; }
         public bool IsUsing { get; set; }
+        private uint timeout = 255;
+        private uint timer = 0;
+        public void countTime()
+        {
+            timer++;
+        }
+        public void resetTime()
+        {
+            timer = 0;
+        }
+        public bool isTimeOut()
+        {
+            if (timer > timeout)
+            {
+                IsUsing = false;
+                return true;
+            }
+            return false;
+        }
     }
 
     public class ForegroundProcessWatcher

@@ -94,110 +94,104 @@ namespace ScreenSoundSwitch
     IntPtr hWnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
             // 检查事件类型是否为窗口位置改变
-            if (eventType != EVENT_OBJECT_LOCATIONCHANGE)
+            if (eventType != 0x000B)
             {
                 return;
                
             }
+
             // 筛选可见窗口
-            if (!IsWindowVisible(hWnd))
-            {
-                return;
-            }
+
             // 获取窗口所属进程ID
             GetWindowThreadProcessId(hWnd, out uint processId);
-            try
+ 
+            
+            if (processInfoDict.ContainsKey(processId))
             {
-                Process process;
-                if (processInfoDict.ContainsKey(processId))
-                {
-                    process = processInfoDict[processId].process;
-                    process.Refresh();
-                }
-                else
-                {
-                    process=Process.GetProcessById((int)processId);
-                }
-                IntPtr mainWindowHandle = process.MainWindowHandle;
-
-                if (mainWindowHandle != hWnd||mainWindowHandle==IntPtr.Zero)
-                {
-                    return;
-                }
-                // 获取窗口所在的屏幕
-
-                IntPtr hMonitor = MonitorFromWindow(mainWindowHandle, 0x00000002);
-                if (hMonitor == IntPtr.Zero)
-                {
-                    return;
-                }
-                // 获取屏幕信息
-                MONITORINFOEX monitorInfo = new MONITORINFOEX();
-                monitorInfo.cbSize = Marshal.SizeOf(monitorInfo);
-                GetMonitorInfo(hMonitor, ref monitorInfo);
-
-                RECT windowRect = new RECT();
-                GetWindowRect(mainWindowHandle, ref windowRect);
-
-                int closestMonitorIndex = -1;
-                int closestDistance = int.MaxValue;
-
-                Screen[] allScreens = Screen.AllScreens;
-                for (int i = 0; i < allScreens.Length; i++)
-                {
-                    Rectangle monitorBounds = allScreens[i].Bounds;
-                    int distance = Math.Abs(windowRect.Left - monitorBounds.Left) +
-                                   Math.Abs(windowRect.Top - monitorBounds.Top);
-                    if (distance < closestDistance)
-                    {
-                        closestDistance = distance;
-                        closestMonitorIndex = i;
-                    }
-                }
-
-
-                // 创建 ProcessInfo 对象并填充信息
-                ProcessInfo processInfo = new ProcessInfo();
-                processInfo.process = process;
-                processInfo.MonitorIndex = closestMonitorIndex;
-               
-                // 将 ProcessInfo 对象添加到字典中
-                if (processInfoDict.ContainsKey(processId) && processInfoDict[processId].MonitorIndex != processInfo.MonitorIndex)
-                {
-                    //textBox1.Text += "Process " + processId + " title is " + winTitle + " on Screen: " + processInfo.MonitorIndex + "\r\n";
-                    if (screenIndexToAudioDevice.ContainsKey(processInfo.MonitorIndex))
-                    {
-                        MMDevice? device = deviceInfoDict[screenIndexToAudioDevice[processInfo.MonitorIndex]];
-                        if (device != null)
-                        {
-                            EDataFlow eDataFlow = new EDataFlow();
-                            ERole eRole = new ERole();
-                            //textBox1.Text += screenIndexToAudioDevice[processInfo.MonitorIndex] + processId;
-                            try
-                            {
-                                audioSwitcher.SwitchProcessTo(device.ID, eRole, eDataFlow, processId);
-                            }
-                            catch (Exception ex)
-                            {
-                                // 处理异常，比如记录日志或者显示错误消息
-                                MessageBox.Show("An error occurred while switching audio process: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                            }
-                        }
-                    }
-                }
-                processInfoDict[processId] = processInfo;
-
-                // 输出屏幕编号
-                //textBox1.Text += "Process " + processId + " title is " + winTitle + " on Screen: " + processInfo.MonitorIndex + "\r\n";
-
+                processInfoDict[processId].process = processInfoDict[processId].process;
+                processInfoDict[processId].process.Refresh();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("An error occurred while switching audio process: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                textBox1.Text += "not found process\r\n";
+                return;
             }
+            //Process process = Process.GetProcessById((int)processId);
+            IntPtr mainWindowHandle = processInfoDict[processId].process.MainWindowHandle;
 
+            if (mainWindowHandle != hWnd||mainWindowHandle==IntPtr.Zero)
+            {
+                return;
+            }
+            // 获取窗口所在的屏幕
 
+            IntPtr hMonitor = MonitorFromWindow(mainWindowHandle, 0x00000002);
+            if (hMonitor == IntPtr.Zero)
+            {
+                return;
+            }
+            // 获取屏幕信息
+            MONITORINFOEX monitorInfo = new MONITORINFOEX();
+            monitorInfo.cbSize = Marshal.SizeOf(monitorInfo);
+            GetMonitorInfo(hMonitor, ref monitorInfo);
+
+            RECT windowRect = new RECT();
+            GetWindowRect(mainWindowHandle, ref windowRect);
+
+            int closestMonitorIndex = -1;
+            int closestDistance = int.MaxValue;
+
+            Screen[] allScreens = Screen.AllScreens;
+            for (int i = 0; i < allScreens.Length; i++)
+            {
+                Rectangle monitorBounds = allScreens[i].Bounds;
+                int distance = Math.Abs(windowRect.Left - monitorBounds.Left) +
+                                Math.Abs(windowRect.Top - monitorBounds.Top);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestMonitorIndex = i;
+                }
+            }
+            if(processInfoDict[processId].MonitorIndex.Equals(closestMonitorIndex))
+            {
+                return;
+            }
+            string winTitle = GetWindowTitle(mainWindowHandle);
+            processInfoDict[processId].MonitorIndex = closestMonitorIndex;
+
+            
+            if (!screenIndexToAudioDevice.ContainsKey(processInfoDict[processId].MonitorIndex))
+            {
+                return;
+            }
+            string screenIndex = screenIndexToAudioDevice[processInfoDict[processId].MonitorIndex];
+            if (deviceInfoDict[screenIndex] == null)
+            {
+                textBox1.Text += "No audio device selected for screen " + processInfoDict[processId].MonitorIndex + "\r\n";
+                return;
+            }
+            MMDevice? device = deviceInfoDict[screenIndex];
+            if (device != null)
+            {
+                EDataFlow eDataFlow = new EDataFlow();
+                ERole eRole = new ERole();
+                //textBox1.Text += screenIndexToAudioDevice[processInfo.MonitorIndex] + processId;
+                try
+                {
+                    audioSwitcher.SwitchProcessTo(device.ID, eRole, eDataFlow, processId);
+
+                    textBox1.Text += "Switching audio process " + processId + " title is " + winTitle + " on Screen: " + processInfoDict[processId].MonitorIndex+"\r\n";
+                }
+                catch (Exception ex)
+                {
+                    // 处理异常，比如记录日志或者显示错误消息
+                    MessageBox.Show("An error occurred while switching audio process: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                }
+            }
+            // 输出屏幕编号
+            //textBox1.Text += "Process " + processId + " title is " + winTitle + " on Screen: " + processInfo.MonitorIndex + "\r\n";
         }
 
 
@@ -223,7 +217,7 @@ namespace ScreenSoundSwitch
         {
             try
             {
-                IntPtr hook = SetWinEventHook(EVENT_OBJECT_LOCATIONCHANGE, EVENT_OBJECT_LOCATIONCHANGE,IntPtr.Zero, WinEventProc, (uint)processid, 0, 0);
+                IntPtr hook = SetWinEventHook(0x000B, 0x000B, IntPtr.Zero, WinEventProc, (uint)processid, 0, 0);
                 processIdHookDict[processid] = hook;
             }catch(Exception ex)
             {
@@ -241,6 +235,7 @@ namespace ScreenSoundSwitch
             }
             return false;
         }
+        /*
         bool GetAudioDeviceAllProcessId()
         {
             List<int> processIdList=new List<int>();
@@ -311,6 +306,7 @@ namespace ScreenSoundSwitch
             }
             return false;
         }
+
         static int GetAudioDeviceProcessId(MMDevice device)
         {
             if (device.AudioSessionManager.Sessions != null)
@@ -330,8 +326,10 @@ namespace ScreenSoundSwitch
             }
             return -1; // 如果没有进程正在使用音频设备，则返回 -1
         }
+      */
         private void Watcher_ForegroundProcessChanged(int processId)
         {
+            /*
             //判断进程是否使用音频设备
             if (!IsUsingAudioDeviceByProcessId(processId))
             {
@@ -341,22 +339,45 @@ namespace ScreenSoundSwitch
                     UnWinHook(processIdHookDict[processId]);
                 }
                 return;
-            }
-            //如果此时进程使用音频设备，判断是否已经添加到processInfoDict
-            if(processIdHookDict.ContainsKey(processId))
-            {   //如果已经添加到processInfoDict,判断当前进程是否已经退出，如果已经退出则卸载钩子
-                if (processInfoDict.ContainsKey((uint)processId) && processInfoDict[(uint)processId].process.HasExited)
-                {
-                    UnhookWinEvent(processIdHookDict[processId]);
-                }
-            }
-            else
+            }*/
+            //判断进程是否已经添加到processInfoDict
+            if (processInfoDict.ContainsKey((uint)processId))
             {
-                //缺少定期卸载钩子的功能(已添加，待测试）
-                this.Invoke(new Action(() =>
+                processInfoDict[(uint)processId].resetTime();
+                return;
+            }
+            ProcessInfo processInfo = new ProcessInfo();
+            processInfo.process = Process.GetProcessById(processId);
+            processInfoDict[(uint)processId]=processInfo;
+            //缺少定期卸载钩子的功能(已添加，待测试）
+            this.Invoke(new Action(() =>
+            {
+                CreateWinHook(processId);
+            }));
+            textBox1.Text+="Create hook for process "+processId+"\r\n";
+
+        }
+        private void LookTimer()
+        {
+            while (true)
+            {
+                Thread.Sleep(1000);
+                foreach (var key in processInfoDict.Keys)
                 {
-                    CreateWinHook(processId);
-                }));
+                    if (processInfoDict[key].isTimeOut())
+                    {               
+                        int processid = processInfoDict[key].process.Id;
+
+                        processInfoDict.Remove(key);
+                        UnhookWinEvent(processIdHookDict[processid]);
+                        processIdHookDict.Remove(processid);
+                        textBox1.Text += "process " + processid + " is timeout," + processIdHookDict.Count + "\r\n";
+                    }
+                    else
+                    {
+                        processInfoDict[key].countTime();
+                    }
+                }
             }
         }
 
@@ -376,8 +397,10 @@ namespace ScreenSoundSwitch
             {
                 comboBoxScreen.Items.Add(i + "." + screens[i].DeviceName);
             }
+            //添加进程计数器,淘汰长时间未使用的进程
+            Thread timerThread = new Thread(LookTimer);
+            timerThread.Start();
             ForegroundProcessWatcher watcher = new ForegroundProcessWatcher();
-
             // 订阅事件
             watcher.ForegroundProcessChanged += Watcher_ForegroundProcessChanged;
         }
