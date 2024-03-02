@@ -5,7 +5,6 @@ using NAudio.CoreAudioApi;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
-using NAudio.CoreAudioApi.Interfaces;
 namespace ScreenSoundSwitch
 {
     public partial class MainForm : Form
@@ -17,12 +16,13 @@ namespace ScreenSoundSwitch
         Dictionary<string, MMDevice?> deviceInfoDict = new Dictionary<string, MMDevice?>();
         Dictionary<int, string> screenIndexToAudioDevice = new Dictionary<int, string>();
         Dictionary<int, IntPtr> processIdHookDict = new Dictionary<int, IntPtr>();
+        private NotifyIcon notifyIcon;
+        private ToolTip toolTip;
         public MainForm()
         {
             InitializeComponent();
-
+            InitializeNotifyIcon();
         }
-
         // 导入 MonitorFromWindow 函数
         [DllImport("user32.dll")]
         private static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
@@ -313,12 +313,46 @@ namespace ScreenSoundSwitch
             // 订阅事件
             watcher.ForegroundProcessChanged += Watcher_ForegroundProcessChanged;
         }
+        private void InitializeNotifyIcon()
+        {
+            notifyIcon = new NotifyIcon();
+            notifyIcon.Icon = SystemIcons.Application;
+            notifyIcon.Visible = true;
+            notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
+
+            ContextMenuStrip contextMenu = new ContextMenuStrip();
+            ToolStripMenuItem restoreMenuItem = new ToolStripMenuItem("打开");
+            restoreMenuItem.Click += RestoreMenuItem_Click;
+            contextMenu.Items.Add(restoreMenuItem);
+
+            ToolStripMenuItem exitMenuItem = new ToolStripMenuItem("退出");
+            exitMenuItem.Click += ExitMenuItem_Click;
+            contextMenu.Items.Add(exitMenuItem);
+
+            notifyIcon.ContextMenuStrip = contextMenu;
+        }
+        private void NotifyIcon_DoubleClick(object sender, EventArgs e)
+        {
+            Show();
+            WindowState = FormWindowState.Normal;
+        }
+
+        private void RestoreMenuItem_Click(object sender, EventArgs e)
+        {
+            NotifyIcon_DoubleClick(sender, e);
+        }
+
+        private void ExitMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            DialogResult result = MessageBox.Show("确定要关闭窗口吗？", "确认关闭", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (result == DialogResult.No)
+            if (e.CloseReason == CloseReason.UserClosing)
             {
-                e.Cancel = true; // 取消关闭操作
+                e.Cancel = true;
+                Hide();
             }
         }
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -327,6 +361,8 @@ namespace ScreenSoundSwitch
             {
                 UnWinHook(hook.Value);
             }
+            base.OnFormClosed(e);
+            notifyIcon.Dispose();
         }
 
 
