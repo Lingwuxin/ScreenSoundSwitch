@@ -5,3 +5,4 @@ A C# application that switches audio playback devices based on the screen where 
 ## 已知问题
 - 最小化到系统托盘后鼠标悬停在应用图标上无法显示应用名称
 - 未设置应用图标
+- 系统息屏后唤醒设备切换异常
