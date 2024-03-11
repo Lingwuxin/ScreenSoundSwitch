@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using Windows.Media.Core;
+using Windows.Media.Streaming.Adaptive;
 
 namespace ScreenSoundSwitch
 {
@@ -13,7 +14,7 @@ namespace ScreenSoundSwitch
         public Process process { get; set; }
         public int MonitorIndex { get; set; }
         public bool IsUsing { get; set; }
-        private uint timeout = 255;
+        private uint timeout = 3;
         private uint timer = 0;
         public void countTime()
         {
@@ -33,7 +34,6 @@ namespace ScreenSoundSwitch
             return false;
         }
     }
-
     public class ForegroundProcessWatcher
     {
         // 导入 Windows API 函数
@@ -45,9 +45,12 @@ namespace ScreenSoundSwitch
 
         // 定义事件委托
         public delegate void ForegroundProcessChangedEventHandler(int processId);
+        public delegate void HookNeedDisableEventHandler(IntPtr hook);
 
         // 定义事件
         public event ForegroundProcessChangedEventHandler ForegroundProcessChanged;
+        public event HookNeedDisableEventHandler HookNeedDisable;
+        private List<Thread>  threads = new List<Thread>();
 
         // 构造函数
         public ForegroundProcessWatcher()
@@ -60,7 +63,7 @@ namespace ScreenSoundSwitch
         private void StartWatching()
         {
             // 启动后台线程进行监听
-            System.Threading.Thread bgThread = new System.Threading.Thread(() =>
+            Thread bgThread = new Thread(() =>
             {
                 int lastProcessId = -1;
 
@@ -76,17 +79,22 @@ namespace ScreenSoundSwitch
                         lastProcessId = (int)processId;
                         OnForegroundProcessChanged(lastProcessId);
                     }
-
                     // 等待一段时间再次检查
-                    System.Threading.Thread.Sleep(100);
+                    Thread.Sleep(100);
                 }
             });
 
             // 启动后台线程
             bgThread.IsBackground = true;
             bgThread.Start();
+            threads.Add(bgThread);
         }
-
+        
+        // 禁用钩子
+        public void DisableHook(IntPtr hook)
+        {
+            HookNeedDisable?.Invoke(hook);
+        }
         // 触发事件的方法
         protected virtual void OnForegroundProcessChanged(int processId)
         {

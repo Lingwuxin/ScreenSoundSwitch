@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScreenSoundSwitch", "ScreenSoundSwitch\ScreenSoundSwitch.csproj", "{51FC180F-42DA-4D20-8034-6FB83801278A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0BBA74D5-4148-4D9E-B0EF-414A24C42048} = {0BBA74D5-4148-4D9E-B0EF-414A24C42048}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoundSwitch.Audio.Manager", "SoundSwitch.Audio.Manager\SoundSwitch.Audio.Manager.csproj", "{46453BFE-13B8-4D07-A5FE-F75B5842F542}"
 EndProject

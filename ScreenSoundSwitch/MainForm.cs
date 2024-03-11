@@ -16,8 +16,8 @@ namespace ScreenSoundSwitch
         Dictionary<string, MMDevice?> deviceInfoDict = new Dictionary<string, MMDevice?>();
         Dictionary<int, string> screenIndexToAudioDevice = new Dictionary<int, string>();
         Dictionary<int, IntPtr> processIdHookDict = new Dictionary<int, IntPtr>();
+        ForegroundProcessWatcher watcher;
         private NotifyIcon notifyIcon;
-        private ToolTip toolTip;
         public MainForm()
         {
             InitializeComponent();
@@ -93,18 +93,15 @@ namespace ScreenSoundSwitch
         private void WinEventProc(IntPtr hWinEventHook, uint eventType,
     IntPtr hWnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
+            Debug.WriteLine("WinEventProc");
             // 检查事件类型是否为窗口位置改变
             if (eventType != 0x000B)
             {
                 return;
                
             }
-
             // 筛选可见窗口
-
-            // 获取窗口所属进程ID
             GetWindowThreadProcessId(hWnd, out uint processId);
- 
             
             if (processInfoDict.ContainsKey(processId))
             {
@@ -113,7 +110,7 @@ namespace ScreenSoundSwitch
             }
             else
             {
-                textBox1.Text += "not found process\r\n";
+                Debug.WriteLine("not found process");
                 return;
             }
             //Process process = Process.GetProcessById((int)processId);
@@ -168,7 +165,7 @@ namespace ScreenSoundSwitch
             string screenIndex = screenIndexToAudioDevice[processInfoDict[processId].MonitorIndex];
             if (deviceInfoDict[screenIndex] == null)
             {
-                textBox1.Text += "No audio device selected for screen " + processInfoDict[processId].MonitorIndex + "\r\n";
+                Debug.WriteLine("No audio device selected for screen " + processInfoDict[processId].MonitorIndex);
                 return;
             }
             MMDevice? device = deviceInfoDict[screenIndex];
@@ -181,7 +178,7 @@ namespace ScreenSoundSwitch
                 {
                     audioSwitcher.SwitchProcessTo(device.ID, eRole, eDataFlow, processId);
 
-                    textBox1.Text += "Switching audio process " + processId + " title is " + winTitle + " on Screen: " + processInfoDict[processId].MonitorIndex+"\r\n";
+                    Debug.WriteLine("Switching audio process " + processId + " title is " + winTitle + " on Screen: " + processInfoDict[processId].MonitorIndex);
                 }
                 catch (Exception ex)
                 {
@@ -226,14 +223,26 @@ namespace ScreenSoundSwitch
 
             //textBox1.Text += $"创建{GetWindowTitle(Process.GetProcessById(processid).MainWindowHandle)}{processid}'s hook\r\n";
         }
-        bool UnWinHook(IntPtr hook)
+        void Watcher_HookNeedDisable(IntPtr hook)
         {
             if(hook != IntPtr.Zero)
             {
-                UnhookWinEvent(hook);
-                return true;
+                Invoke(new Action(() =>
+                {
+                    if (UnhookWinEvent(hook))
+                    {   //只能在创建h ook的进程中卸载hook
+                        Debug.WriteLine("Unhook success！");
+                    }
+                    else
+                    {
+                        Debug.WriteLine("unhook on thread" + Thread.CurrentThread.ManagedThreadId);
+                        Debug.WriteLine("Unhook failed！");
+                    }
+                }
+                ));
+
+
             }
-            return false;
         }
 
         private void Watcher_ForegroundProcessChanged(int processId)
@@ -258,12 +267,10 @@ namespace ScreenSoundSwitch
             ProcessInfo processInfo = new ProcessInfo();
             processInfo.process = Process.GetProcessById(processId);
             processInfoDict[(uint)processId]=processInfo;
-            //缺少定期卸载钩子的功能(已添加，待测试）
-            this.Invoke(new Action(() =>
+            Invoke(new Action(() =>
             {
                 CreateWinHook(processId);
             }));
-            textBox1.Text+="Create hook for process "+processId+"\r\n";
 
         }
         private void LookTimer()
@@ -278,9 +285,8 @@ namespace ScreenSoundSwitch
                         int processid = processInfoDict[key].process.Id;
 
                         processInfoDict.Remove(key);
-                        UnhookWinEvent(processIdHookDict[processid]);
+                        watcher.DisableHook(processIdHookDict[processid]);
                         processIdHookDict.Remove(processid);
-                        textBox1.Text += "process " + processid + " is timeout," + processIdHookDict.Count + "\r\n";
                     }
                     else
                     {
@@ -309,14 +315,15 @@ namespace ScreenSoundSwitch
             //添加进程计数器,淘汰长时间未使用的进程
             Thread timerThread = new Thread(LookTimer);
             timerThread.Start();
-            ForegroundProcessWatcher watcher = new ForegroundProcessWatcher();
+            watcher = new ForegroundProcessWatcher();
             // 订阅事件
             watcher.ForegroundProcessChanged += Watcher_ForegroundProcessChanged;
+            watcher.HookNeedDisable += Watcher_HookNeedDisable;
         }
         private void InitializeNotifyIcon()
         {
             notifyIcon = new NotifyIcon();
-            notifyIcon.Icon = SystemIcons.Application;
+            notifyIcon.Icon = Icon;
             notifyIcon.Visible = true;
             notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
 
@@ -342,11 +349,11 @@ namespace ScreenSoundSwitch
             NotifyIcon_DoubleClick(sender, e);
         }
 
+        //不能使用Close()
         private void ExitMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
-
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (e.CloseReason == CloseReason.UserClosing)
@@ -354,14 +361,10 @@ namespace ScreenSoundSwitch
                 e.Cancel = true;
                 Hide();
             }
+            
         }
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {   
-            foreach (var hook in processIdHookDict)
-            {
-                UnWinHook(hook.Value);
-            }
-            base.OnFormClosed(e);
             notifyIcon.Dispose();
         }
 
