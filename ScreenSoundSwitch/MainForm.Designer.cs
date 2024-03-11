@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             tableLayoutPanel1 = new TableLayoutPanel();
             comboBoxScreen = new ComboBox();
             labelScreen = new Label();
@@ -118,11 +119,12 @@
             Controls.Add(button1);
             Controls.Add(textBox1);
             Controls.Add(tableLayoutPanel1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
             Text = "Main";
-            Load += MainForm_Load;
             FormClosing += MainForm_FormClosing;
             FormClosed += MainForm_FormClosed;
+            Load += MainForm_Load;
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
             ResumeLayout(false);
