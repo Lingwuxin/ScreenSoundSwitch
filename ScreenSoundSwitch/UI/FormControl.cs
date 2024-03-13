@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace ScreenSoundSwitch
+namespace ScreenSoundSwitch.UI
 {
-    public partial class VolumeControl : UserControl
+    public partial class FormControl : UserControl
     {
-        public VolumeControl()
+        public FormControl()
         {
             InitializeComponent();
         }

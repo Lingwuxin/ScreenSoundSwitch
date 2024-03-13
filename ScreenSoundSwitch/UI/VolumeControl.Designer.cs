@@ -28,44 +28,45 @@
         /// </summary>
         private void InitializeComponent()
         {
-            trackBar1 = new TrackBar();
-            label1 = new Label();
-            ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
+            volumeTraceBar = new TrackBar();
+            deviceLable = new Label();
+            ((System.ComponentModel.ISupportInitialize)volumeTraceBar).BeginInit();
             SuspendLayout();
             // 
-            // trackBar1
+            // volumeTraceBar
             // 
-            trackBar1.Location = new Point(39, 112);
-            trackBar1.Name = "trackBar1";
-            trackBar1.Orientation = Orientation.Vertical;
-            trackBar1.Size = new Size(45, 104);
-            trackBar1.TabIndex = 0;
+            volumeTraceBar.Location = new Point(39, 112);
+            volumeTraceBar.Name = "volumeTraceBar";
+            volumeTraceBar.Orientation = Orientation.Vertical;
+            volumeTraceBar.Size = new Size(45, 104);
+            volumeTraceBar.TabIndex = 0;
             // 
-            // label1
+            // deviceLable
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(26, 64);
-            label1.Name = "label1";
-            label1.Size = new Size(80, 17);
-            label1.TabIndex = 1;
-            label1.Text = "deviceName";
+            deviceLable.AutoSize = true;
+            deviceLable.Location = new Point(26, 64);
+            deviceLable.Name = "deviceLable";
+            deviceLable.Size = new Size(80, 17);
+            deviceLable.TabIndex = 1;
+            deviceLable.Text = "deviceName";
             // 
             // VolumeControl
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            Controls.Add(label1);
-            Controls.Add(trackBar1);
+            Controls.Add(deviceLable);
+            Controls.Add(volumeTraceBar);
             Name = "VolumeControl";
             Size = new Size(152, 240);
-            ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();
+            Load += VolumeControl_Load;
+            ((System.ComponentModel.ISupportInitialize)volumeTraceBar).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private TrackBar trackBar1;
-        private Label label1;
+        private TrackBar volumeTraceBar;
+        private Label deviceLable;
     }
 }
