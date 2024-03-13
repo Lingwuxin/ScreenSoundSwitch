@@ -29,15 +29,60 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            tabControl = new TabControl();
+            tabPage1 = new TabPage();
+            tabPage2 = new TabPage();
+            button1 = new Button();
             tableLayoutPanel1 = new TableLayoutPanel();
             comboBoxScreen = new ComboBox();
             labelScreen = new Label();
             labelAudio = new Label();
             comboBoxAudio = new ComboBox();
-            textBox1 = new TextBox();
-            button1 = new Button();
+            tabControl.SuspendLayout();
+            tabPage1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
+            // 
+            // tabControl
+            // 
+            tabControl.Controls.Add(tabPage1);
+            tabControl.Controls.Add(tabPage2);
+            tabControl.Location = new Point(24, 12);
+            tabControl.Name = "tabControl";
+            tabControl.SelectedIndex = 0;
+            tabControl.Size = new Size(732, 426);
+            tabControl.TabIndex = 0;
+            // 
+            // tabPage1
+            // 
+            tabPage1.Controls.Add(button1);
+            tabPage1.Controls.Add(tableLayoutPanel1);
+            tabPage1.Location = new Point(4, 26);
+            tabPage1.Name = "tabPage1";
+            tabPage1.Padding = new Padding(3);
+            tabPage1.Size = new Size(724, 396);
+            tabPage1.TabIndex = 0;
+            tabPage1.Text = "设备选择";
+            tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            tabPage2.Location = new Point(4, 26);
+            tabPage2.Name = "tabPage2";
+            tabPage2.Padding = new Padding(3);
+            tabPage2.Size = new Size(724, 396);
+            tabPage2.TabIndex = 1;
+            tabPage2.Text = "音量控制";
+            tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            button1.Location = new Point(324, 31);
+            button1.Name = "button1";
+            button1.Size = new Size(75, 23);
+            button1.TabIndex = 6;
+            button1.Text = "button1";
+            button1.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel1
             // 
@@ -50,13 +95,13 @@
             tableLayoutPanel1.Controls.Add(labelScreen, 0, 0);
             tableLayoutPanel1.Controls.Add(labelAudio, 2, 0);
             tableLayoutPanel1.Controls.Add(comboBoxAudio, 3, 0);
-            tableLayoutPanel1.Location = new Point(188, 148);
+            tableLayoutPanel1.Location = new Point(134, 75);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 2;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 51F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 49F));
             tableLayoutPanel1.Size = new Size(456, 100);
-            tableLayoutPanel1.TabIndex = 1;
+            tableLayoutPanel1.TabIndex = 5;
             // 
             // comboBoxScreen
             // 
@@ -92,55 +137,35 @@
             comboBoxAudio.Size = new Size(200, 25);
             comboBoxAudio.TabIndex = 3;
             // 
-            // textBox1
-            // 
-            textBox1.Location = new Point(0, 268);
-            textBox1.Multiline = true;
-            textBox1.Name = "textBox1";
-            textBox1.ScrollBars = ScrollBars.Horizontal;
-            textBox1.Size = new Size(765, 185);
-            textBox1.TabIndex = 2;
-            // 
-            // button1
-            // 
-            button1.Location = new Point(378, 104);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 23);
-            button1.TabIndex = 3;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click_1;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(768, 450);
-            Controls.Add(button1);
-            Controls.Add(textBox1);
-            Controls.Add(tableLayoutPanel1);
+            Controls.Add(tabControl);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
             Text = "Main";
             FormClosing += MainForm_FormClosing;
             FormClosed += MainForm_FormClosed;
             Load += MainForm_Load;
+            tabControl.ResumeLayout(false);
+            tabPage1.ResumeLayout(false);
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
-
-
 
         #endregion
 
+        private TabControl tabControl;
+        private TabPage tabPage1;
+        private Button button1;
         private TableLayoutPanel tableLayoutPanel1;
         private ComboBox comboBoxScreen;
         private Label labelScreen;
         private Label labelAudio;
         private ComboBox comboBoxAudio;
-        private TextBox textBox1;
-        private Button button1;
+        private TabPage tabPage2;
     }
 }

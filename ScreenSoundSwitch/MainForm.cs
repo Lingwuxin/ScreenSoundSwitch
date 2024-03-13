@@ -98,7 +98,6 @@ namespace ScreenSoundSwitch
             if (eventType != 0x000B)
             {
                 return;
-               
             }
             // 筛选可见窗口
             GetWindowThreadProcessId(hWnd, out uint processId);
@@ -374,7 +373,6 @@ namespace ScreenSoundSwitch
             if (comboBoxAudio.SelectedItem != null)
             {
                 screenIndexToAudioDevice[comboBoxScreen.SelectedIndex] = (string)comboBoxAudio.SelectedItem;
-                textBox1.Text += comboBoxScreen.SelectedIndex + "is on" + (string)comboBoxAudio.SelectedItem + "\r\n";
             }
 
         }

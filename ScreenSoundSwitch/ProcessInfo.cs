@@ -14,7 +14,7 @@ namespace ScreenSoundSwitch
         public Process process { get; set; }
         public int MonitorIndex { get; set; }
         public bool IsUsing { get; set; }
-        private uint timeout = 3;
+        private uint timeout = 225;
         private uint timer = 0;
         public void countTime()
         {
