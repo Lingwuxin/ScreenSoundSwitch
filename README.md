@@ -4,6 +4,8 @@ A C# application that switches audio playback devices based on the screen where 
 ## 功能实现
 - 切换播放设备的功能实现来自[SoundSwitch](https://github.com/Belphemur/SoundSwitch/tree/dev/SoundSwitch)
 - 监听其他窗口活动通过Win32 API [setWinEventHook](https://learn.microsoft.com/zh-cn/windows/win32/api/winuser/nf-winuser-setwineventhook)
+## 特别注意
+- 当音乐软件打开桌面歌词时，播放音频的线程有可能会被绑定在歌词上，此时拖动播放器窗口并不会触发设备切换，拖动歌词则可正常触发
 ## 已知问题
 - 最小化到系统托盘后鼠标悬停在应用图标上无法显示应用名称
 - 未设置应用图标
