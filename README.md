@@ -1,6 +1,9 @@
 # ScreenSoundSwitch
 A C# application that switches audio playback devices based on the screen where the process window is located.
 ## 根据进程窗口所在的屏幕来切换播放设备
+## 环境
+- Windows 10 21H2以上版本
+- .NET 8.0
 ## 功能实现
 - 切换播放设备的功能实现来自[SoundSwitch](https://github.com/Belphemur/SoundSwitch/tree/dev/SoundSwitch)
 - 监听其他窗口活动通过Win32 API [setWinEventHook](https://learn.microsoft.com/zh-cn/windows/win32/api/winuser/nf-winuser-setwineventhook)
