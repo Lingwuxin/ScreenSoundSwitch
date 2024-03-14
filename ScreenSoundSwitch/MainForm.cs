@@ -20,7 +20,6 @@ namespace ScreenSoundSwitch
         Dictionary<int, string> screenIndexToAudioDevice = new Dictionary<int, string>();
         Dictionary<int, IntPtr> processIdHookDict = new Dictionary<int, IntPtr>();
         DeviceControl deviceControl = new DeviceControl();
-        FormControl formControl = new FormControl();
         ForegroundProcessWatcher watcher;
         private NotifyIcon notifyIcon;
         public MainForm()
@@ -31,23 +30,120 @@ namespace ScreenSoundSwitch
         }
         private void AddUserControl()
         {
-            deviceControl.selectButton.Click += button1_Click;
-            formControl.selectDevicePage.Controls.Add(deviceControl);
-            formControl.Dock=DockStyle.Fill;
-            Controls.Add(formControl);
+            deviceControl.selectButton.Click += bound_button_Click;
+            selectDevicePage.Controls.Add(deviceControl);
+            tabControl.SelectedIndexChanged += SelectPageChange;
+        }
+        private void SelectPageChange(object? sender, EventArgs e)
+        {
+            switch(tabControl.SelectedIndex)
+            {
+                case 0:
+                    AddUserControl();
+                    break;
+                case 1:
+                    AddVolumeControl();
+                    break;
+            }
         }
         private void AddVolumeControl()
         {
             deviceCollection = audioDeviceEnumerator.GetDevices();
             foreach (var device in deviceCollection)
             {
-                Debug.WriteLine("test");
                 VolumeControl volumeControl = new VolumeControl();
                 volumeControl.setTitle(device.FriendlyName);
                 FlowLayoutPanel volumeLayout = new FlowLayoutPanel();
                 volumeLayout.Dock=DockStyle.Fill;
                 volumeLayout.Controls.Add(volumeControl);
-                formControl.volumeCtrlPage.Controls.Add(volumeLayout);
+                Debug.WriteLine(device.FriendlyName);
+
+            }
+        }
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+
+            // 获取所有显示器和它们对应的播放设备
+            deviceCollection = audioDeviceEnumerator.GetDevices();
+            foreach (var device in deviceCollection)
+            {
+                deviceControl.comBoxAudio.Items.Add(device.FriendlyName);
+                deviceInfoDict.Add(device.FriendlyName, device);
+            }
+            AddVolumeControl();
+
+            screens = Screen.AllScreens;
+            for (int i = 0; i < screens.Length; i++)
+            {
+                deviceControl.comBoxScreen.Items.Add(i + "." + screens[i].DeviceName);
+            }
+
+            //添加进程计数器,淘汰长时间未使用的进程
+            Thread timerThread = new Thread(LookTimer);
+            timerThread.Start();
+            watcher = new ForegroundProcessWatcher();
+            // 订阅事件
+            watcher.ForegroundProcessChanged += Watcher_ForegroundProcessChanged;
+            watcher.HookNeedDisable += UnWinHook;
+        }
+        private void InitializeNotifyIcon()
+        {
+            notifyIcon = new NotifyIcon();
+            notifyIcon.Icon = Icon;
+            notifyIcon.Visible = true;
+            notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
+
+            ContextMenuStrip contextMenu = new ContextMenuStrip();
+            ToolStripMenuItem restoreMenuItem = new ToolStripMenuItem("打开");
+            restoreMenuItem.Click += RestoreMenuItem_Click;
+            contextMenu.Items.Add(restoreMenuItem);
+
+            ToolStripMenuItem exitMenuItem = new ToolStripMenuItem("退出");
+            exitMenuItem.Click += ExitMenuItem_Click;
+            contextMenu.Items.Add(exitMenuItem);
+
+            notifyIcon.ContextMenuStrip = contextMenu;
+        }
+        private void NotifyIcon_DoubleClick(object sender, EventArgs e)
+        {
+            Show();
+            WindowState = FormWindowState.Normal;
+        }
+
+        private void RestoreMenuItem_Click(object sender, EventArgs e)
+        {
+            NotifyIcon_DoubleClick(sender, e);
+        }
+
+        //不能使用Close()
+        private void ExitMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+        private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+                Hide();
+            }
+
+        }
+        private void MainForm_FormClosed(object? sender, FormClosedEventArgs e)
+        {
+            foreach (var hook in processIdHookDict.Values)
+            {
+                UnWinHook(hook);
+            }
+            notifyIcon.Dispose();
+        }
+
+        private void bound_button_Click(object? sender, EventArgs e)
+        {
+            Debug.WriteLine("button1_Click");
+            if (deviceControl.comBoxScreen.SelectedItem != null && deviceControl.comBoxAudio.SelectedItem != null)
+            {
+                screenIndexToAudioDevice[deviceControl.comBoxScreen.SelectedIndex] = (string)deviceControl.comBoxAudio.SelectedItem;
             }
         }
         // 导入 MonitorFromWindow 函数
@@ -121,11 +217,6 @@ namespace ScreenSoundSwitch
     IntPtr hWnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
             Debug.WriteLine("WinEventProc");
-            // 检查事件类型是否为窗口位置改变
-            if (eventType != 0x000B)
-            {
-                return;
-            }
             // 筛选可见窗口
             GetWindowThreadProcessId(hWnd, out uint processId);
 
@@ -144,6 +235,7 @@ namespace ScreenSoundSwitch
 
             if (mainWindowHandle != hWnd || mainWindowHandle == IntPtr.Zero)
             {
+                Debug.WriteLine("mainWindowHandle != hWnd");
                 return;
             }
             // 获取窗口所在的屏幕
@@ -151,6 +243,7 @@ namespace ScreenSoundSwitch
             IntPtr hMonitor = MonitorFromWindow(mainWindowHandle, 0x00000002);
             if (hMonitor == IntPtr.Zero)
             {
+                Debug.WriteLine("hMonitor == IntPtr.Zero");
                 return;
             }
             // 获取屏幕信息
@@ -324,92 +417,6 @@ namespace ScreenSoundSwitch
             }
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-
-            // 获取所有显示器和它们对应的播放设备
-            deviceCollection = audioDeviceEnumerator.GetDevices();
-            
-            foreach (var device in deviceCollection)
-            {
-                deviceControl.comBoxAudio.Items.Add(device.FriendlyName);
-                deviceInfoDict.Add(device.FriendlyName, device);
-            }
-            AddVolumeControl();
-
-            screens = Screen.AllScreens;
-            for (int i = 0; i < screens.Length; i++)
-            {
-                deviceControl.comBoxScreen.Items.Add(i + "." + screens[i].DeviceName);
-            }
-
-            //添加进程计数器,淘汰长时间未使用的进程
-            Thread timerThread = new Thread(LookTimer);
-            timerThread.Start();
-            watcher = new ForegroundProcessWatcher();
-            // 订阅事件
-            watcher.ForegroundProcessChanged += Watcher_ForegroundProcessChanged;
-            watcher.HookNeedDisable += UnWinHook;
-        }
-        private void InitializeNotifyIcon()
-        {
-            notifyIcon = new NotifyIcon();
-            notifyIcon.Icon = Icon;
-            notifyIcon.Visible = true;
-            notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
-
-            ContextMenuStrip contextMenu = new ContextMenuStrip();
-            ToolStripMenuItem restoreMenuItem = new ToolStripMenuItem("打开");
-            restoreMenuItem.Click += RestoreMenuItem_Click;
-            contextMenu.Items.Add(restoreMenuItem);
-
-            ToolStripMenuItem exitMenuItem = new ToolStripMenuItem("退出");
-            exitMenuItem.Click += ExitMenuItem_Click;
-            contextMenu.Items.Add(exitMenuItem);
-
-            notifyIcon.ContextMenuStrip = contextMenu;
-        }
-        private void NotifyIcon_DoubleClick(object sender, EventArgs e)
-        {
-            Show();
-            WindowState = FormWindowState.Normal;
-        }
-
-        private void RestoreMenuItem_Click(object sender, EventArgs e)
-        {
-            NotifyIcon_DoubleClick(sender, e);
-        }
-
-        //不能使用Close()
-        private void ExitMenuItem_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
-        }
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (e.CloseReason == CloseReason.UserClosing)
-            {
-                e.Cancel = true;
-                Hide();
-            }
-
-        }
-        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            foreach (var hook in processIdHookDict.Values)
-            {
-                UnWinHook(hook);
-            }
-            notifyIcon.Dispose();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            Debug.WriteLine("button1_Click");
-            if (deviceControl.comBoxScreen.SelectedItem != null && deviceControl.comBoxAudio.SelectedItem!=null)
-            {
-                screenIndexToAudioDevice[deviceControl.comBoxScreen.SelectedIndex] = (string)deviceControl.comBoxAudio.SelectedItem;
-            }
-        }
+ 
     }
 }
