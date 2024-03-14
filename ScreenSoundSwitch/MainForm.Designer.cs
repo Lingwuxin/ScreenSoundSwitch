@@ -70,13 +70,16 @@
             // 
             // volumepPageTableLayout
             // 
+            volumepPageTableLayout.AutoSize = true;
+            volumepPageTableLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             volumepPageTableLayout.ColumnCount = 1;
             volumepPageTableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            volumepPageTableLayout.Location = new Point(23, 55);
+            volumepPageTableLayout.Dock = DockStyle.Left;
+            volumepPageTableLayout.Location = new Point(3, 3);
             volumepPageTableLayout.Name = "volumepPageTableLayout";
             volumepPageTableLayout.RowCount = 1;
             volumepPageTableLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            volumepPageTableLayout.Size = new Size(158, 224);
+            volumepPageTableLayout.Size = new Size(0, 390);
             volumepPageTableLayout.TabIndex = 0;
             // 
             // MainForm
@@ -93,6 +96,7 @@
             Load += MainForm_Load;
             tabControl.ResumeLayout(false);
             manageVolumePage.ResumeLayout(false);
+            manageVolumePage.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -101,6 +105,6 @@
         private TabControl tabControl;
         private TabPage selectDevicePage;
         private TabPage manageVolumePage;
-        private TableLayoutPanel volumepPageTableLayout;
+        public TableLayoutPanel volumepPageTableLayout;
     }
 }

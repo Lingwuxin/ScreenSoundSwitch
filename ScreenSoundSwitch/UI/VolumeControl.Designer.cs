@@ -30,12 +30,13 @@
         {
             volumeTraceBar = new TrackBar();
             deviceLable = new Label();
+            screenNum = new Label();
             ((System.ComponentModel.ISupportInitialize)volumeTraceBar).BeginInit();
             SuspendLayout();
             // 
             // volumeTraceBar
             // 
-            volumeTraceBar.Location = new Point(39, 112);
+            volumeTraceBar.Location = new Point(39, 72);
             volumeTraceBar.Name = "volumeTraceBar";
             volumeTraceBar.Orientation = Orientation.Vertical;
             volumeTraceBar.Size = new Size(45, 104);
@@ -44,16 +45,26 @@
             // deviceLable
             // 
             deviceLable.AutoSize = true;
-            deviceLable.Location = new Point(26, 64);
+            deviceLable.Location = new Point(14, 188);
             deviceLable.Name = "deviceLable";
             deviceLable.Size = new Size(80, 17);
             deviceLable.TabIndex = 1;
             deviceLable.Text = "deviceName";
             // 
+            // screenNum
+            // 
+            screenNum.AutoSize = true;
+            screenNum.Location = new Point(26, 32);
+            screenNum.Name = "screenNum";
+            screenNum.Size = new Size(82, 17);
+            screenNum.TabIndex = 2;
+            screenNum.Text = "Not selected";
+            // 
             // VolumeControl
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(screenNum);
             Controls.Add(deviceLable);
             Controls.Add(volumeTraceBar);
             Name = "VolumeControl";
@@ -65,8 +76,8 @@
         }
 
         #endregion
-
-        private TrackBar volumeTraceBar;
         private Label deviceLable;
+        public TrackBar volumeTraceBar;
+        private Label screenNum;
     }
 }
