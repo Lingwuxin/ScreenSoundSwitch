@@ -36,8 +36,10 @@
             tableLayoutPanel2 = new TableLayoutPanel();
             comBoxScreen = new ComboBox();
             label1 = new Label();
-            labelAudio = new Label();
             comBoxAudio = new ComboBox();
+            labelAudio = new Label();
+            screenList = new ListBox();
+            audioDeviceList = new ListBox();
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             SuspendLayout();
@@ -101,58 +103,81 @@
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 45.01919F));
             tableLayoutPanel2.Controls.Add(comBoxScreen, 1, 0);
             tableLayoutPanel2.Controls.Add(label1, 0, 0);
-            tableLayoutPanel2.Controls.Add(labelAudio, 2, 0);
             tableLayoutPanel2.Controls.Add(comBoxAudio, 3, 0);
+            tableLayoutPanel2.Controls.Add(labelAudio, 2, 0);
             tableLayoutPanel2.Location = new Point(46, 63);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 2;
+            tableLayoutPanel2.RowCount = 1;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 51F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 49F));
-            tableLayoutPanel2.Size = new Size(456, 100);
+            tableLayoutPanel2.Size = new Size(456, 43);
             tableLayoutPanel2.TabIndex = 7;
             // 
             // comBoxScreen
             // 
+            comBoxScreen.Anchor = AnchorStyles.Left;
             comBoxScreen.FormattingEnabled = true;
-            comBoxScreen.Location = new Point(62, 3);
+            comBoxScreen.Location = new Point(62, 9);
             comBoxScreen.Name = "comBoxScreen";
             comBoxScreen.Size = new Size(122, 25);
             comBoxScreen.TabIndex = 0;
             // 
             // label1
             // 
+            label1.Anchor = AnchorStyles.Right;
             label1.AutoSize = true;
-            label1.Location = new Point(3, 0);
+            label1.Location = new Point(9, 13);
             label1.Name = "label1";
             label1.Size = new Size(47, 17);
             label1.TabIndex = 1;
             label1.Text = "Screen";
             // 
+            // comBoxAudio
+            // 
+            comBoxAudio.Anchor = AnchorStyles.None;
+            comBoxAudio.FormattingEnabled = true;
+            comBoxAudio.Location = new Point(253, 9);
+            comBoxAudio.Name = "comBoxAudio";
+            comBoxAudio.Size = new Size(200, 25);
+            comBoxAudio.TabIndex = 3;
+            // 
             // labelAudio
             // 
+            labelAudio.Anchor = AnchorStyles.Right;
             labelAudio.AutoSize = true;
-            labelAudio.Location = new Point(190, 0);
+            labelAudio.Location = new Point(205, 13);
             labelAudio.Name = "labelAudio";
             labelAudio.Size = new Size(42, 17);
             labelAudio.TabIndex = 2;
             labelAudio.Text = "Audio";
             // 
-            // comBoxAudio
+            // screenList
             // 
-            comBoxAudio.FormattingEnabled = true;
-            comBoxAudio.Location = new Point(253, 3);
-            comBoxAudio.Name = "comBoxAudio";
-            comBoxAudio.Size = new Size(200, 25);
-            comBoxAudio.TabIndex = 3;
+            screenList.FormattingEnabled = true;
+            screenList.ItemHeight = 17;
+            screenList.Location = new Point(108, 136);
+            screenList.Name = "screenList";
+            screenList.Size = new Size(120, 157);
+            screenList.TabIndex = 9;
+            // 
+            // audioDeviceList
+            // 
+            audioDeviceList.FormattingEnabled = true;
+            audioDeviceList.ItemHeight = 17;
+            audioDeviceList.Location = new Point(299, 136);
+            audioDeviceList.Name = "audioDeviceList";
+            audioDeviceList.Size = new Size(190, 157);
+            audioDeviceList.TabIndex = 10;
             // 
             // DeviceControl
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(audioDeviceList);
+            Controls.Add(screenList);
             Controls.Add(selectButton);
             Controls.Add(tableLayoutPanel2);
             Name = "DeviceControl";
-            Size = new Size(544, 212);
+            Size = new Size(547, 343);
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
             tableLayoutPanel2.PerformLayout();
@@ -171,5 +196,7 @@
         public ComboBox comBoxScreen;
         public ComboBox comBoxAudio;
         public Button selectButton;
+        private ListBox screenList;
+        private ListBox audioDeviceList;
     }
 }
