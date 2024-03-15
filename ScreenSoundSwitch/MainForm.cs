@@ -337,8 +337,6 @@ namespace ScreenSoundSwitch
             // 输出屏幕编号
             //textBox1.Text += "Process " + processId + " title is " + winTitle + " on Screen: " + processInfo.MonitorIndex + "\r\n";
         }
-
-
         // 导入Windows API函数
         [DllImport("user32.dll")]
         public static extern bool EnumWindows(EnumWindowsProc enumProc, IntPtr lParam);
