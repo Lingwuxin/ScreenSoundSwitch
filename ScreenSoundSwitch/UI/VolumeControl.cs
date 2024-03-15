@@ -1,15 +1,5 @@
 ﻿using NAudio.CoreAudioApi;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Windows.Media.Devices;
 
 namespace ScreenSoundSwitch
 {
@@ -23,7 +13,7 @@ namespace ScreenSoundSwitch
         }
         public void setDevice(MMDevice device)
         {
-            if(this.device!=null&&this.device.Equals(device))
+            if(this.device!=null&&this.device.ID.Equals(device.ID))
             {
                 return;
             }
@@ -31,14 +21,19 @@ namespace ScreenSoundSwitch
             setDeviceName();
             setVolume();
         }
+        public string getScreenName()
+        {
+            return screen.DeviceName;
+        }
         public void setScreen(Screen screen)
         {
-            if(this.screen!=null&&this.screen.Equals(screen))
+            if(this.screen!=null&&this.screen.DeviceName.Equals(screen.DeviceName))
             {
                 return;
             }
+            Debug.WriteLine("set screen to " + screen.DeviceName);
             this.screen = screen;
-            screenNum.Text= screen.DeviceName;
+            screenMsg.Text= screen.DeviceName;
         }
         private void setDeviceName()
         {
@@ -51,7 +46,7 @@ namespace ScreenSoundSwitch
         public void setVolume()
         {
             Debug.WriteLine("get " + device.FriendlyName + "volume" + device.AudioEndpointVolume.MasterVolumeLevelScalar * 10);
-            volumeTraceBar.Value = (int)device.AudioEndpointVolume.MasterVolumeLevelScalar;
+            volumeTraceBar.Value = (int)device.AudioEndpointVolume.MasterVolumeLevelScalar*10;
         }
         public void volumeTraceBar_ValueChanged(object? sender, EventArgs e)
         {

@@ -107,6 +107,5 @@ namespace ScreenSoundSwitch
             }
             return -1; // 如果没有进程正在使用音频设备，则返回 -1
         }
-
-            }
+    }
 }

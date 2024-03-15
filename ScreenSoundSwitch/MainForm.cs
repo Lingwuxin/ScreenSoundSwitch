@@ -22,6 +22,7 @@ namespace ScreenSoundSwitch
         Dictionary<int, IntPtr> processIdHookDict = new Dictionary<int, IntPtr>();
         DeviceControl deviceControl = new DeviceControl();
         ForegroundProcessWatcher watcher;
+        bool isButtonClicked = false;
         private NotifyIcon notifyIcon;
         public MainForm()
         {
@@ -80,6 +81,10 @@ namespace ScreenSoundSwitch
         }
         private void UpdateVolumeControl()
         {
+            if(!isButtonClicked)
+            {
+                return;
+            }
             List<VolumeControl> volumeControls=new List<VolumeControl>();
             foreach (VolumeControl control in volumepPageTableLayout.Controls)
             {
@@ -93,11 +98,10 @@ namespace ScreenSoundSwitch
                 {
                     volumeControl.setScreen(deviceNameToScreen[device.FriendlyName]);
                 }
-                Debug.WriteLine("add " + device.FriendlyName);  
                 volumeControl.setDevice(device);
-                
                 count++;
             }
+            isButtonClicked = false;
         }
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -169,6 +173,8 @@ namespace ScreenSoundSwitch
             {
                 deviceNameToScreen[(string)deviceControl.comBoxAudio.SelectedItem]= screens[deviceControl.comBoxScreen.SelectedIndex];
                 screenIndexToAudioDevice[deviceControl.comBoxScreen.SelectedIndex] = (string)deviceControl.comBoxAudio.SelectedItem;
+                deviceControl.updateList((string)deviceControl.comBoxScreen.SelectedItem, (string)deviceControl.comBoxAudio.SelectedItem);
+                isButtonClicked = true;
             }
         }
 
