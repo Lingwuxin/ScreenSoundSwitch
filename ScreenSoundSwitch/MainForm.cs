@@ -49,7 +49,7 @@ namespace ScreenSoundSwitch
             screens = Screen.AllScreens;
             for (int i = 0; i < screens.Length; i++)
             {
-                deviceControl.comBoxScreen.Items.Add(i + "." + screens[i].DeviceName);
+                deviceControl.comBoxScreen.Items.Add(screens[i].DeviceName);
             }
             deviceControl.selectButton.Click += bound_button_Click;
             deviceCollection = audioDeviceEnumerator.GetDevices();
