@@ -9,7 +9,7 @@ namespace ScreenSoundSwitch
 {
      class DevicesConfig
     {
-        public string DeviceName { get; set; }
+        public string FriendlyName { get; set; }
         public int MonitorIndex { get; set; }
         public int Volume { get; set; }
     }
@@ -27,11 +27,11 @@ namespace ScreenSoundSwitch
             if(!File.Exists(pathRoot)){
                 Directory.CreateDirectory(pathRoot);
             }
-            DevicesConfig devicesConfig = new DevicesConfig();
-            devicesConfig.DeviceName = deviceName;
-            devicesConfig.MonitorIndex = monitorIndex;
-            devicesConfig.Volume = volume;
-            this.devicesConfig.Add(devicesConfig);
+            DevicesConfig deviceConfig = new DevicesConfig();
+            deviceConfig.FriendlyName = deviceName;
+            deviceConfig.MonitorIndex = monitorIndex;
+            deviceConfig.Volume = volume;
+            this.devicesConfig.Add(deviceConfig);
         }
         public void SetAutoStart(bool isAutoStart)
         {

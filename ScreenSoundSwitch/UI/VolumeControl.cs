@@ -19,7 +19,7 @@ namespace ScreenSoundSwitch
             }
             this.device = device;
             setDeviceName();
-            setVolume();
+            setVolume((int)device.AudioEndpointVolume.MasterVolumeLevelScalar * 10);
         }
         public string getScreenName()
         {
@@ -43,15 +43,15 @@ namespace ScreenSoundSwitch
         {
             return volumeTraceBar.Value;
         }
-        public void setVolume()
+        public void setVolume(int value)
         {
-            Debug.WriteLine("get " + device.FriendlyName + "volume" + device.AudioEndpointVolume.MasterVolumeLevelScalar * 10);
-            volumeTraceBar.Value = (int)device.AudioEndpointVolume.MasterVolumeLevelScalar*10;
+            Debug.WriteLine("set " + device.FriendlyName + "volume " + value);
+            volumeTraceBar.Value = value;
         }
         public void volumeTraceBar_ValueChanged(object? sender, EventArgs e)
         {
             device.AudioEndpointVolume.MasterVolumeLevelScalar = volumeTraceBar.Value / 10.0f;
-            Debug.WriteLine("set " + device.FriendlyName + "volume to " + device.AudioEndpointVolume.MasterVolumeLevelScalar);
+            Debug.WriteLine("set " + device.FriendlyName + "volume to " + device.AudioEndpointVolume.MasterVolumeLevelScalar*10);
         }
         private void VolumeControl_Load(object sender, EventArgs e)
         {

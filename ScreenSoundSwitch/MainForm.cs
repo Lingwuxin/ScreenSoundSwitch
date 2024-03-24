@@ -18,7 +18,7 @@ namespace ScreenSoundSwitch
         Screen[] screens;
         Dictionary<uint, ProcessInfo> processInfoDict = new Dictionary<uint, ProcessInfo>();
         Dictionary<string, MMDevice?> deviceInfoDict = new Dictionary<string, MMDevice?>();
-        Dictionary<int, string> screenIndexToAudioDevice = new Dictionary<int, string>();
+        Dictionary<int, string> screenIndexToAudioDeviceName = new Dictionary<int, string>();
         Dictionary<string,Screen> deviceNameToScreen = new Dictionary<string, Screen>();
         Dictionary<int, IntPtr> processIdHookDict = new Dictionary<int, IntPtr>();
         DeviceControl deviceControl = new DeviceControl();
@@ -98,14 +98,15 @@ namespace ScreenSoundSwitch
                 volumeControls.Add(control);
             }
             int count = 0;
-            foreach (var device in deviceCollection)
+            foreach (KeyValuePair<int,string> valuePair in screenIndexToAudioDeviceName)
             {
                 VolumeControl volumeControl = volumeControls[count];
-                if (deviceNameToScreen.ContainsKey(device.FriendlyName))
+                Debug.WriteLine("update the VolumeControl of "+valuePair.Value);
+                if (deviceNameToScreen.ContainsKey(valuePair.Value))
                 {
-                    volumeControl.setScreen(deviceNameToScreen[device.FriendlyName]);
+                    volumeControl.setScreen(screens[valuePair.Key]);
                 }
-                volumeControl.setDevice(device);
+                volumeControl.setDevice(deviceInfoDict[valuePair.Value]);
                 count++;
             }
             isBounded = false;
@@ -117,10 +118,16 @@ namespace ScreenSoundSwitch
             {
                 foreach (var deviceConfig in appConfig.GetDevicesConfig())
                 {
-                    screenIndexToAudioDevice[deviceConfig.MonitorIndex] = deviceConfig.DeviceName;
-                    deviceControl.updateList(screens[deviceConfig.MonitorIndex].DeviceName,deviceConfig.DeviceName);
-                    deviceNameToScreen[deviceConfig.DeviceName] = screens[deviceConfig.MonitorIndex];
-                    isBounded = true;
+                    Debug.WriteLine(deviceConfig.FriendlyName);
+                    //如果该设备仍在使用，则添加该设备的信息
+                    if (deviceInfoDict.ContainsKey(deviceConfig.FriendlyName))
+                    {
+                        Debug.WriteLine("Read " + deviceConfig.FriendlyName + " mesg");
+                        screenIndexToAudioDeviceName[deviceConfig.MonitorIndex] = deviceConfig.FriendlyName;
+                        deviceControl.updateList(screens[deviceConfig.MonitorIndex].DeviceName, deviceConfig.FriendlyName);
+                        deviceNameToScreen[deviceConfig.FriendlyName] = screens[deviceConfig.MonitorIndex];
+                        isBounded = true;
+                    }
                 }
             }
         }
@@ -226,7 +233,7 @@ namespace ScreenSoundSwitch
                 int screenIndex= deviceControl.comBoxScreen.SelectedIndex;
                 string deviceName = (string)deviceControl.comBoxAudio.SelectedItem;
                 deviceNameToScreen[deviceName] = screens[screenIndex];
-                screenIndexToAudioDevice[screenIndex] = deviceName;
+                screenIndexToAudioDeviceName[screenIndex] = deviceName;
                 deviceControl.updateList((string)deviceControl.comBoxScreen.SelectedItem, deviceName);
                 float deviceVolume = deviceInfoDict[deviceName].AudioEndpointVolume.MasterVolumeLevelScalar*10;
                 appConfig.AddDeviceConfig(deviceName, screenIndex,(int)deviceVolume);
@@ -360,12 +367,12 @@ namespace ScreenSoundSwitch
             processInfoDict[processId].MonitorIndex = closestMonitorIndex;
 
 
-            if (!screenIndexToAudioDevice.ContainsKey(processInfoDict[processId].MonitorIndex))
+            if (!screenIndexToAudioDeviceName.ContainsKey(processInfoDict[processId].MonitorIndex))
             {
                 Debug.WriteLine("No screen selected for " + processInfoDict[processId].MonitorIndex);
                 return;
             }
-            string screenIndex = screenIndexToAudioDevice[processInfoDict[processId].MonitorIndex];
+            string screenIndex = screenIndexToAudioDeviceName[processInfoDict[processId].MonitorIndex];
             if (deviceInfoDict[screenIndex] == null)
             {
                 Debug.WriteLine("No audio device selected " + processInfoDict[processId].MonitorIndex);
