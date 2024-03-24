@@ -21,8 +21,12 @@ namespace ScreenSoundSwitch
     {
         private WinformConfig winformConfig=new WinformConfig();
         private List<DevicesConfig> devicesConfig = new List<DevicesConfig>();
+        string pathRoot = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)+ "\\AppData\\Roaming\\ScreenSoundSwitch\\";
         public void AddDeviceConfig(string deviceName, int monitorIndex,int volume)
         {   
+            if(!File.Exists(pathRoot)){
+                Directory.CreateDirectory(pathRoot);
+            }
             DevicesConfig devicesConfig = new DevicesConfig();
             devicesConfig.DeviceName = deviceName;
             devicesConfig.MonitorIndex = monitorIndex;
@@ -46,15 +50,15 @@ namespace ScreenSoundSwitch
         public void WriteConfig()
         {
             string json = Newtonsoft.Json.JsonConvert.SerializeObject(devicesConfig);
-            File.WriteAllText("DeviceConfig.json", json);
+            File.WriteAllText(pathRoot+"DeviceConfig.json", json);
             string json1 = Newtonsoft.Json.JsonConvert.SerializeObject(winformConfig);
-            File.WriteAllText("WinformConfig.json", json1);
+            File.WriteAllText(pathRoot+"WinformConfig.json", json1);
         }
         public bool ReadWinformConfig()
         {
-            if (File.Exists("WinformConfig.json"))
+            if (File.Exists(pathRoot+"WinformConfig.json"))
             {
-                string json = File.ReadAllText("WinformConfig.json");
+                string json = File.ReadAllText(pathRoot + "WinformConfig.json");
                 winformConfig = Newtonsoft.Json.JsonConvert.DeserializeObject<WinformConfig>(json);
                 Debug.WriteLine(winformConfig);
                 return true;
@@ -66,9 +70,9 @@ namespace ScreenSoundSwitch
         }
         public bool ReadDeviceConfig()
         {
-            if (File.Exists("DeviceConfig.json"))
+            if (File.Exists(pathRoot+"DeviceConfig.json"))
             {
-                string json = File.ReadAllText("DeviceConfig.json");
+                string json = File.ReadAllText(pathRoot+"DeviceConfig.json");
                 devicesConfig = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DevicesConfig>>(json);
                 return true;
             }
