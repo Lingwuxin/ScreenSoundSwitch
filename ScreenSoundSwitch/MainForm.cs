@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using ScreenSoundSwitch.UI;
 using Windows.Networking.Sockets;
+using Microsoft.Win32;
 namespace ScreenSoundSwitch
 {
     public partial class MainForm : Form
@@ -22,13 +23,19 @@ namespace ScreenSoundSwitch
         Dictionary<int, IntPtr> processIdHookDict = new Dictionary<int, IntPtr>();
         DeviceControl deviceControl = new DeviceControl();
         ForegroundProcessWatcher watcher;
-        bool isButtonClicked = false;
+        bool isBounded = false;
         private NotifyIcon notifyIcon;
+        private AppConfig appConfig = new AppConfig();
+        private bool autoStartEnabled = false;
+        private const string StartupRegistryKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
+        private const string AppName = "ScreenSoundSwitch";
+
         public MainForm()
         {
             InitializeComponent();
             InitializeNotifyIcon();
         }
+        //添加用户控件
         private void AddUserControl()
         {
             // 获取所有显示器和它们对应的播放设备
@@ -81,7 +88,7 @@ namespace ScreenSoundSwitch
         }
         private void UpdateVolumeControl()
         {
-            if(!isButtonClicked)
+            if(!isBounded)
             {
                 return;
             }
@@ -101,11 +108,26 @@ namespace ScreenSoundSwitch
                 volumeControl.setDevice(device);
                 count++;
             }
-            isButtonClicked = false;
+            isBounded = false;
+        }
+        //从Json文件中读取配置
+        private void LoadConfig()
+        {
+            if(appConfig.ReadDeviceConfig())
+            {
+                foreach (var deviceConfig in appConfig.GetDevicesConfig())
+                {
+                    screenIndexToAudioDevice[deviceConfig.MonitorIndex] = deviceConfig.DeviceName;
+                    deviceControl.updateList(screens[deviceConfig.MonitorIndex].DeviceName,deviceConfig.DeviceName);
+                    deviceNameToScreen[deviceConfig.DeviceName] = screens[deviceConfig.MonitorIndex];
+                    isBounded = true;
+                }
+            }
         }
         private void MainForm_Load(object sender, EventArgs e)
         {
             AddUserControl();
+            LoadConfig();
             //添加进程计数器,淘汰长时间未使用的进程
             Thread timerThread = new Thread(LookTimer);
             timerThread.Start();
@@ -123,22 +145,44 @@ namespace ScreenSoundSwitch
             notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
 
             ContextMenuStrip contextMenu = new ContextMenuStrip();
+
             ToolStripMenuItem restoreMenuItem = new ToolStripMenuItem("打开");
             restoreMenuItem.Click += RestoreMenuItem_Click;
             contextMenu.Items.Add(restoreMenuItem);
-
+            ToolStripMenuItem autostartMenuItem = new ToolStripMenuItem("开机启动");
+            autostartMenuItem.Click += AutostartMenuItem_Click;
+            contextMenu.Items.Add(autostartMenuItem);
             ToolStripMenuItem exitMenuItem = new ToolStripMenuItem("退出");
             exitMenuItem.Click += ExitMenuItem_Click;
             contextMenu.Items.Add(exitMenuItem);
-
             notifyIcon.ContextMenuStrip = contextMenu;
+            appConfig.ReadWinformConfig();
+            autoStartEnabled = appConfig.IsAutoStart();
+            autostartMenuItem.Checked = autoStartEnabled;
         }
         private void NotifyIcon_DoubleClick(object sender, EventArgs e)
         {
             Show();
             WindowState = FormWindowState.Normal;
         }
+        private void AutostartMenuItem_Click(object sender, EventArgs e)
+        {
+            autoStartEnabled = !autoStartEnabled;
+            ((ToolStripMenuItem)sender).Checked = autoStartEnabled;
+            appConfig.SetAutoStart(autoStartEnabled);
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(StartupRegistryKey, true))
+            {
+                if (autoStartEnabled)
+                {
+                    key.SetValue(AppName, Application.ExecutablePath);
+                }
+                else
+                {
+                    key.DeleteValue(AppName, false);
+                }
+            }
 
+        }
         private void RestoreMenuItem_Click(object sender, EventArgs e)
         {
             NotifyIcon_DoubleClick(sender, e);
@@ -148,6 +192,13 @@ namespace ScreenSoundSwitch
         private void ExitMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            if (isBounded)
+            {
+                Hide();
+            }
         }
         private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
         {
@@ -160,6 +211,7 @@ namespace ScreenSoundSwitch
         }
         private void MainForm_FormClosed(object? sender, FormClosedEventArgs e)
         {
+            appConfig.WriteConfig();
             foreach (var hook in processIdHookDict.Values)
             {
                 UnWinHook(hook);
@@ -171,10 +223,14 @@ namespace ScreenSoundSwitch
         {
             if (deviceControl.comBoxScreen.SelectedItem != null && deviceControl.comBoxAudio.SelectedItem != null)
             {
-                deviceNameToScreen[(string)deviceControl.comBoxAudio.SelectedItem]= screens[deviceControl.comBoxScreen.SelectedIndex];
-                screenIndexToAudioDevice[deviceControl.comBoxScreen.SelectedIndex] = (string)deviceControl.comBoxAudio.SelectedItem;
-                deviceControl.updateList((string)deviceControl.comBoxScreen.SelectedItem, (string)deviceControl.comBoxAudio.SelectedItem);
-                isButtonClicked = true;
+                int screenIndex= deviceControl.comBoxScreen.SelectedIndex;
+                string deviceName = (string)deviceControl.comBoxAudio.SelectedItem;
+                deviceNameToScreen[deviceName] = screens[screenIndex];
+                screenIndexToAudioDevice[screenIndex] = deviceName;
+                deviceControl.updateList((string)deviceControl.comBoxScreen.SelectedItem, deviceName);
+                float deviceVolume = deviceInfoDict[deviceName].AudioEndpointVolume.MasterVolumeLevelScalar*10;
+                appConfig.AddDeviceConfig(deviceName, screenIndex,(int)deviceVolume);
+                isBounded = true;
             }
         }
 

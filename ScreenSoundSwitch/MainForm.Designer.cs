@@ -94,6 +94,7 @@
             FormClosing += MainForm_FormClosing;
             FormClosed += MainForm_FormClosed;
             Load += MainForm_Load;
+            Shown += MainForm_Shown;
             tabControl.ResumeLayout(false);
             manageVolumePage.ResumeLayout(false);
             manageVolumePage.PerformLayout();
