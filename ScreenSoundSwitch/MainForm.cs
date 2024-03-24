@@ -19,9 +19,10 @@ namespace ScreenSoundSwitch
         Dictionary<uint, ProcessInfo> processInfoDict = new Dictionary<uint, ProcessInfo>();
         Dictionary<string, MMDevice?> deviceInfoDict = new Dictionary<string, MMDevice?>();
         Dictionary<int, string> screenIndexToAudioDeviceName = new Dictionary<int, string>();
-        Dictionary<string,Screen> deviceNameToScreen = new Dictionary<string, Screen>();
+        DeviceManger deviceManger = new DeviceManger();
         Dictionary<int, IntPtr> processIdHookDict = new Dictionary<int, IntPtr>();
         DeviceControl deviceControl = new DeviceControl();
+        Dictionary<string, VolumeControl> deviceNameToVolumeControls = new Dictionary<string, VolumeControl>();
         ForegroundProcessWatcher watcher;
         bool isBounded = false;
         private NotifyIcon notifyIcon;
@@ -59,6 +60,7 @@ namespace ScreenSoundSwitch
             foreach (var device in deviceCollection)
             {
                 VolumeControl volumeControl = new VolumeControl();
+                deviceNameToVolumeControls[device.FriendlyName]=volumeControl;
                 volumepPageTableLayout.Controls.Add(volumeControl, count, 0);
             }
             selectDevicePage.Controls.Add(deviceControl);
@@ -92,21 +94,17 @@ namespace ScreenSoundSwitch
             {
                 return;
             }
-            List<VolumeControl> volumeControls=new List<VolumeControl>();
-            foreach (VolumeControl control in volumepPageTableLayout.Controls)
-            {
-                volumeControls.Add(control);
-            }
             int count = 0;
-            foreach (KeyValuePair<int,string> valuePair in screenIndexToAudioDeviceName)
+            //按设备遍历
+            foreach (var device in deviceCollection)
             {
-                VolumeControl volumeControl = volumeControls[count];
-                Debug.WriteLine("update the VolumeControl of "+valuePair.Value);
-                if (deviceNameToScreen.ContainsKey(valuePair.Value))
-                {
-                    volumeControl.setScreen(screens[valuePair.Key]);
-                }
-                volumeControl.setDevice(deviceInfoDict[valuePair.Value]);
+                Debug.WriteLine("update volume control of " + device.FriendlyName);
+                VolumeControl volumeControl = deviceNameToVolumeControls[device.FriendlyName];
+                volumeControl.setDevice(device);
+                Screen[] s = deviceManger.GetScreens(device.FriendlyName);
+
+                volumeControl.setScreen(s);
+                volumepPageTableLayout.Controls.Add(volumeControl, count, 0);
                 count++;
             }
             isBounded = false;
@@ -116,8 +114,9 @@ namespace ScreenSoundSwitch
         {
             if(appConfig.ReadDeviceConfig())
             {
-                foreach (var deviceConfig in appConfig.GetDevicesConfig())
+                foreach (var deviceConfigPair in appConfig.GetDevicesConfig())
                 {
+                    DevicesConfig deviceConfig= deviceConfigPair.Value;
                     Debug.WriteLine(deviceConfig.FriendlyName);
                     //如果该设备仍在使用，则添加该设备的信息
                     if (deviceInfoDict.ContainsKey(deviceConfig.FriendlyName))
@@ -125,7 +124,7 @@ namespace ScreenSoundSwitch
                         Debug.WriteLine("Read " + deviceConfig.FriendlyName + " mesg");
                         screenIndexToAudioDeviceName[deviceConfig.MonitorIndex] = deviceConfig.FriendlyName;
                         deviceControl.updateList(screens[deviceConfig.MonitorIndex].DeviceName, deviceConfig.FriendlyName);
-                        deviceNameToScreen[deviceConfig.FriendlyName] = screens[deviceConfig.MonitorIndex];
+                        deviceManger.AddDevice(deviceConfig.FriendlyName, screens[deviceConfig.MonitorIndex]);
                         isBounded = true;
                     }
                 }
@@ -231,12 +230,12 @@ namespace ScreenSoundSwitch
             if (deviceControl.comBoxScreen.SelectedItem != null && deviceControl.comBoxAudio.SelectedItem != null)
             {
                 int screenIndex= deviceControl.comBoxScreen.SelectedIndex;
-                string deviceName = (string)deviceControl.comBoxAudio.SelectedItem;
-                deviceNameToScreen[deviceName] = screens[screenIndex];
-                screenIndexToAudioDeviceName[screenIndex] = deviceName;
-                deviceControl.updateList((string)deviceControl.comBoxScreen.SelectedItem, deviceName);
-                float deviceVolume = deviceInfoDict[deviceName].AudioEndpointVolume.MasterVolumeLevelScalar*10;
-                appConfig.AddDeviceConfig(deviceName, screenIndex,(int)deviceVolume);
+                string deviceFriendlyName = (string)deviceControl.comBoxAudio.SelectedItem;
+                deviceManger.AddDevice(deviceFriendlyName, screens[screenIndex]);
+                screenIndexToAudioDeviceName[screenIndex] = deviceFriendlyName;
+                deviceControl.updateList((string)deviceControl.comBoxScreen.SelectedItem, deviceFriendlyName);
+                float deviceVolume = deviceInfoDict[deviceFriendlyName].AudioEndpointVolume.MasterVolumeLevelScalar*10;
+                appConfig.AddDeviceConfig(deviceFriendlyName, screenIndex,(int)deviceVolume);
                 isBounded = true;
             }
         }

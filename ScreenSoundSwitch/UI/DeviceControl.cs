@@ -1,4 +1,6 @@
-﻿namespace ScreenSoundSwitch.UI
+﻿using System.Diagnostics;
+
+namespace ScreenSoundSwitch.UI
 {
     public partial class DeviceControl : UserControl
     {
@@ -9,6 +11,7 @@
         //根据传入的键值对，设置ListBox的内容
         public void updateList(string screenName,string audioName)
         {
+            Debug.WriteLine("updateList");  
             //遍历screenList的每一个元素，如果找到了键值对中的键，则将其值更新为新的值，否则添加新的键值对
             for (int i = 0; i < screenList.Items.Count; i++)
             {

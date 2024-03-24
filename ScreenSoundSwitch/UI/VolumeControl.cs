@@ -1,12 +1,13 @@
 ﻿using NAudio.CoreAudioApi;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace ScreenSoundSwitch
 {
     public partial class VolumeControl : UserControl
     {
         MMDevice device;
-        Screen screen;
+        Screen[] screens;
         public VolumeControl()
         {
             InitializeComponent();
@@ -19,21 +20,25 @@ namespace ScreenSoundSwitch
             }
             this.device = device;
             setDeviceName();
-            setVolume((int)device.AudioEndpointVolume.MasterVolumeLevelScalar * 10);
+            float volume = device.AudioEndpointVolume.MasterVolumeLevelScalar * 10;
+            setVolume((int)volume);
         }
-        public string getScreenName()
+        public void setScreen(Screen[]? screens)
         {
-            return screen.DeviceName;
-        }
-        public void setScreen(Screen screen)
-        {
-            if(this.screen!=null&&this.screen.DeviceName.Equals(screen.DeviceName))
+            if(screens==null||screens.Length==0)
             {
+                screenMsg.Text = "no select";
                 return;
             }
-            Debug.WriteLine("set screen to " + screen.DeviceName);
-            this.screen = screen;
-            screenMsg.Text= screen.DeviceName;
+            this.screens = screens;
+            screenMsg.Text = "";
+            for(int i = 0; i < screens.Length; i++)
+            {
+                Debug.WriteLine("set screen to " + screens[i].DeviceName);
+                screenMsg.Text += screens[i].DeviceName;
+            }
+            
+            
         }
         private void setDeviceName()
         {
@@ -45,13 +50,13 @@ namespace ScreenSoundSwitch
         }
         public void setVolume(int value)
         {
-            Debug.WriteLine("set " + device.FriendlyName + "volume " + value);
+            Debug.WriteLine("set " + device.FriendlyName + "volume to " + value);
             volumeTraceBar.Value = value;
         }
         public void volumeTraceBar_ValueChanged(object? sender, EventArgs e)
         {
             device.AudioEndpointVolume.MasterVolumeLevelScalar = volumeTraceBar.Value / 10.0f;
-            Debug.WriteLine("set " + device.FriendlyName + "volume to " + device.AudioEndpointVolume.MasterVolumeLevelScalar*10);
+            Debug.WriteLine("change " + device.FriendlyName + "volume to " + device.AudioEndpointVolume.MasterVolumeLevelScalar*10);
         }
         private void VolumeControl_Load(object sender, EventArgs e)
         {

@@ -20,18 +20,24 @@ namespace ScreenSoundSwitch
     internal class AppConfig
     {
         private WinformConfig winformConfig=new WinformConfig();
-        private List<DevicesConfig> devicesConfig = new List<DevicesConfig>();
+        private Dictionary<string, DevicesConfig> devicesConfig = new Dictionary<string, DevicesConfig>();
+        private Dictionary<string,bool> deviceIsExist = new Dictionary<string, bool>();
         string pathRoot = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)+ "\\AppData\\Roaming\\ScreenSoundSwitch\\";
-        public void AddDeviceConfig(string deviceName, int monitorIndex,int volume)
-        {   
-            if(!File.Exists(pathRoot)){
+        public AppConfig()
+        {
+            if (!File.Exists(pathRoot))
+            {
                 Directory.CreateDirectory(pathRoot);
             }
+        }
+        public void AddDeviceConfig(string deviceName, int monitorIndex,int volume)
+        {
+
             DevicesConfig deviceConfig = new DevicesConfig();
             deviceConfig.FriendlyName = deviceName;
             deviceConfig.MonitorIndex = monitorIndex;
             deviceConfig.Volume = volume;
-            this.devicesConfig.Add(deviceConfig);
+            devicesConfig[deviceName]= deviceConfig;
         }
         public void SetAutoStart(bool isAutoStart)
         {
@@ -42,7 +48,7 @@ namespace ScreenSoundSwitch
             return winformConfig.isAutoStart;
         }
         
-        public List<DevicesConfig> GetDevicesConfig()
+        public Dictionary<string, DevicesConfig> GetDevicesConfig()
         {
             return devicesConfig;
         }
@@ -73,7 +79,7 @@ namespace ScreenSoundSwitch
             if (File.Exists(pathRoot+"DeviceConfig.json"))
             {
                 string json = File.ReadAllText(pathRoot+"DeviceConfig.json");
-                devicesConfig = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DevicesConfig>>(json);
+                devicesConfig = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, DevicesConfig>>(json);
                 return true;
             }
             else
