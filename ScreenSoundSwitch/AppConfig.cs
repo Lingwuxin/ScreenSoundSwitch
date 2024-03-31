@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -56,10 +57,24 @@ namespace ScreenSoundSwitch
         }
         public bool ReadWinformConfig()
         {
-            if (File.Exists(pathRoot+"WinformConfig.json"))
+            if (File.Exists(pathRoot + "WinformConfig.json"))
             {
                 string json = File.ReadAllText(pathRoot + "WinformConfig.json");
-                winformConfig = Newtonsoft.Json.JsonConvert.DeserializeObject<WinformConfig>(json);
+                try
+                {
+                    winformConfig = Newtonsoft.Json.JsonConvert.DeserializeObject<WinformConfig>(json);
+                }
+                catch (JsonReaderException ex)
+                {
+                    Debug.WriteLine("JsonReaderException: " + ex.Message);
+                    return false;
+                }
+                catch (JsonSerializationException ex)
+                {
+                    Debug.WriteLine("JsonSerializationException: " + ex.Message);
+                    return false;
+                }
+
                 Debug.WriteLine(winformConfig);
                 return true;
             }
@@ -73,7 +88,21 @@ namespace ScreenSoundSwitch
             if (File.Exists(pathRoot+"DeviceConfig.json"))
             {
                 string json = File.ReadAllText(pathRoot+"DeviceConfig.json");
-                devicesConfig = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DevicesConfig>>(json);
+                try
+                {
+                    devicesConfig = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DevicesConfig>>(json);
+                }
+                catch (JsonReaderException ex)
+                {
+                    Debug.WriteLine("JsonReaderException: " + ex.Message);
+                    return false;
+                }
+                catch (JsonSerializationException ex)
+                {
+                    Debug.WriteLine("JsonSerializationException: " + ex.Message);
+                    return false;
+                }
+                Debug.WriteLine(devicesConfig);
                 return true;
             }
             else
