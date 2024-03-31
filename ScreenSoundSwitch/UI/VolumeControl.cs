@@ -7,15 +7,19 @@ namespace ScreenSoundSwitch
     public partial class VolumeControl : UserControl
     {
         MMDevice device;
+<<<<<<< HEAD
         Screen[] screens;
+=======
+>>>>>>> master
         public VolumeControl()
         {
             InitializeComponent();
         }
-        public void setDevice(MMDevice device)
+        public void setDevice(MMDevice? device)
         {
             if(this.device!=null&&this.device.ID.Equals(device.ID))
             {
+                Debug.WriteLine("设备获取失败！");
                 return;
             }
             this.device = device;
@@ -23,6 +27,7 @@ namespace ScreenSoundSwitch
             float volume = device.AudioEndpointVolume.MasterVolumeLevelScalar * 10;
             setVolume((int)volume);
         }
+<<<<<<< HEAD
         public void setScreen(Screen[]? screens)
         {
             if(screens==null||screens.Length==0)
@@ -40,6 +45,8 @@ namespace ScreenSoundSwitch
             
             
         }
+=======
+>>>>>>> master
         private void setDeviceName()
         {
             deviceLable.Text = device.FriendlyName;

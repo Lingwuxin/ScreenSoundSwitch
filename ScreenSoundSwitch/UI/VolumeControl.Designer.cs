@@ -30,13 +30,12 @@
         {
             volumeTraceBar = new TrackBar();
             deviceLable = new Label();
-            screenMsg = new Label();
             ((System.ComponentModel.ISupportInitialize)volumeTraceBar).BeginInit();
             SuspendLayout();
             // 
             // volumeTraceBar
             // 
-            volumeTraceBar.Location = new Point(39, 72);
+            volumeTraceBar.Location = new Point(49, 43);
             volumeTraceBar.Name = "volumeTraceBar";
             volumeTraceBar.Orientation = Orientation.Vertical;
             volumeTraceBar.Size = new Size(45, 104);
@@ -45,30 +44,20 @@
             // deviceLable
             // 
             deviceLable.AutoSize = true;
-            deviceLable.Location = new Point(14, 188);
+            deviceLable.Location = new Point(26, 150);
             deviceLable.Name = "deviceLable";
             deviceLable.Size = new Size(80, 17);
             deviceLable.TabIndex = 1;
             deviceLable.Text = "deviceName";
             // 
-            // screenMsg
-            // 
-            screenMsg.AutoSize = true;
-            screenMsg.Location = new Point(26, 32);
-            screenMsg.Name = "screenMsg";
-            screenMsg.Size = new Size(82, 17);
-            screenMsg.TabIndex = 2;
-            screenMsg.Text = "Not selected";
-            // 
             // VolumeControl
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            Controls.Add(screenMsg);
             Controls.Add(deviceLable);
             Controls.Add(volumeTraceBar);
             Name = "VolumeControl";
-            Size = new Size(152, 240);
+            Size = new Size(140, 222);
             Load += VolumeControl_Load;
             ((System.ComponentModel.ISupportInitialize)volumeTraceBar).EndInit();
             ResumeLayout(false);
@@ -78,6 +67,5 @@
         #endregion
         private Label deviceLable;
         public TrackBar volumeTraceBar;
-        private Label screenMsg;
     }
 }
