@@ -21,7 +21,7 @@ namespace ScreenSoundSwitch
         Dictionary<int, string> screenIndexToAudioDeviceName = new Dictionary<int, string>();
         Dictionary<string,Screen> deviceNameToScreen = new Dictionary<string, Screen>();
         Dictionary<int, IntPtr> processIdHookDict = new Dictionary<int, IntPtr>();
-        DeviceControl deviceControl = new DeviceControl();
+        DeviceControl deviceSelectControl = new DeviceControl();
         ForegroundProcessWatcher watcher;
         bool isBounded = false;
         private NotifyIcon notifyIcon;
@@ -40,76 +40,112 @@ namespace ScreenSoundSwitch
         {
             // 获取所有显示器和它们对应的播放设备
             deviceCollection = audioDeviceEnumerator.GetDevices();
-
+            //将音频播放设备添加到字典中并设置到VolumeControl
             foreach (var device in deviceCollection)
             {
                 deviceInfoDict.Add(device.FriendlyName, device);
-                deviceControl.comBoxAudio.Items.Add(device.FriendlyName);
+                Debug.WriteLine(device.FriendlyName + "已添加");
+                setVolumeControl(device);
+                deviceSelectControl.comBoxAudio.Items.Add(device.FriendlyName);
             }
             screens = Screen.AllScreens;
             for (int i = 0; i < screens.Length; i++)
             {
-                deviceControl.comBoxScreen.Items.Add(screens[i].DeviceName);
+                deviceSelectControl.comBoxScreen.Items.Add(screens[i].DeviceName);
             }
-            deviceControl.selectButton.Click += bound_button_Click;
-            deviceCollection = audioDeviceEnumerator.GetDevices();
+            deviceSelectControl.selectButton.Click += bound_button_Click;
+            
+
+            selectDevicePage.Controls.Add(deviceSelectControl);
+            tabControl.SelectedIndexChanged += SelectPageChange;
+        }
+        private void setVolumeControl(MMDevice? mMDevice)
+        {
             volumepPageTableLayout.ColumnCount = deviceCollection.Count;
             volumepPageTableLayout.RowCount = 1;
             int count = 0;
             foreach (var device in deviceCollection)
             {
                 VolumeControl volumeControl = new VolumeControl();
+                volumeControl.setDevice(mMDevice);
                 volumepPageTableLayout.Controls.Add(volumeControl, count, 0);
+                count++;
             }
-            selectDevicePage.Controls.Add(deviceControl);
-            tabControl.SelectedIndexChanged += SelectPageChange;
         }
         private void SelectPageChange(object? sender, EventArgs e)
         {
             switch(tabControl.SelectedIndex)
             {
                 case 0:
-                    UpdateSelectControl();
+                    if (IsSelectConrtolChanged())
+                    {
+                        UpdateSelectControl();
+                    }
                     break;
                 case 1:
-                    UpdateVolumeControl();
+                    if (IsAudioDeviceChanged())
+                    {
+                        UpdateVolumeControl();
+                    }
                     break;
             }
         }
+        private bool IsSelectConrtolChanged()
+        {
+
+            if (IsAudioDeviceChanged() || IsScreenChanged())
+            {
+                return true;
+            }
+            return false;
+        }
+        private bool IsScreenChanged()
+        {
+            //屏幕设备信息是否更改
+            Screen[] screens_new = Screen.AllScreens;
+            if (screens.Length == screens_new.Length)
+            {
+                for (int i = 0; i < screens_new.Length; i++)
+                {
+                    if (!screens_new[i].DeviceName.Equals(screens[i].DeviceName))
+                    {
+                        Debug.WriteLine("IsScreenChanged");
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        //播放设备信息是否更改
+        private bool IsAudioDeviceChanged()
+        {
+            MMDevice[] audios= audioDeviceEnumerator.GetDevices().ToArray();
+            foreach(MMDevice mMDevice in audios)
+            {
+                if (!deviceInfoDict.ContainsKey(mMDevice.FriendlyName))
+                {
+                    Debug.WriteLine("IsAudioDeviceChanged");
+                    return true;
+                }
+            }
+            return false;
+        }
         private void UpdateSelectControl()
         {
-            deviceControl.comBoxAudio.Items.Clear();
+            deviceSelectControl.comBoxAudio.Items.Clear();
             deviceCollection = audioDeviceEnumerator.GetDevices();
             foreach (var device in deviceCollection)
             {
                 deviceInfoDict[device.FriendlyName] = device;
-                deviceControl.comBoxAudio.Items.Add(device.FriendlyName);
+                deviceSelectControl.comBoxAudio.Items.Add(device.FriendlyName);
             }
         }
         private void UpdateVolumeControl()
         {
-            if(!isBounded)
-            {
-                return;
-            }
-            List<VolumeControl> volumeControls=new List<VolumeControl>();
-            foreach (VolumeControl control in volumepPageTableLayout.Controls)
-            {
-                volumeControls.Add(control);
-            }
-            int count = 0;
-            foreach (KeyValuePair<int,string> valuePair in screenIndexToAudioDeviceName)
-            {
-                VolumeControl volumeControl = volumeControls[count];
-                Debug.WriteLine("update the VolumeControl of "+valuePair.Value);
-                if (deviceNameToScreen.ContainsKey(valuePair.Value))
-                {
-                    volumeControl.setScreen(screens[valuePair.Key]);
-                }
-                volumeControl.setDevice(deviceInfoDict[valuePair.Value]);
-                count++;
-            }
-            isBounded = false;
+            Debug.WriteLine("=======================UpdateVolumeControl======================");
+            Debug.WriteLine("未完成");
+            Debug.WriteLine("=======================UpdateVolumeControl======================");
+
         }
         //从Json文件中读取配置
         private void LoadConfig()
@@ -124,7 +160,7 @@ namespace ScreenSoundSwitch
                     {
                         Debug.WriteLine("Read " + deviceConfig.FriendlyName + " mesg");
                         screenIndexToAudioDeviceName[deviceConfig.MonitorIndex] = deviceConfig.FriendlyName;
-                        deviceControl.updateList(screens[deviceConfig.MonitorIndex].DeviceName, deviceConfig.FriendlyName);
+                        deviceSelectControl.updateList(screens[deviceConfig.MonitorIndex].DeviceName, deviceConfig.FriendlyName);
                         deviceNameToScreen[deviceConfig.FriendlyName] = screens[deviceConfig.MonitorIndex];
                         isBounded = true;
                     }
@@ -228,13 +264,13 @@ namespace ScreenSoundSwitch
 
         private void bound_button_Click(object? sender, EventArgs e)
         {
-            if (deviceControl.comBoxScreen.SelectedItem != null && deviceControl.comBoxAudio.SelectedItem != null)
+            if (deviceSelectControl.comBoxScreen.SelectedItem != null && deviceSelectControl.comBoxAudio.SelectedItem != null)
             {
-                int screenIndex= deviceControl.comBoxScreen.SelectedIndex;
-                string deviceName = (string)deviceControl.comBoxAudio.SelectedItem;
+                int screenIndex= deviceSelectControl.comBoxScreen.SelectedIndex;
+                string deviceName = (string)deviceSelectControl.comBoxAudio.SelectedItem;
                 deviceNameToScreen[deviceName] = screens[screenIndex];
                 screenIndexToAudioDeviceName[screenIndex] = deviceName;
-                deviceControl.updateList((string)deviceControl.comBoxScreen.SelectedItem, deviceName);
+                deviceSelectControl.updateList((string)deviceSelectControl.comBoxScreen.SelectedItem, deviceName);
                 float deviceVolume = deviceInfoDict[deviceName].AudioEndpointVolume.MasterVolumeLevelScalar*10;
                 appConfig.AddDeviceConfig(deviceName, screenIndex,(int)deviceVolume);
                 isBounded = true;
