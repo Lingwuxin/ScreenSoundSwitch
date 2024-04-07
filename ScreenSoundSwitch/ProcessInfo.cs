@@ -6,16 +6,62 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Windows.Media.Core;
 using Windows.Media.Streaming.Adaptive;
+using System.Threading;
 
 namespace ScreenSoundSwitch
 {
     class ProcessInfo
     {
+        public struct RECT
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
+        [DllImport("user32.dll")]
+        private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MONITORINFO
+        {
+            public int cbSize;
+            public RECT rcMonitor;
+            public RECT rcWork;
+            public uint dwFlags;
+        }
+        private MONITORINFO monitorInfo;
+        [DllImport("user32.dll")]
+        private static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
         public Process process { get; set; }
-        public int MonitorIndex { get; set; }
-        public bool IsUsing { get; set; }
+        public int MonitorIndex {
+            get { return GetMonitorIndex(); }  
+            set { MonitorIndex = value; }
+        }
+
+        public int lastMonitorIndex { get; set; } = -1;
+
+
+        private int GetMonitorIndex()
+        {
+            
+            int monitorIndex = -1; // 默认为-1表示找不到
+            IntPtr hWnd = process.MainWindowHandle;
+            if (hWnd != IntPtr.Zero)
+            {
+                IntPtr hMonitor = MonitorFromWindow(hWnd, 2); // 2表示包含指定窗口的显示器
+                MONITORINFO monitorInfo = new MONITORINFO();
+                monitorInfo.cbSize = Marshal.SizeOf(monitorInfo);
+                if (GetMonitorInfo(hMonitor, ref monitorInfo))
+                {
+                    monitorIndex = (int)monitorInfo.dwFlags;
+                }
+            }
+            return monitorIndex;
+        }
         private uint timeout = 225;
         private uint timer = 0;
+        public bool IsUsing { get; set; }
         public void countTime()
         {
             timer++;
@@ -101,4 +147,6 @@ namespace ScreenSoundSwitch
             ForegroundProcessChanged?.Invoke(processId);
         }
     }
+
+
 }

@@ -61,7 +61,7 @@ namespace ScreenSoundSwitch
             }
             return true;
         }
-        bool IsUsingAudioDeviceByProcessId(int processId,Dictionary<uint,MMDevice?> deviceInfoDict)
+        public bool IsUsingAudioDeviceByProcessId(int processId,Dictionary<string,MMDevice?> deviceInfoDict)
         {
             foreach (var deviceInfo in deviceInfoDict)
             {
@@ -87,7 +87,32 @@ namespace ScreenSoundSwitch
             }
             return false;
         }
-
+        public string? GetUsingAudioDeviceNameById(int processId, Dictionary<string, MMDevice?> deviceInfoDict)
+        {
+            foreach (var deviceInfo in deviceInfoDict)
+            {
+                if (deviceInfo.Value.AudioSessionManager.Sessions == null)
+                {
+                    continue;
+                }
+                for (int i = deviceInfo.Value.AudioSessionManager.Sessions.Count; i > 0; i--)
+                {
+                    if (deviceInfo.Value.AudioSessionManager.Sessions[i - 1].State != AudioSessionState.AudioSessionStateActive)
+                    {
+                        continue;
+                    }
+                    if (deviceInfo.Value.AudioSessionManager.Sessions[i - 1].GetProcessID == 0)
+                    {
+                        continue;
+                    }
+                    if (deviceInfo.Value.AudioSessionManager.Sessions[i - 1].GetProcessID == processId)
+                    {
+                        return deviceInfo.Key.ToString();
+                    }
+                }
+            }
+            return null;
+        }
         static int GetAudioDeviceProcessId(MMDevice device)
         {
             if (device.AudioSessionManager.Sessions != null)

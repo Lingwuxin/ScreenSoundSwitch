@@ -8,13 +8,15 @@ using System.Text;
 using ScreenSoundSwitch.UI;
 using Windows.Networking.Sockets;
 using Microsoft.Win32;
+using static ScreenSoundSwitch.MainForm;
+using static SoundSwitch.Audio.Manager.Interop.Com.User.User32.NativeMethods;
 namespace ScreenSoundSwitch
 {
     public partial class MainForm : Form
     {
         AudioSwitcher audioSwitcher = AudioSwitcher.Instance;
         MMDeviceCollection deviceCollection;
-        AudioDeviceManger audioDeviceEnumerator = new AudioDeviceManger();
+        AudioDeviceManger audioDeviceManger = new AudioDeviceManger();
         Screen[] screens;
         Dictionary<uint, ProcessInfo> processInfoDict = new Dictionary<uint, ProcessInfo>();
         Dictionary<string, MMDevice?> deviceInfoDict = new Dictionary<string, MMDevice?>();
@@ -39,7 +41,7 @@ namespace ScreenSoundSwitch
         private void AddUserControl()
         {
             // 获取所有显示器和它们对应的播放设备
-            deviceCollection = audioDeviceEnumerator.GetDevices();
+            deviceCollection = audioDeviceManger.GetDevices();
             //将音频播放设备添加到字典中并设置到VolumeControl
             foreach (var device in deviceCollection)
             {
@@ -119,7 +121,7 @@ namespace ScreenSoundSwitch
         //播放设备信息是否更改
         private bool IsAudioDeviceChanged()
         {
-            MMDevice[] audios= audioDeviceEnumerator.GetDevices().ToArray();
+            MMDevice[] audios= audioDeviceManger.GetDevices().ToArray();
             foreach(MMDevice mMDevice in audios)
             {
                 if (!deviceInfoDict.ContainsKey(mMDevice.FriendlyName))
@@ -133,7 +135,7 @@ namespace ScreenSoundSwitch
         private void UpdateSelectControl()
         {
             deviceSelectControl.comBoxAudio.Items.Clear();
-            deviceCollection = audioDeviceEnumerator.GetDevices();
+            deviceCollection = audioDeviceManger.GetDevices();
             foreach (var device in deviceCollection)
             {
                 deviceInfoDict[device.FriendlyName] = device;
@@ -205,8 +207,16 @@ namespace ScreenSoundSwitch
         }
         private void NotifyIcon_DoubleClick(object sender, EventArgs e)
         {
-            Show();
-            WindowState = FormWindowState.Normal;
+            if (Visible)
+            {
+                Hide();
+            }
+            else
+            {
+                Show();
+                WindowState = FormWindowState.Normal;
+            }
+
         }
         private void AutostartMenuItem_Click(object sender, EventArgs e)
         {
@@ -280,19 +290,6 @@ namespace ScreenSoundSwitch
         [DllImport("user32.dll")]
         private static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
 
-        [DllImport("user32.dll")]
-        private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFOEX lpmi);
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        public struct MONITORINFOEX
-        {
-            public int cbSize;
-            public RECT rcMonitor;
-            public RECT rcWork;
-            public uint dwFlags;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-            public string szDevice;
-        }
 
         [DllImport("user32.dll")]
         private static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc,
@@ -308,13 +305,7 @@ namespace ScreenSoundSwitch
         public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
 
-        public struct RECT
-        {
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
-        }
+
         [DllImport("user32.dll", CharSet = CharSet.Ansi, SetLastError = true)]
         public static extern int GetWindowTextLength(IntPtr hWnd);
 
@@ -336,31 +327,12 @@ namespace ScreenSoundSwitch
             return stringBuilder.ToString();
         }
 
-        private int ClosetMonitor(IntPtr mainWindowHandle)
-        {
-            int closestMonitorIndex = -1;
-            int closestDistance = int.MaxValue;
-            RECT windowRect = new RECT();
-            GetWindowRect(mainWindowHandle, ref windowRect);
-            for (int i = 0; i < screens.Length; i++)
-            {
-                Rectangle monitorBounds = screens[i].Bounds;
-                int distance = Math.Abs(windowRect.Left - monitorBounds.Left) +
-                                Math.Abs(windowRect.Top - monitorBounds.Top);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestMonitorIndex = i;
-                }
-            }
-            return closestMonitorIndex;
-        }
-        private void WinEventProc(IntPtr hWinEventHook, uint eventType,
+        private void WinEventProcChangeAudioDevic(IntPtr hWinEventHook, uint eventType,
     IntPtr hWnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
-            Debug.WriteLine("WinEventProc");
+            
             GetWindowThreadProcessId(hWnd, out uint processId);
-
+            Debug.WriteLine("WinEventProc:Pid " + processId+" is foreground window");
             if (processInfoDict.ContainsKey(processId))
             {
                 processInfoDict[processId].process = processInfoDict[processId].process;
@@ -368,7 +340,7 @@ namespace ScreenSoundSwitch
             }
             else
             {
-                Debug.WriteLine("not found process");
+                Debug.WriteLine("WinEventProc:not found process");
                 return;
             }
             //Process process = Process.GetProcessById((int)processId);
@@ -376,7 +348,7 @@ namespace ScreenSoundSwitch
 
             if (mainWindowHandle != hWnd || mainWindowHandle == IntPtr.Zero)
             {
-                Debug.WriteLine("mainWindowHandle != hWnd");
+                Debug.WriteLine("WinEventProc:mainWindowHandle != hWnd");
                 return;
             }
             // 获取窗口所在的屏幕
@@ -384,34 +356,31 @@ namespace ScreenSoundSwitch
             IntPtr hMonitor = MonitorFromWindow(mainWindowHandle, 0x00000002);
             if (hMonitor == IntPtr.Zero)
             {
-                Debug.WriteLine("hMonitor == IntPtr.Zero");
+                Debug.WriteLine("WinEventProc:hMonitor == IntPtr.Zero");
                 return;
             }
             // 获取屏幕信息
-            MONITORINFOEX monitorInfo = new MONITORINFOEX();
-            monitorInfo.cbSize = Marshal.SizeOf(monitorInfo);
-            GetMonitorInfo(hMonitor, ref monitorInfo);
 
-            int closestMonitorIndex= ClosetMonitor(mainWindowHandle);
-
-            if (processInfoDict[processId].MonitorIndex.Equals(closestMonitorIndex))
+            int lastMonitorIndex = processInfoDict[processId].lastMonitorIndex;
+           
+            Debug.WriteLine(lastMonitorIndex);
+            if (processInfoDict[processId].MonitorIndex.Equals(lastMonitorIndex))
             {
-                Debug.WriteLine("same screen");
+                Debug.WriteLine("WinEventProc:same screen");
                 return;
             }
             string winTitle = GetWindowTitle(mainWindowHandle);
-            processInfoDict[processId].MonitorIndex = closestMonitorIndex;
-
+            processInfoDict[processId].lastMonitorIndex = processInfoDict[processId].MonitorIndex;
 
             if (!screenIndexToAudioDeviceName.ContainsKey(processInfoDict[processId].MonitorIndex))
             {
-                Debug.WriteLine("No screen selected for " + processInfoDict[processId].MonitorIndex);
+                Debug.WriteLine("WinEventProc:No screen selected for " + processInfoDict[processId].MonitorIndex);
                 return;
             }
             string screenIndex = screenIndexToAudioDeviceName[processInfoDict[processId].MonitorIndex];
             if (deviceInfoDict[screenIndex] == null)
             {
-                Debug.WriteLine("No audio device selected " + processInfoDict[processId].MonitorIndex);
+                Debug.WriteLine("WinEventProc:No audio device selected " + processInfoDict[processId].MonitorIndex);
                 return;
             }
             MMDevice? device = deviceInfoDict[screenIndex];
@@ -424,12 +393,12 @@ namespace ScreenSoundSwitch
                 {
                     audioSwitcher.SwitchProcessTo(device.ID, eRole, eDataFlow, processId);
 
-                    Debug.WriteLine("Switching audio process " + processId + " title is " + winTitle + " on Screen: " + processInfoDict[processId].MonitorIndex);
+                    Debug.WriteLine("WinEventProc:Switching audio process " + processId + " title is " + winTitle + " on Screen: " + processInfoDict[processId].MonitorIndex);
                 }
                 catch (Exception ex)
                 {
                     // 处理异常，比如记录日志或者显示错误消息
-                    MessageBox.Show("An error occurred while switching audio process: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("WinEventProc:An error occurred while switching audio process: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 }
             }
@@ -437,29 +406,41 @@ namespace ScreenSoundSwitch
             //textBox1.Text += "Process " + processId + " title is " + winTitle + " on Screen: " + processInfo.MonitorIndex + "\r\n";
         }
         // 导入Windows API函数
-        [DllImport("user32.dll")]
-        public static extern bool EnumWindows(EnumWindowsProc enumProc, IntPtr lParam);
-        [DllImport("user32.dll")]
-        public static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
 
         [DllImport("user32.dll")]
         public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
 
-        [DllImport("user32.dll")]
-        public static extern bool IsWindowVisible(IntPtr hWnd);
 
 
         [DllImport("user32.dll")]
         public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+        public struct RECT
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
+        [DllImport("user32.dll")]
+        private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
 
-
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MONITORINFO
+        {
+            public int cbSize;
+            public RECT rcMonitor;
+            public RECT rcWork;
+            public uint dwFlags;
+        }
         //监听进程窗口是否移动
-        void CreateWinHook(int processid)
+        void CreateWinHook(int processId)
         {
             try
             {
-                IntPtr hook = SetWinEventHook(0x000B, 0x000B, IntPtr.Zero, WinEventProc, (uint)processid, 0, 0);
-                processIdHookDict[processid] = hook;
+
+                
+                IntPtr hook = SetWinEventHook(0x000B, 0x000B, IntPtr.Zero, WinEventProcChangeAudioDevic, (uint)processId, 0, 0);
+                processIdHookDict[processId] = hook;
             }
             catch (Exception ex)
             {
@@ -508,9 +489,9 @@ namespace ScreenSoundSwitch
                 processInfoDict[(uint)processId].resetTime();
                 return;
             }
+            //当进程被创建时，检测进程是否在
             ProcessInfo processInfo = new ProcessInfo();
             processInfo.process = Process.GetProcessById(processId);
-            processInfo.MonitorIndex=ClosetMonitor(processInfo.process.MainWindowHandle);
             processInfoDict[(uint)processId] = processInfo;
             Invoke(new Action(() =>
             {
