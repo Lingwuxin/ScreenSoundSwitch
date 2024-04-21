@@ -1,38 +1,41 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ScreenSoundSwitch
 {
      class DevicesConfig
     {
         public string FriendlyName { get; set; }
-        public int MonitorIndex { get; set; }
+        public string MonitorName { get; set; }
         public int Volume { get; set; }
     }
      class WinformConfig
     {
-        public bool isAutoStart = false;
+        public bool isAutoStart = false;//是否开机自启动
     }
     internal class AppConfig
     {
         private WinformConfig winformConfig=new WinformConfig();
         private List<DevicesConfig> devicesConfig = new List<DevicesConfig>();
         string pathRoot = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)+ "\\AppData\\Roaming\\ScreenSoundSwitch\\";
-        public void AddDeviceConfig(string deviceName, int monitorIndex,int volume)
+        public void AddDeviceConfig(string deviceName, string monitorName,int volume)
         {   
             if(!File.Exists(pathRoot)){
                 Directory.CreateDirectory(pathRoot);
             }
-            DevicesConfig deviceConfig = new DevicesConfig();
-            deviceConfig.FriendlyName = deviceName;
-            deviceConfig.MonitorIndex = monitorIndex;
-            deviceConfig.Volume = volume;
-            this.devicesConfig.Add(deviceConfig);
+            DevicesConfig _deviceConfig = new DevicesConfig();
+            _deviceConfig.FriendlyName = deviceName;
+            _deviceConfig.MonitorName = monitorName;
+            _deviceConfig.Volume = volume;
+            for(int i = 0; i < devicesConfig.Count; i++)
+            {
+                if (devicesConfig[i].MonitorName == monitorName)//遍历设备配置列表如果已存在相同的设备名，则更新，否则遍历完毕后添加配置到列表
+                {
+                    devicesConfig[i]=_deviceConfig;
+                    return;
+                }
+            }
+            devicesConfig.Add(_deviceConfig);
         }
         public void SetAutoStart(bool isAutoStart)
         {
@@ -50,9 +53,9 @@ namespace ScreenSoundSwitch
         //将配置保存为json格式文件
         public void WriteConfig()
         {
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(devicesConfig);
+            string json = JsonConvert.SerializeObject(devicesConfig);
             File.WriteAllText(pathRoot+"DeviceConfig.json", json);
-            string json1 = Newtonsoft.Json.JsonConvert.SerializeObject(winformConfig);
+            string json1 = JsonConvert.SerializeObject(winformConfig);
             File.WriteAllText(pathRoot+"WinformConfig.json", json1);
         }
         public bool ReadWinformConfig()
@@ -62,7 +65,7 @@ namespace ScreenSoundSwitch
                 string json = File.ReadAllText(pathRoot + "WinformConfig.json");
                 try
                 {
-                    winformConfig = Newtonsoft.Json.JsonConvert.DeserializeObject<WinformConfig>(json);
+                    winformConfig = JsonConvert.DeserializeObject<WinformConfig>(json);
                 }
                 catch (JsonReaderException ex)
                 {
@@ -90,7 +93,7 @@ namespace ScreenSoundSwitch
                 string json = File.ReadAllText(pathRoot+"DeviceConfig.json");
                 try
                 {
-                    devicesConfig = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DevicesConfig>>(json);
+                    devicesConfig = JsonConvert.DeserializeObject<List<DevicesConfig>>(json);
                 }
                 catch (JsonReaderException ex)
                 {
@@ -102,7 +105,6 @@ namespace ScreenSoundSwitch
                     Debug.WriteLine("JsonSerializationException: " + ex.Message);
                     return false;
                 }
-                Debug.WriteLine(devicesConfig);
                 return true;
             }
             else

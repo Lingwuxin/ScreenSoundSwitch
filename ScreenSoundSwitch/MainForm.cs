@@ -6,10 +6,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using ScreenSoundSwitch.UI;
-using Windows.Networking.Sockets;
 using Microsoft.Win32;
-using static ScreenSoundSwitch.MainForm;
-using static SoundSwitch.Audio.Manager.Interop.Com.User.User32.NativeMethods;
 namespace ScreenSoundSwitch
 {
     public partial class MainForm : Form
@@ -21,6 +18,7 @@ namespace ScreenSoundSwitch
         Dictionary<uint, ProcessInfo> processInfoDict = new Dictionary<uint, ProcessInfo>();
         Dictionary<string, MMDevice?> deviceInfoDict = new Dictionary<string, MMDevice?>();
         Dictionary<int, string> screenIndexToAudioDeviceName = new Dictionary<int, string>();
+        Dictionary<string,int> screenNameToScreenIndex = new Dictionary<string,int>();
         Dictionary<string,Screen> deviceNameToScreen = new Dictionary<string, Screen>();
         Dictionary<int, IntPtr> processIdHookDict = new Dictionary<int, IntPtr>();
         DeviceControl deviceSelectControl = new DeviceControl();
@@ -51,9 +49,12 @@ namespace ScreenSoundSwitch
                 deviceSelectControl.comBoxAudio.Items.Add(device.FriendlyName);
             }
             screens = Screen.AllScreens;
+            screenNameToScreenIndex.Clear();
             for (int i = 0; i < screens.Length; i++)
             {
-                deviceSelectControl.comBoxScreen.Items.Add(screens[i].DeviceName);
+                string deviceName = screens[i].DeviceName;
+                deviceSelectControl.comBoxScreen.Items.Add(deviceName);
+                screenNameToScreenIndex[deviceName]= i;
             }
             deviceSelectControl.selectButton.Click += bound_button_Click;
             
@@ -149,21 +150,24 @@ namespace ScreenSoundSwitch
             Debug.WriteLine("=======================UpdateVolumeControl======================");
 
         }
+
         //从Json文件中读取配置
         private void LoadConfig()
         {
             if(appConfig.ReadDeviceConfig())
             {
-                foreach (var deviceConfig in appConfig.GetDevicesConfig())
+                    foreach (var deviceConfig in appConfig.GetDevicesConfig())
                 {
                     Debug.WriteLine(deviceConfig.FriendlyName);
                     //如果该设备仍在使用，则添加该设备的信息
-                    if (deviceInfoDict.ContainsKey(deviceConfig.FriendlyName))
+                    if (deviceInfoDict.ContainsKey(deviceConfig.FriendlyName)&& screenNameToScreenIndex.ContainsKey(deviceConfig.MonitorName))
                     {
                         Debug.WriteLine("Read " + deviceConfig.FriendlyName + " mesg");
-                        screenIndexToAudioDeviceName[deviceConfig.MonitorIndex] = deviceConfig.FriendlyName;
-                        deviceSelectControl.updateList(screens[deviceConfig.MonitorIndex].DeviceName, deviceConfig.FriendlyName);
-                        deviceNameToScreen[deviceConfig.FriendlyName] = screens[deviceConfig.MonitorIndex];
+                        //通过屏幕设备名称获取屏幕序号
+                        int monitorIndex = screenNameToScreenIndex[deviceConfig.MonitorName];
+                        screenIndexToAudioDeviceName[monitorIndex] = deviceConfig.FriendlyName;
+                        deviceSelectControl.updateList(deviceConfig.MonitorName, deviceConfig.FriendlyName);
+                        deviceNameToScreen[deviceConfig.FriendlyName] = screens[monitorIndex];
                         isBounded = true;
                     }
                 }
@@ -282,7 +286,8 @@ namespace ScreenSoundSwitch
                 screenIndexToAudioDeviceName[screenIndex] = deviceName;
                 deviceSelectControl.updateList((string)deviceSelectControl.comBoxScreen.SelectedItem, deviceName);
                 float deviceVolume = deviceInfoDict[deviceName].AudioEndpointVolume.MasterVolumeLevelScalar*10;
-                appConfig.AddDeviceConfig(deviceName, screenIndex,(int)deviceVolume);
+               
+                appConfig.AddDeviceConfig(deviceName, screens[screenIndex].DeviceName,(int)deviceVolume);
                 isBounded = true;
             }
         }
@@ -363,7 +368,6 @@ namespace ScreenSoundSwitch
 
             int lastMonitorIndex = processInfoDict[processId].lastMonitorIndex;
            
-            Debug.WriteLine(lastMonitorIndex);
             if (processInfoDict[processId].MonitorIndex.Equals(lastMonitorIndex))
             {
                 Debug.WriteLine("WinEventProc:same screen");

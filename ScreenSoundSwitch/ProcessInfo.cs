@@ -49,7 +49,7 @@ namespace ScreenSoundSwitch
             IntPtr hWnd = process.MainWindowHandle;
             if (hWnd != IntPtr.Zero)
             {
-                IntPtr hMonitor = MonitorFromWindow(hWnd, 2); // 2表示包含指定窗口的显示器
+                IntPtr hMonitor = MonitorFromWindow(hWnd, 0);
                 MONITORINFO monitorInfo = new MONITORINFO();
                 monitorInfo.cbSize = Marshal.SizeOf(monitorInfo);
                 if (GetMonitorInfo(hMonitor, ref monitorInfo))
