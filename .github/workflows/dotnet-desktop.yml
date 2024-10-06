@@ -32,9 +32,10 @@ jobs:
       - name: Build project
         run: dotnet build --configuration Release --no-restore
 
-      # 打包为单文件可执行程序
+
+      # 打包为单文件可执行程序，移除程序集修剪选项
       - name: Publish as single executable
-        run: dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:PublishTrimmed=true
+        run: dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
 
       # 创建 GitHub Release（仅当推送的是标签时）
       - name: Create Release
