@@ -5,43 +5,63 @@ namespace ScreenSoundSwitch
 {
     public partial class VolumeControl : UserControl
     {
-        MMDevice device;
+        MMDevice? device;
         public VolumeControl()
         {
             InitializeComponent();
         }
-        public void setDevice(MMDevice? device)
+        private void VolumeControl_Load(object sender, EventArgs e)
         {
-            if(this.device!=null&&this.device.ID.Equals(device.ID))
+            volumeTraceBar.Scroll += new EventHandler(volumeTraceBar_Scroll);
+        }
+        public void volumeTraceBar_Scroll(object? sender, EventArgs e)
+        {
+            setVolume();
+        }
+        public void setDevice(MMDevice device)
+        {
+            if (device == null)
             {
-                Debug.WriteLine("设备获取失败！");
+                Debug.WriteLine("设备为空");
+                return;
+            }
+            if (this.device!=null&&this.device.ID.Equals(device.ID))
+            {
+                Debug.WriteLine("设备已设置");
                 return;
             }
             this.device = device;
-            setDeviceName();
-            setVolume((int)device.AudioEndpointVolume.MasterVolumeLevelScalar * 10);
+            setDeviceMsg();
+            device.AudioEndpointVolume.OnVolumeNotification += OnVolumeChange;
         }
-        private void setDeviceName()
+
+        private void setDeviceMsg()
         {
+            if (device == null)
+            {
+                return;
+            }
+            device.AudioEndpointVolume.OnVolumeNotification -= OnVolumeChange;
+            volumeTraceBar.Value = (int)(device.AudioEndpointVolume.MasterVolumeLevelScalar*100);
             deviceLable.Text = device.FriendlyName;
+            device.AudioEndpointVolume.OnVolumeNotification += OnVolumeChange;
         }
         public int getVolume()
         {
             return volumeTraceBar.Value;
         }
-        public void setVolume(int value)
+        public void setVolume()
         {
-            Debug.WriteLine("set " + device.FriendlyName + "volume " + value);
-            volumeTraceBar.Value = value;
+
+            device.AudioEndpointVolume.MasterVolumeLevelScalar = volumeTraceBar.Value / 100.0f;
+            Debug.WriteLine("set " + device.FriendlyName + "volume to " + device.AudioEndpointVolume.MasterVolumeLevelScalar * 100);
         }
-        public void volumeTraceBar_ValueChanged(object? sender, EventArgs e)
+
+        private void OnVolumeChange(AudioVolumeNotificationData data)
         {
-            device.AudioEndpointVolume.MasterVolumeLevelScalar = volumeTraceBar.Value / 10.0f;
-            Debug.WriteLine("set " + device.FriendlyName + "volume to " + device.AudioEndpointVolume.MasterVolumeLevelScalar*10);
+            Debug.WriteLine($"{data.MasterVolume}");
+            volumeTraceBar.Value = (int)(data.MasterVolume * 100);//data.MasterVolume * 100要加括号，否则会先将data.MasterVolume转换成整数再运算
         }
-        private void VolumeControl_Load(object sender, EventArgs e)
-        {
-            volumeTraceBar.ValueChanged += new EventHandler(volumeTraceBar_ValueChanged);
-        }
+
     }
 }

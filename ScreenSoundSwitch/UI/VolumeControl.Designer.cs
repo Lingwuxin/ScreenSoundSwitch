@@ -35,7 +35,9 @@
             // 
             // volumeTraceBar
             // 
+            volumeTraceBar.LargeChange = 20;
             volumeTraceBar.Location = new Point(49, 43);
+            volumeTraceBar.Maximum = 100;
             volumeTraceBar.Name = "volumeTraceBar";
             volumeTraceBar.Orientation = Orientation.Vertical;
             volumeTraceBar.Size = new Size(45, 104);

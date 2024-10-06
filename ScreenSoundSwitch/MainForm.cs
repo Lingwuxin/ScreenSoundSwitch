@@ -23,7 +23,7 @@ namespace ScreenSoundSwitch
         Dictionary<int, IntPtr> processIdHookDict = new Dictionary<int, IntPtr>();
         DeviceControl deviceSelectControl = new DeviceControl();
         ForegroundProcessWatcher watcher;
-        bool isBounded = false;
+        bool isBounded = false;//当读取到已有配置时（音频设备已与屏幕绑定），隐藏界面
         private NotifyIcon notifyIcon;
         private AppConfig appConfig = new AppConfig();
         private bool autoStartEnabled = false;
@@ -45,9 +45,10 @@ namespace ScreenSoundSwitch
             {
                 deviceInfoDict.Add(device.FriendlyName, device);
                 Debug.WriteLine(device.FriendlyName + "已添加");
-                setVolumeControl(device);
+                
                 deviceSelectControl.comBoxAudio.Items.Add(device.FriendlyName);
             }
+            setVolumeControl();
             screens = Screen.AllScreens;
             screenNameToScreenIndex.Clear();
             for (int i = 0; i < screens.Length; i++)
@@ -62,7 +63,7 @@ namespace ScreenSoundSwitch
             selectDevicePage.Controls.Add(deviceSelectControl);
             tabControl.SelectedIndexChanged += SelectPageChange;
         }
-        private void setVolumeControl(MMDevice? mMDevice)
+        private void setVolumeControl()
         {
             volumepPageTableLayout.ColumnCount = deviceCollection.Count;
             volumepPageTableLayout.RowCount = 1;
@@ -70,7 +71,7 @@ namespace ScreenSoundSwitch
             foreach (var device in deviceCollection)
             {
                 VolumeControl volumeControl = new VolumeControl();
-                volumeControl.setDevice(mMDevice);
+                volumeControl.setDevice(device);
                 volumepPageTableLayout.Controls.Add(volumeControl, count, 0);
                 count++;
             }
@@ -143,7 +144,7 @@ namespace ScreenSoundSwitch
                 deviceSelectControl.comBoxAudio.Items.Add(device.FriendlyName);
             }
         }
-        private void UpdateVolumeControl()
+        private void UpdateVolumeControl()//更新控件中的设备名列表
         {
             Debug.WriteLine("=======================UpdateVolumeControl======================");
             Debug.WriteLine("未完成");
@@ -158,7 +159,6 @@ namespace ScreenSoundSwitch
             {
                     foreach (var deviceConfig in appConfig.GetDevicesConfig())
                 {
-                    Debug.WriteLine(deviceConfig.FriendlyName);
                     //如果该设备仍在使用，则添加该设备的信息
                     if (deviceInfoDict.ContainsKey(deviceConfig.FriendlyName)&& screenNameToScreenIndex.ContainsKey(deviceConfig.MonitorName))
                     {
@@ -173,19 +173,7 @@ namespace ScreenSoundSwitch
                 }
             }
         }
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            AddUserControl();
-            LoadConfig();
-            //添加进程计数器,淘汰长时间未使用的进程
-            Thread timerThread = new Thread(LookTimer);
-            timerThread.Start();
-            watcher = new ForegroundProcessWatcher();
-            // 订阅事件
-            watcher.ForegroundProcessChanged += Watcher_ForegroundProcessChanged;
-            watcher.HookNeedDisable += UnWinHook;
 
-        }
         private void InitializeNotifyIcon()
         {
             notifyIcon = new NotifyIcon();
@@ -208,6 +196,11 @@ namespace ScreenSoundSwitch
             appConfig.ReadWinformConfig();
             autoStartEnabled = appConfig.IsAutoStart();
             autostartMenuItem.Checked = autoStartEnabled;
+        }
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            AddUserControl();
+            LoadConfig();
         }
         private void NotifyIcon_DoubleClick(object sender, EventArgs e)
         {
@@ -252,6 +245,13 @@ namespace ScreenSoundSwitch
         }
         private void MainForm_Shown(object sender, EventArgs e)
         {
+            //添加进程计数器,淘汰长时间未使用的进程
+            Thread timerThread = new Thread(LookTimer);
+            timerThread.Start();
+            watcher = new ForegroundProcessWatcher();
+            // 订阅事件
+            watcher.ForegroundProcessChanged += Watcher_ForegroundProcessChanged;
+            watcher.HookNeedDisable += UnWinHook;
             if (isBounded)
             {
                 Hide();
@@ -333,12 +333,12 @@ namespace ScreenSoundSwitch
         }
 
         private void WinEventProcChangeAudioDevic(IntPtr hWinEventHook, uint eventType,
-    IntPtr hWnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
+    IntPtr hWnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)//监听进程窗口是否移动到其他显示器上
         {
             
             GetWindowThreadProcessId(hWnd, out uint processId);
             Debug.WriteLine("WinEventProc:Pid " + processId+" is foreground window");
-            if (processInfoDict.ContainsKey(processId))
+            if (processInfoDict.ContainsKey(processId))//如果由该进程
             {
                 processInfoDict[processId].process = processInfoDict[processId].process;
                 processInfoDict[processId].process.Refresh();
@@ -392,7 +392,6 @@ namespace ScreenSoundSwitch
             {
                 EDataFlow eDataFlow = new EDataFlow();
                 ERole eRole = new ERole();
-                //textBox1.Text += screenIndexToAudioDevice[processInfo.MonitorIndex] + processId;
                 try
                 {
                     audioSwitcher.SwitchProcessTo(device.ID, eRole, eDataFlow, processId);
@@ -406,8 +405,6 @@ namespace ScreenSoundSwitch
 
                 }
             }
-            // 输出屏幕编号
-            //textBox1.Text += "Process " + processId + " title is " + winTitle + " on Screen: " + processInfo.MonitorIndex + "\r\n";
         }
         // 导入Windows API函数
 
@@ -440,9 +437,7 @@ namespace ScreenSoundSwitch
         void CreateWinHook(int processId)
         {
             try
-            {
-
-                
+            {                
                 IntPtr hook = SetWinEventHook(0x000B, 0x000B, IntPtr.Zero, WinEventProcChangeAudioDevic, (uint)processId, 0, 0);
                 processIdHookDict[processId] = hook;
             }
@@ -451,7 +446,6 @@ namespace ScreenSoundSwitch
                 MessageBox.Show("An error occurred while switching audio process: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            //textBox1.Text += $"创建{GetWindowTitle(Process.GetProcessById(processid).MainWindowHandle)}{processid}'s hook\r\n";
         }
 
         void UnWinHook(IntPtr hook)
