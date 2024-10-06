@@ -40,7 +40,7 @@ jobs:
         run: |
           $zipFile = "ScreenSoundSwitch.zip"          
           $env:ZIP_FILE = $zipFile
-          $publishDir = "$(pwd)/ScreenSoundSwitch/bin/Release/net8.0-windows/win-x64/publish"
+          $publishDir = "$(pwd)/ScreenSoundSwitch/bin/Release/net8.0-windows*/win-x64/publish"
           $env:PUBLISH_DIR = $publishDir
           if (Test-Path $publishDir) {
             Write-Host "Publish directory exists: $publishDir"
