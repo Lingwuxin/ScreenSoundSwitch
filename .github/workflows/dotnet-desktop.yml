@@ -1,4 +1,4 @@
-name: Build and Release
+name: Build and Release .NET Core Desktop App
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
       - name: Publish
         run: |
           dotnet publish ScreenSoundSwitch/ScreenSoundSwitch.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
-          echo "publish_dir=$(pwd)/ScreenSoundSwitch/bin/Release/net8.0-windows*/win-x64" >> $GITHUB_ENV
+          echo "publish_dir=$(pwd)/ScreenSoundSwitch/bin/Release/net8.0-windows/win-x64/publish" >> $GITHUB_ENV
 
       - name: List files in publish directory
         run: |
@@ -38,16 +38,21 @@ jobs:
 
       - name: Check publish directory
         run: |
-          $zipFile = "ScreenSoundSwitch.zip"
+          $zipFile = "ScreenSoundSwitch.zip"          
           $env:ZIP_FILE = $zipFile
-          $publishDir = "$ScreenSoundSwitch/bin/Release/net8.0-windows*/win-x64"
-          echo "publish_dir=$publishDir" >> $GITHUB_ENV
+          $publishDir = "$(pwd)/ScreenSoundSwitch/bin/Release/net8.0-windows/win-x64/publish"
+          $env:PUBLISH_DIR = $publishDir
           if (Test-Path $publishDir) {
             Write-Host "Publish directory exists: $publishDir"
           } else {
             Write-Host "Publish directory does not exist!"
             exit 1
           }
+
+      - name: Compress published files
+        run: |
+          Compress-Archive -Path "$env:PUBLISH_DIR/*" -DestinationPath "$env:ZIP_FILE"
+          echo "zip_file=$zip_file" >> $GITHUB_ENV
 
       - name: Create Release
         id: create_release
@@ -59,15 +64,6 @@ jobs:
           release_name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
-
-      - name: Upload Release Asset
-        run: |
-          Write-Host "Publish Directory: $env:PUBLISH_DIR"
-          Write-Host "ZIP File: $env:ZIP_FILE"
-          Compress-Archive -Path "$env:PUBLISH_DIR/*" -DestinationPath "$env:ZIP_FILE"
-          echo "Uploading asset..."
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
@@ -85,6 +81,6 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git tag "v1.0.${{ github.run_number }}"
-          git push origin "v1.0.${{ github.run_number }}"
+          git push origin "refs/tags/v1.0.${{ github.run_number }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
