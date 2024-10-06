@@ -38,9 +38,9 @@ jobs:
 
       - name: Check publish directory
         run: |
-          $zipFile = "$(pwd)/ScreenSoundSwitch.zip"
-          echo "zip_file=$zipFile" >> $GITHUB_ENV
-          $publishDir = "$(pwd)/ScreenSoundSwitch/bin/Release/net8.0-windows*/win-x64"
+          $zipFile = "ScreenSoundSwitch.zip"
+          $env:ZIP_FILE = $zipFile
+          $publishDir = "$ScreenSoundSwitch/bin/Release/net8.0-windows*/win-x64"
           echo "publish_dir=$publishDir" >> $GITHUB_ENV
           if (Test-Path $publishDir) {
             Write-Host "Publish directory exists: $publishDir"
@@ -62,6 +62,8 @@ jobs:
 
       - name: Upload Release Asset
         run: |
+          Write-Host "Publish Directory: $env:PUBLISH_DIR"
+          Write-Host "ZIP File: $env:ZIP_FILE"
           Compress-Archive -Path "$env:PUBLISH_DIR/*" -DestinationPath "$env:ZIP_FILE"
           echo "Uploading asset..."
         env:
