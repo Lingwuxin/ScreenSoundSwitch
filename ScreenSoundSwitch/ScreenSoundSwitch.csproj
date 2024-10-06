@@ -8,6 +8,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <StartupObject>ScreenSoundSwitch.Program</StartupObject>
     <ApplicationIcon>src\window.ico</ApplicationIcon>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <PreferredUILang>zh-CN</PreferredUILang>
   </PropertyGroup>
 
   <ItemGroup>
