@@ -42,7 +42,7 @@ jobs:
       # 压缩发布文件
       - name: Compress Release Asset
         run: |
-          $zipFile = "${{ env.publish_dir }}\ScreenSoundSwitch.zip"
+          $zipFile = "${{ github.workspace }}\ScreenSoundSwitch.zip"
           Compress-Archive -Path "${{ env.publish_dir }}\*" -DestinationPath $zipFile
           echo "zip_file=$zipFile" >> $GITHUB_ENV
 
