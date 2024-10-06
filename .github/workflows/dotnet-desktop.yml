@@ -38,7 +38,7 @@ jobs:
 
       - name: Check publish directory
         run: |
-          $zipFile = "ScreenSoundSwitch.zip"
+          $zipFile = "$(pwd)/ScreenSoundSwitch.zip"
           echo "zip_file=$zipFile" >> $GITHUB_ENV
           $publishDir = "$(pwd)/ScreenSoundSwitch/bin/Release/net8.0-windows*/win-x64"
           echo "publish_dir=$publishDir" >> $GITHUB_ENV
