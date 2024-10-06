@@ -1,6 +1,5 @@
 name: Build and Release .NET Core Desktop App
 
-# 触发条件：推送到 master 分支或发布标签
 on:
   push:
     branches:
@@ -28,23 +27,11 @@ jobs:
       - name: Build project
         run: dotnet build --configuration Release --no-restore
 
-      - name: Publish
+      - name: Publish as single executable
         id: publish
         run: |
-          dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=false
-          # 获取发布目录
-          echo "publish_dir=$(pwd)/bin/Release/net8.0-windows10.0.17763.0/win-x64/publish" >> $GITHUB_ENV
-
-      # 列出发布目录，调试发布路径是否正确
-      - name: List publish directory
-        run: dir ${{ env.publish_dir }}
-
-      # 压缩发布文件
-      - name: Compress Release Asset
-        run: |
-          $zipFile = "${{ github.workspace }}\ScreenSoundSwitch.zip"
-          Compress-Archive -Path "${{ env.publish_dir }}\*" -DestinationPath $zipFile
-          echo "zip_file=$zipFile" >> $GITHUB_ENV
+          dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
+          echo "publish_dir=$(pwd)/bin/Release/net8.0-windows*/win-x64/publish" >> $GITHUB_ENV
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
@@ -59,12 +46,26 @@ jobs:
           prerelease: false
 
       - name: Upload Release Asset
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: actions/upload-release-asset@v1
+        run: |
+          zip_file="${{ env.publish_dir }}/ScreenSoundSwitch.zip"
+          Compress-Archive -Path "${{ env.publish_dir }}/*" -DestinationPath $zip_file
+          echo "zip_file=$zip_file" >> $GITHUB_ENV
+          echo "Uploading asset..."
+          uses: actions/upload-release-asset@v1
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            upload_url: ${{ steps.create_release.outputs.upload_url }}
+            asset_path: $zip_file
+            asset_name: ScreenSoundSwitch.zip
+            asset_content_type: application/zip
+
+      - name: Create Tag
+        if: success() && github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git tag "v1.0.${{ github.run_number }}"
+          git push origin "v1.0.${{ github.run_number }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.zip_file }}
-          asset_name: ScreenSoundSwitch.zip
-          asset_content_type: application/zip
