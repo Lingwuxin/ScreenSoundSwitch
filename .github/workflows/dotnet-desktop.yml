@@ -30,13 +30,13 @@ jobs:
       - name: Publish
         run: |
           dotnet publish ScreenSoundSwitch/ScreenSoundSwitch.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
-          echo "publish_dir=$(pwd)/bin/Release/net8.0-windows*/win-x64/publish" >> $GITHUB_ENV
+          echo "publish_dir=$(pwd)/bin/Release/net8.0-windows*/win-x64" >> $GITHUB_ENV
       - name: List files in publish directory
         run: |
-          Get-ChildItem -Recurse -Path "$(pwd)/bin/Release"
+          Get-ChildItem -Recurse -Path "$(pwd)/ScreenSoundSwitch/bin/Release"
       - name: Check publish directory
         run: |
-          $publishDir = "$(pwd)/bin/Release/net8.0-windows*/win-x64/publish"
+          $publishDir = "$(pwd)/ScreenSoundSwitch/bin/Release/net8.0-windows*/win-x64"
           if (Test-Path $publishDir) {
             Write-Host "Publish directory exists: $publishDir"
           } else {
