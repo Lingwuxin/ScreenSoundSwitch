@@ -14,31 +14,38 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      # 检出代码
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 设置 .NET Core SDK
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.x'  # 根据项目需要调整版本
+          dotnet-version: '8.x'
 
-      # 恢复 NuGet 依赖项
       - name: Restore dependencies
         run: dotnet restore
 
-      # 构建项目
       - name: Build project
         run: dotnet build --configuration Release --no-restore
 
+      - name: Publish
+        id: publish
+        run: |
+          dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=false
+          echo "##[set-output name=publish_dir;]$(pwd)/bin/Release/net8.0-windows10.0.17763.0/win-x64/publish"
 
-      # 打包为单文件可执行程序，移除程序集修剪选项
-      - name: Publish as single executable
-        run: dotnet publish ScreenSoundSwitch/ScreenSoundSwitch.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
+      # 列出发布目录，调试发布路径是否正确
+      - name: List publish directory
+        run: dir ${{ steps.publish.outputs.publish_dir }}
 
+      # 压缩发布文件
+      - name: Compress Release Asset
+        run: |
+          $publishDir = "${{ steps.publish.outputs.publish_dir }}"
+          $zipFile = "$publishDir\ScreenSoundSwitch.zip"
+          Compress-Archive -Path "$publishDir\*" -DestinationPath $zipFile
+          echo "##[set-output name=zip_file;]$zipFile"
 
-      # 创建 GitHub Release（仅当推送的是标签时）
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
         id: create_release
@@ -51,7 +58,6 @@ jobs:
           draft: false
           prerelease: false
 
-      # 上传生成的 exe 文件作为 Release 资产
       - name: Upload Release Asset
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-release-asset@v1
@@ -59,6 +65,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./bin/Release/net8.0/win-x64/publish/ScreenSoundSwitch.exe
-          asset_name: ScreenSoundSwitch.exe
-          asset_content_type: application/octet-stream
+          asset_path: ${{ steps.compress.outputs.zip_file }}
+          asset_name: ScreenSoundSwitch.zip
+          asset_content_type: application/zip
