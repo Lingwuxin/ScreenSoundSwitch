@@ -51,8 +51,8 @@ jobs:
 
       - name: Compress published files
         run: |
-          Compress-Archive -Path "$env:PUBLISH_DIR/*" -DestinationPath "$env:ZIP_FILE"
           echo "zip_file=$zip_file" >> $GITHUB_ENV
+          Compress-Archive -Path "$env:PUBLISH_DIR/*" -DestinationPath "$env:ZIP_FILE"          
 
       - name: Create Release
         id: create_release
