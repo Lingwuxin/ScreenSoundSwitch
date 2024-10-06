@@ -1,4 +1,3 @@
-//v0.0.1
 using SoundSwitch.Audio.Manager;
 using SoundSwitch.Audio.Manager.Interop.Enum;
 using NAudio.CoreAudioApi;
@@ -18,12 +17,12 @@ namespace ScreenSoundSwitch
         Dictionary<uint, ProcessInfo> processInfoDict = new Dictionary<uint, ProcessInfo>();
         Dictionary<string, MMDevice?> deviceInfoDict = new Dictionary<string, MMDevice?>();
         Dictionary<int, string> screenIndexToAudioDeviceName = new Dictionary<int, string>();
-        Dictionary<string,int> screenNameToScreenIndex = new Dictionary<string,int>();
-        Dictionary<string,Screen> deviceNameToScreen = new Dictionary<string, Screen>();
+        Dictionary<string, int> screenNameToScreenIndex = new Dictionary<string, int>();
+        Dictionary<string, Screen> deviceNameToScreen = new Dictionary<string, Screen>();
         Dictionary<int, IntPtr> processIdHookDict = new Dictionary<int, IntPtr>();
         DeviceControl deviceSelectControl = new DeviceControl();
         ForegroundProcessWatcher watcher;
-        bool isBounded = false;//µ±¶ÁÈ¡µ½ÒÑÓĞÅäÖÃÊ±£¨ÒôÆµÉè±¸ÒÑÓëÆÁÄ»°ó¶¨£©£¬Òş²Ø½çÃæ
+        bool isBounded = false;//è®¾ç½®éŸ³é¢‘è®¾å¤‡æ˜¯å¦å·²ç»ä¸æ˜¾ç¤ºå™¨ç»‘å®š
         private NotifyIcon notifyIcon;
         private AppConfig appConfig = new AppConfig();
         private bool autoStartEnabled = false;
@@ -35,17 +34,16 @@ namespace ScreenSoundSwitch
             InitializeComponent();
             InitializeNotifyIcon();
         }
-        //Ìí¼ÓÓÃ»§¿Ø¼ş
         private void AddUserControl()
         {
-            // »ñÈ¡ËùÓĞÏÔÊ¾Æ÷ºÍËüÃÇ¶ÔÓ¦µÄ²¥·ÅÉè±¸
+            
             deviceCollection = audioDeviceManger.GetDevices();
-            //½«ÒôÆµ²¥·ÅÉè±¸Ìí¼Óµ½×ÖµäÖĞ²¢ÉèÖÃµ½VolumeControl
+            //å°†æ‰€æœ‰éŸ³é¢‘é©±åŠ¨ä¸VolumeControlæ§ä»¶ç»„åˆ
             foreach (var device in deviceCollection)
             {
                 deviceInfoDict.Add(device.FriendlyName, device);
-                Debug.WriteLine(device.FriendlyName + "ÒÑÌí¼Ó");
-                
+                Debug.WriteLine(device.FriendlyName + "å·²æ·»åŠ ");
+
                 deviceSelectControl.comBoxAudio.Items.Add(device.FriendlyName);
             }
             setVolumeControl();
@@ -55,10 +53,10 @@ namespace ScreenSoundSwitch
             {
                 string deviceName = screens[i].DeviceName;
                 deviceSelectControl.comBoxScreen.Items.Add(deviceName);
-                screenNameToScreenIndex[deviceName]= i;
+                screenNameToScreenIndex[deviceName] = i;
             }
             deviceSelectControl.selectButton.Click += bound_button_Click;
-            
+
 
             selectDevicePage.Controls.Add(deviceSelectControl);
             tabControl.SelectedIndexChanged += SelectPageChange;
@@ -78,7 +76,7 @@ namespace ScreenSoundSwitch
         }
         private void SelectPageChange(object? sender, EventArgs e)
         {
-            switch(tabControl.SelectedIndex)
+            switch (tabControl.SelectedIndex)
             {
                 case 0:
                     if (IsSelectConrtolChanged())
@@ -105,7 +103,7 @@ namespace ScreenSoundSwitch
         }
         private bool IsScreenChanged()
         {
-            //ÆÁÄ»Éè±¸ĞÅÏ¢ÊÇ·ñ¸ü¸Ä
+            //åˆ¤æ–­æ˜¾ç¤ºå™¨æ•°ç›®æ˜¯å¦å‘ç”Ÿå˜åŒ–
             Screen[] screens_new = Screen.AllScreens;
             if (screens.Length == screens_new.Length)
             {
@@ -120,11 +118,11 @@ namespace ScreenSoundSwitch
             }
             return false;
         }
-        //²¥·ÅÉè±¸ĞÅÏ¢ÊÇ·ñ¸ü¸Ä
+        //åˆ¤æ–­éŸ³é¢‘é©±åŠ¨æ˜¯å¦åœ¨deviceInfoDictä¸­
         private bool IsAudioDeviceChanged()
         {
-            MMDevice[] audios= audioDeviceManger.GetDevices().ToArray();
-            foreach(MMDevice mMDevice in audios)
+            MMDevice[] audios = audioDeviceManger.GetDevices().ToArray();
+            foreach (MMDevice mMDevice in audios)
             {
                 if (!deviceInfoDict.ContainsKey(mMDevice.FriendlyName))
                 {
@@ -144,26 +142,26 @@ namespace ScreenSoundSwitch
                 deviceSelectControl.comBoxAudio.Items.Add(device.FriendlyName);
             }
         }
-        private void UpdateVolumeControl()//¸üĞÂ¿Ø¼şÖĞµÄÉè±¸ÃûÁĞ±í
+        private void UpdateVolumeControl()//å½“ç‚¹å‡»éŸ³é¢‘é©±åŠ¨é¡µé¢æ—¶é‡æ–°åŠ è½½
         {
             Debug.WriteLine("=======================UpdateVolumeControl======================");
-            Debug.WriteLine("Î´Íê³É");
+            Debug.WriteLine("Î´ï¿½ï¿½ï¿½");
             Debug.WriteLine("=======================UpdateVolumeControl======================");
 
         }
 
-        //´ÓJsonÎÄ¼şÖĞ¶ÁÈ¡ÅäÖÃ
+        //é€šè¿‡jsonåŠ è½½é…ç½®
         private void LoadConfig()
         {
-            if(appConfig.ReadDeviceConfig())
+            if (appConfig.ReadDeviceConfig())
             {
-                    foreach (var deviceConfig in appConfig.GetDevicesConfig())
+                foreach (var deviceConfig in appConfig.GetDevicesConfig())
                 {
-                    //Èç¹û¸ÃÉè±¸ÈÔÔÚÊ¹ÓÃ£¬ÔòÌí¼Ó¸ÃÉè±¸µÄĞÅÏ¢
-                    if (deviceInfoDict.ContainsKey(deviceConfig.FriendlyName)&& screenNameToScreenIndex.ContainsKey(deviceConfig.MonitorName))
+                    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è±¸ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¸ï¿½ï¿½è±¸ï¿½ï¿½ï¿½ï¿½Ï¢
+                    if (deviceInfoDict.ContainsKey(deviceConfig.FriendlyName) && screenNameToScreenIndex.ContainsKey(deviceConfig.MonitorName))
                     {
                         Debug.WriteLine("Read " + deviceConfig.FriendlyName + " mesg");
-                        //Í¨¹ıÆÁÄ»Éè±¸Ãû³Æ»ñÈ¡ÆÁÄ»ĞòºÅ
+                        //Í¨ï¿½ï¿½ï¿½ï¿½Ä»ï¿½è±¸ï¿½ï¿½ï¿½Æ»ï¿½È¡ï¿½ï¿½Ä»ï¿½ï¿½ï¿½
                         int monitorIndex = screenNameToScreenIndex[deviceConfig.MonitorName];
                         screenIndexToAudioDeviceName[monitorIndex] = deviceConfig.FriendlyName;
                         deviceSelectControl.updateList(deviceConfig.MonitorName, deviceConfig.FriendlyName);
@@ -183,13 +181,13 @@ namespace ScreenSoundSwitch
 
             ContextMenuStrip contextMenu = new ContextMenuStrip();
 
-            ToolStripMenuItem restoreMenuItem = new ToolStripMenuItem("´ò¿ª");
+            ToolStripMenuItem restoreMenuItem = new ToolStripMenuItem("æ‰“å¼€");
             restoreMenuItem.Click += RestoreMenuItem_Click;
             contextMenu.Items.Add(restoreMenuItem);
-            ToolStripMenuItem autostartMenuItem = new ToolStripMenuItem("¿ª»úÆô¶¯");
+            ToolStripMenuItem autostartMenuItem = new ToolStripMenuItem("å¼€æœºå¯åŠ¨");
             autostartMenuItem.Click += AutostartMenuItem_Click;
             contextMenu.Items.Add(autostartMenuItem);
-            ToolStripMenuItem exitMenuItem = new ToolStripMenuItem("ÍË³ö");
+            ToolStripMenuItem exitMenuItem = new ToolStripMenuItem("é€€å‡º");
             exitMenuItem.Click += ExitMenuItem_Click;
             contextMenu.Items.Add(exitMenuItem);
             notifyIcon.ContextMenuStrip = contextMenu;
@@ -238,18 +236,17 @@ namespace ScreenSoundSwitch
             NotifyIcon_DoubleClick(sender, e);
         }
 
-        //²»ÄÜÊ¹ÓÃClose()
         private void ExitMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            //Ìí¼Ó½ø³Ì¼ÆÊıÆ÷,ÌÔÌ­³¤Ê±¼äÎ´Ê¹ÓÃµÄ½ø³Ì
+            //è®¾ç½®è®¡æ—¶å™¨ï¼Œè¶…æ—¶ä¸å†ç›‘å¬çº¿ç¨‹
+            //è¿™æ˜¯ä¸€ä¸ªç³Ÿç³•çš„è®¾è®¡ï¼Œç›®å‰é€šè¿‡èšç„¦çª—å£æ¥åˆ¤æ–­çª—å£æ˜¯å¦ç§»åŠ¨ï¼Œå› æ­¤ä¸éœ€è¦ç›‘å¬å¤§é‡çš„æ— å…³è¿›ç¨‹
             Thread timerThread = new Thread(LookTimer);
             timerThread.Start();
             watcher = new ForegroundProcessWatcher();
-            // ¶©ÔÄÊÂ¼ş
             watcher.ForegroundProcessChanged += Watcher_ForegroundProcessChanged;
             watcher.HookNeedDisable += UnWinHook;
             if (isBounded)
@@ -280,14 +277,14 @@ namespace ScreenSoundSwitch
         {
             if (deviceSelectControl.comBoxScreen.SelectedItem != null && deviceSelectControl.comBoxAudio.SelectedItem != null)
             {
-                int screenIndex= deviceSelectControl.comBoxScreen.SelectedIndex;
+                int screenIndex = deviceSelectControl.comBoxScreen.SelectedIndex;
                 string deviceName = (string)deviceSelectControl.comBoxAudio.SelectedItem;
                 deviceNameToScreen[deviceName] = screens[screenIndex];
                 screenIndexToAudioDeviceName[screenIndex] = deviceName;
                 deviceSelectControl.updateList((string)deviceSelectControl.comBoxScreen.SelectedItem, deviceName);
-                float deviceVolume = deviceInfoDict[deviceName].AudioEndpointVolume.MasterVolumeLevelScalar*10;
-               
-                appConfig.AddDeviceConfig(deviceName, screens[screenIndex].DeviceName,(int)deviceVolume);
+                float deviceVolume = deviceInfoDict[deviceName].AudioEndpointVolume.MasterVolumeLevelScalar * 10;
+
+                appConfig.AddDeviceConfig(deviceName, screens[screenIndex].DeviceName, (int)deviceVolume);
                 isBounded = true;
             }
         }
@@ -306,7 +303,7 @@ namespace ScreenSoundSwitch
         private delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType,
             IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
 
-        // ¶¨ÒåÃ¶¾Ù´°¿ÚµÄÎ¯ÍĞ
+        // ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ù´ï¿½ï¿½Úµï¿½Î¯ï¿½ï¿½
         public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
 
@@ -318,27 +315,27 @@ namespace ScreenSoundSwitch
 
         public static string GetWindowTitle(IntPtr hWnd)
         {
-            // »ñÈ¡´°¿Ú±êÌâµÄ³¤¶È
+            // ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½Ä³ï¿½ï¿½ï¿½
             int length = GetWindowTextLength(hWnd);
             if (length == 0)
                 return string.Empty;
 
-            // ÉêÇëÄÚ´æ»º³åÇøÀ´´æ´¢´°¿Ú±êÌâ
+            // ï¿½ï¿½ï¿½ï¿½ï¿½Ú´æ»ºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ´¢ï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½
             StringBuilder stringBuilder = new StringBuilder(length + 1);
 
-            // »ñÈ¡´°¿Ú±êÌâ
+            // ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½
             GetWindowText(hWnd, stringBuilder, stringBuilder.Capacity);
 
             return stringBuilder.ToString();
         }
 
         private void WinEventProcChangeAudioDevic(IntPtr hWinEventHook, uint eventType,
-    IntPtr hWnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)//¼àÌı½ø³Ì´°¿ÚÊÇ·ñÒÆ¶¯µ½ÆäËûÏÔÊ¾Æ÷ÉÏ
+    IntPtr hWnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½
         {
-            
+
             GetWindowThreadProcessId(hWnd, out uint processId);
-            Debug.WriteLine("WinEventProc:Pid " + processId+" is foreground window");
-            if (processInfoDict.ContainsKey(processId))//Èç¹ûÓÉ¸Ã½ø³Ì
+            Debug.WriteLine("WinEventProc:Pid " + processId + " is foreground window");
+            if (processInfoDict.ContainsKey(processId))//ï¿½ï¿½ï¿½ï¿½É¸Ã½ï¿½ï¿½ï¿½
             {
                 processInfoDict[processId].process = processInfoDict[processId].process;
                 processInfoDict[processId].process.Refresh();
@@ -356,7 +353,7 @@ namespace ScreenSoundSwitch
                 Debug.WriteLine("WinEventProc:mainWindowHandle != hWnd");
                 return;
             }
-            // »ñÈ¡´°¿ÚËùÔÚµÄÆÁÄ»
+            // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½Ä»
 
             IntPtr hMonitor = MonitorFromWindow(mainWindowHandle, 0x00000002);
             if (hMonitor == IntPtr.Zero)
@@ -364,10 +361,10 @@ namespace ScreenSoundSwitch
                 Debug.WriteLine("WinEventProc:hMonitor == IntPtr.Zero");
                 return;
             }
-            // »ñÈ¡ÆÁÄ»ĞÅÏ¢
+            // ï¿½ï¿½È¡ï¿½ï¿½Ä»ï¿½ï¿½Ï¢
 
             int lastMonitorIndex = processInfoDict[processId].lastMonitorIndex;
-           
+
             if (processInfoDict[processId].MonitorIndex.Equals(lastMonitorIndex))
             {
                 Debug.WriteLine("WinEventProc:same screen");
@@ -399,14 +396,13 @@ namespace ScreenSoundSwitch
                     Debug.WriteLine("WinEventProc:Switching audio process " + processId + " title is " + winTitle + " on Screen: " + processInfoDict[processId].MonitorIndex);
                 }
                 catch (Exception ex)
-                {
-                    // ´¦ÀíÒì³££¬±ÈÈç¼ÇÂ¼ÈÕÖ¾»òÕßÏÔÊ¾´íÎóÏûÏ¢
+                {              
                     MessageBox.Show("WinEventProc:An error occurred while switching audio process: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 }
             }
         }
-        // µ¼ÈëWindows APIº¯Êı
+        // ï¿½ï¿½ï¿½ï¿½Windows APIï¿½ï¿½ï¿½ï¿½
 
         [DllImport("user32.dll")]
         public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
@@ -433,11 +429,10 @@ namespace ScreenSoundSwitch
             public RECT rcWork;
             public uint dwFlags;
         }
-        //¼àÌı½ø³Ì´°¿ÚÊÇ·ñÒÆ¶¯
         void CreateWinHook(int processId)
         {
             try
-            {                
+            {
                 IntPtr hook = SetWinEventHook(0x000B, 0x000B, IntPtr.Zero, WinEventProcChangeAudioDevic, (uint)processId, 0, 0);
                 processIdHookDict[processId] = hook;
             }
@@ -455,13 +450,13 @@ namespace ScreenSoundSwitch
                 Invoke(new Action(() =>
                 {
                     if (UnhookWinEvent(hook))
-                    {   //Ö»ÄÜÔÚ´´½¨h ookµÄ½ø³ÌÖĞĞ¶ÔØhook
-                        Debug.WriteLine("Unhook success£¡");
+                    {  
+                        Debug.WriteLine("Unhook success");
                     }
                     else
                     {
                         Debug.WriteLine("unhook on thread" + Thread.CurrentThread.ManagedThreadId);
-                        Debug.WriteLine("Unhook failed£¡");
+                        Debug.WriteLine("Unhook failed");
                     }
                 }
                 ));
@@ -471,23 +466,21 @@ namespace ScreenSoundSwitch
         private void Watcher_ForegroundProcessChanged(int processId)
         {
             /*
-            //ÅĞ¶Ï½ø³ÌÊÇ·ñÊ¹ÓÃÒôÆµÉè±¸
+            //é€šè¿‡è¿›ç¨‹ä¸éŸ³é¢‘è®¾å¤‡é©±åŠ¨ä¹‹é—´çš„ä¼šè¯æ¥åˆ¤æ–­æ˜¯å¦åœ¨ä½¿ç”¨éŸ³é¢‘è®¾å¤‡
             if (!IsUsingAudioDeviceByProcessId(processId))
             {
-                //Èç¹û´ËÊ±½ø³ÌÃ»ÓĞÊ¹ÓÃÒôÆµÉè±¸£¬ÅĞ¶ÏÊÇ·ñÒÑ¾­Ìí¼Óµ½processInfoDict²¢Ğ¶ÔØ¹³×Ó
                 if(processIdHookDict.ContainsKey(processId))
                 {
                     UnWinHook(processIdHookDict[processId]);
                 }
                 return;
             }*/
-            //ÅĞ¶Ï½ø³ÌÊÇ·ñÒÑ¾­Ìí¼Óµ½processInfoDict
             if (processInfoDict.ContainsKey((uint)processId))
             {
                 processInfoDict[(uint)processId].resetTime();
                 return;
             }
-            //µ±½ø³Ì±»´´½¨Ê±£¬¼ì²â½ø³ÌÊÇ·ñÔÚ
+            //ï¿½ï¿½ï¿½ï¿½ï¿½Ì±ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½
             ProcessInfo processInfo = new ProcessInfo();
             processInfo.process = Process.GetProcessById(processId);
             processInfoDict[(uint)processId] = processInfo;
@@ -509,7 +502,7 @@ namespace ScreenSoundSwitch
                         int processid = processInfoDict[key].process.Id;
 
                         processInfoDict.Remove(key);
-                        
+
                         processIdHookDict.Remove(processid);
                     }
                     else
@@ -520,6 +513,6 @@ namespace ScreenSoundSwitch
             }
         }
 
- 
+
     }
 }
