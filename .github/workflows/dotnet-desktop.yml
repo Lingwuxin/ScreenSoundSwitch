@@ -1,4 +1,4 @@
-name: Build and Release .NET Core Desktop App
+name: Build and Release
 
 on:
   push:
