@@ -35,7 +35,8 @@ jobs:
 
       # 打包为单文件可执行程序，移除程序集修剪选项
       - name: Publish as single executable
-        run: dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
+        run: dotnet publish ScreenSoundSwitch/ScreenSoundSwitch.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
+
 
       # 创建 GitHub Release（仅当推送的是标签时）
       - name: Create Release
