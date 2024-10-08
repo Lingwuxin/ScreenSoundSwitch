@@ -1,41 +1,16 @@
-﻿using NAudio.CoreAudioApi.Interfaces;
-using NAudio.CoreAudioApi;
-using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Text;
-using Windows.Media.Core;
-using Windows.Media.Streaming.Adaptive;
-using System.Threading;
+
 
 namespace ScreenSoundSwitch
 {
     class ProcessInfo
     {
-        public struct RECT
-        {
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
-        }
-        [DllImport("user32.dll")]
-        private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
+        Screen[] allScreens = Screen.AllScreens;
 
-        [StructLayout(LayoutKind.Sequential)]
-        public struct MONITORINFO
-        {
-            public int cbSize;
-            public RECT rcMonitor;
-            public RECT rcWork;
-            public uint dwFlags;
-        }
-        private MONITORINFO monitorInfo;
-        [DllImport("user32.dll")]
-        private static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
         public Process process { get; set; }
         public int MonitorIndex {
-            get { return GetMonitorIndex(); }  
+            get { return GetMonitorIndex(); }
             set { MonitorIndex = value; }
         }
 
@@ -46,15 +21,14 @@ namespace ScreenSoundSwitch
         {
             
             int monitorIndex = -1; // 默认为-1表示找不到
-            IntPtr hWnd = process.MainWindowHandle;
-            if (hWnd != IntPtr.Zero)
+            Screen targetScreen=Screen.FromHandle(process.MainWindowHandle);
+            
+            for(int i = 0; i < allScreens.Length; i++)
             {
-                IntPtr hMonitor = MonitorFromWindow(hWnd, 0);
-                MONITORINFO monitorInfo = new MONITORINFO();
-                monitorInfo.cbSize = Marshal.SizeOf(monitorInfo);
-                if (GetMonitorInfo(hMonitor, ref monitorInfo))
+                if (allScreens[i].Equals(targetScreen))
                 {
-                    monitorIndex = (int)monitorInfo.dwFlags;
+                    monitorIndex = i;
+                    break;
                 }
             }
             return monitorIndex;
@@ -97,7 +71,7 @@ namespace ScreenSoundSwitch
         public event ForegroundProcessChangedEventHandler ForegroundProcessChanged;
         public event HookNeedDisableEventHandler HookNeedDisable;
         private List<Thread>  threads = new List<Thread>();
-
+        private CancellationTokenSource cts = new CancellationTokenSource();
         // 构造函数
         public ForegroundProcessWatcher()
         {
@@ -113,7 +87,7 @@ namespace ScreenSoundSwitch
             {
                 int lastProcessId = -1;
 
-                while (true)
+                while (!cts.Token.IsCancellationRequested)
                 {
                     IntPtr hWnd = GetForegroundWindow(); // 获取当前聚焦的窗口句柄
                     uint processId;

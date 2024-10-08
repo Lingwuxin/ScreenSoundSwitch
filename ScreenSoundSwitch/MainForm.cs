@@ -244,8 +244,8 @@ namespace ScreenSoundSwitch
         {
             //设置计时器，超时不再监听线程
             //这是一个糟糕的设计，目前通过聚焦窗口来判断窗口是否移动，因此不需要监听大量的无关进程
-            Thread timerThread = new Thread(LookTimer);
-            timerThread.Start();
+            //Thread timerThread = new Thread(LookTimer);
+            //timerThread.Start();
             watcher = new ForegroundProcessWatcher();
             watcher.ForegroundProcessChanged += Watcher_ForegroundProcessChanged;
             watcher.HookNeedDisable += UnWinHook;
@@ -315,27 +315,24 @@ namespace ScreenSoundSwitch
 
         public static string GetWindowTitle(IntPtr hWnd)
         {
-            // ��ȡ���ڱ���ĳ���
             int length = GetWindowTextLength(hWnd);
             if (length == 0)
                 return string.Empty;
 
-            // �����ڴ滺�������洢���ڱ���
             StringBuilder stringBuilder = new StringBuilder(length + 1);
 
-            // ��ȡ���ڱ���
             GetWindowText(hWnd, stringBuilder, stringBuilder.Capacity);
 
             return stringBuilder.ToString();
         }
 
-        private void WinEventProcChangeAudioDevic(IntPtr hWinEventHook, uint eventType,
-    IntPtr hWnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)//�������̴����Ƿ��ƶ���������ʾ����
+        private void WinEventProcChangeAudioDevice(IntPtr hWinEventHook, uint eventType,
+    IntPtr hWnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
 
             GetWindowThreadProcessId(hWnd, out uint processId);
             Debug.WriteLine("WinEventProc:Pid " + processId + " is foreground window");
-            if (processInfoDict.ContainsKey(processId))//����ɸý���
+            if (processInfoDict.ContainsKey(processId))
             {
                 processInfoDict[processId].process = processInfoDict[processId].process;
                 processInfoDict[processId].process.Refresh();
@@ -353,7 +350,6 @@ namespace ScreenSoundSwitch
                 Debug.WriteLine("WinEventProc:mainWindowHandle != hWnd");
                 return;
             }
-            // ��ȡ�������ڵ���Ļ
 
             IntPtr hMonitor = MonitorFromWindow(mainWindowHandle, 0x00000002);
             if (hMonitor == IntPtr.Zero)
@@ -361,7 +357,6 @@ namespace ScreenSoundSwitch
                 Debug.WriteLine("WinEventProc:hMonitor == IntPtr.Zero");
                 return;
             }
-            // ��ȡ��Ļ��Ϣ
 
             int lastMonitorIndex = processInfoDict[processId].lastMonitorIndex;
 
@@ -433,7 +428,7 @@ namespace ScreenSoundSwitch
         {
             try
             {
-                IntPtr hook = SetWinEventHook(0x000B, 0x000B, IntPtr.Zero, WinEventProcChangeAudioDevic, (uint)processId, 0, 0);
+                IntPtr hook = SetWinEventHook(0x000B, 0x000B, IntPtr.Zero, WinEventProcChangeAudioDevice, (uint)processId, 0, 0);
                 processIdHookDict[processId] = hook;
             }
             catch (Exception ex)
