@@ -480,7 +480,6 @@ namespace ScreenSoundSwitch
                 processInfoDict[(uint)processId].resetTime();
                 return;
             }
-            //�����̱�����ʱ���������Ƿ���
             ProcessInfo processInfo = new ProcessInfo();
             processInfo.process = Process.GetProcessById(processId);
             processInfoDict[(uint)processId] = processInfo;

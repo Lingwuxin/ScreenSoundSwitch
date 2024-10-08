@@ -28,20 +28,24 @@
         /// </summary>
         private void InitializeComponent()
         {
-            volumeTraceBar = new TrackBar();
+            volumeTrackBar = new TrackBar();
             deviceLable = new Label();
-            ((System.ComponentModel.ISupportInitialize)volumeTraceBar).BeginInit();
+            leftTrackBar = new TrackBar();
+            rightTrackBar = new TrackBar();
+            ((System.ComponentModel.ISupportInitialize)volumeTrackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)leftTrackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)rightTrackBar).BeginInit();
             SuspendLayout();
             // 
-            // volumeTraceBar
+            // volumeTrackBar
             // 
-            volumeTraceBar.LargeChange = 20;
-            volumeTraceBar.Location = new Point(49, 43);
-            volumeTraceBar.Maximum = 100;
-            volumeTraceBar.Name = "volumeTraceBar";
-            volumeTraceBar.Orientation = Orientation.Vertical;
-            volumeTraceBar.Size = new Size(45, 104);
-            volumeTraceBar.TabIndex = 0;
+            volumeTrackBar.LargeChange = 20;
+            volumeTrackBar.Location = new Point(49, 43);
+            volumeTrackBar.Maximum = 100;
+            volumeTrackBar.Name = "volumeTrackBar";
+            volumeTrackBar.Orientation = Orientation.Vertical;
+            volumeTrackBar.Size = new Size(45, 104);
+            volumeTrackBar.TabIndex = 0;
             // 
             // deviceLable
             // 
@@ -52,22 +56,46 @@
             deviceLable.TabIndex = 1;
             deviceLable.Text = "deviceName";
             // 
+            // leftTrackBar
+            // 
+            leftTrackBar.LargeChange = 20;
+            leftTrackBar.Location = new Point(26, 170);
+            leftTrackBar.Maximum = 100;
+            leftTrackBar.Name = "leftTrackBar";
+            leftTrackBar.Size = new Size(104, 45);
+            leftTrackBar.TabIndex = 2;
+            // 
+            // rightTrackBar
+            // 
+            rightTrackBar.LargeChange = 20;
+            rightTrackBar.Location = new Point(26, 202);
+            rightTrackBar.Maximum = 100;
+            rightTrackBar.Name = "rightTrackBar";
+            rightTrackBar.Size = new Size(104, 45);
+            rightTrackBar.TabIndex = 3;
+            // 
             // VolumeControl
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(rightTrackBar);
+            Controls.Add(leftTrackBar);
             Controls.Add(deviceLable);
-            Controls.Add(volumeTraceBar);
+            Controls.Add(volumeTrackBar);
             Name = "VolumeControl";
-            Size = new Size(140, 222);
+            Size = new Size(143, 249);
             Load += VolumeControl_Load;
-            ((System.ComponentModel.ISupportInitialize)volumeTraceBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)volumeTrackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)leftTrackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)rightTrackBar).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
         private Label deviceLable;
-        public TrackBar volumeTraceBar;
+        public TrackBar volumeTrackBar;
+        private TrackBar leftTrackBar;
+        private TrackBar rightTrackBar;
     }
 }

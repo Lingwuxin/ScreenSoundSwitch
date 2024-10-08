@@ -147,6 +147,4 @@ namespace ScreenSoundSwitch
             ForegroundProcessChanged?.Invoke(processId);
         }
     }
-
-
 }
