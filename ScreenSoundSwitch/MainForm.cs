@@ -20,7 +20,6 @@ namespace ScreenSoundSwitch
         Dictionary<int, string> screenIndexToAudioDeviceName = new Dictionary<int, string>();
         Dictionary<string, int> screenNameToScreenIndex = new Dictionary<string, int>();
         Dictionary<string, Screen> deviceNameToScreen = new Dictionary<string, Screen>();
-        Dictionary<int, IntPtr> processIdHookDict = new Dictionary<int, IntPtr>();
         DeviceControl deviceSelectControl = new DeviceControl();
         private  WindowMonitor _windowMonitor;
         bool isBounded = false;//设置音频设备是否已经与显示器绑定
@@ -269,10 +268,6 @@ namespace ScreenSoundSwitch
         private void MainForm_FormClosed(object? sender, FormClosedEventArgs e)
         {
             appConfig.WriteConfig();
-            foreach (var hook in processIdHookDict.Values)
-            {
-                UnWinHook(hook);
-            }
             notifyIcon.Dispose();
         }
 
@@ -329,12 +324,6 @@ namespace ScreenSoundSwitch
             return stringBuilder.ToString();
         }
 
-        private void WinEventProcChangeAudioDevice(IntPtr hWinEventHook, uint eventType,
-    IntPtr hWnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
-        {
-
-
-        }
         // ����Windows API����
 
         [DllImport("user32.dll")]
@@ -342,8 +331,6 @@ namespace ScreenSoundSwitch
 
 
 
-        [DllImport("user32.dll")]
-        public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
         public struct RECT
         {
             public int Left;
@@ -351,8 +338,7 @@ namespace ScreenSoundSwitch
             public int Right;
             public int Bottom;
         }
-        [DllImport("user32.dll")]
-        private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
+
 
         [StructLayout(LayoutKind.Sequential)]
         public struct MONITORINFO
@@ -362,39 +348,8 @@ namespace ScreenSoundSwitch
             public RECT rcWork;
             public uint dwFlags;
         }
-        void CreateWinHook(int processId)
-        {
-            try
-            {
-                IntPtr hook = SetWinEventHook(0x000B, 0x000B, IntPtr.Zero, WinEventProcChangeAudioDevice, (uint)processId, 0, 0);
-                processIdHookDict[processId] = hook;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred while switching audio process: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
 
-        }
 
-        void UnWinHook(IntPtr hook)
-        {
-            if (hook != IntPtr.Zero)
-            {
-                Invoke(new Action(() =>
-                {
-                    if (UnhookWinEvent(hook))
-                    {  
-                        Debug.WriteLine("Unhook success");
-                    }
-                    else
-                    {
-                        Debug.WriteLine("unhook on thread" + Thread.CurrentThread.ManagedThreadId);
-                        Debug.WriteLine("Unhook failed");
-                    }
-                }
-                ));
-            }
-        }
 
         private void OnForegroundChanged(object? sender,WindowMonitor.Event e)
         {
@@ -408,6 +363,7 @@ namespace ScreenSoundSwitch
                 }
                 return;
             }*/
+          
             var processId = e.ProcessId;
             if (processInfoDict.ContainsKey(processId))
             {
@@ -422,7 +378,7 @@ namespace ScreenSoundSwitch
         {
             var hWnd = e.Hwnd;
             var processId = e.ProcessId;
-            Debug.WriteLine("WinEventProc:Pid " + processId + " is foreground window");
+            Debug.WriteLine($"{e.ProcessName}：{e.ProcessId} is moved");
             if (processInfoDict.ContainsKey(processId))
             {
                 processInfoDict[processId].process = processInfoDict[processId].process;
@@ -477,14 +433,26 @@ namespace ScreenSoundSwitch
                 ERole eRole = new ERole();
                 try
                 {
-                    audioSwitcher.SwitchProcessTo(device.ID, eRole, eDataFlow, processId);
+                    if (InvokeRequired) {
+                        Invoke(new Action(() =>
+                        {
+                            audioSwitcher.SwitchProcessTo(device.ID, eRole, eDataFlow, processId);
+                        }));
+
+                    }
+                    else
+                    {
+                        audioSwitcher.SwitchProcessTo(device.ID, eRole, eDataFlow, processId);
+                    }
+
+                    
 
                     Debug.WriteLine("WinEventProc:Switching audio process " + processId + " title is " + winTitle + " on Screen: " + processInfoDict[processId].MonitorIndex);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("WinEventProc:An error occurred while switching audio process: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+                    //MessageBox.Show("WinEventProc:An error occurred while switching audio process: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Debug.WriteLine(ex);
                 }
             }
         }
@@ -500,8 +468,6 @@ namespace ScreenSoundSwitch
                         int processid = processInfoDict[key].process.Id;
 
                         processInfoDict.Remove(key);
-
-                        processIdHookDict.Remove(processid);
                     }
                     else
                     {

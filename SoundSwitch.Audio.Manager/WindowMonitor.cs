@@ -130,8 +130,8 @@ namespace SoundSwitch.Audio.Manager
 
             ComThread.Invoke(() =>
             {
-                User32.NativeMethods.SetWinEventHook(User32.NativeMethods.EVENT_OBJECT_LOCATIONCHANGE,
-                    User32.NativeMethods.EVENT_OBJECT_LOCATIONCHANGE,
+                User32.NativeMethods.SetWinEventHook(User32.NativeMethods.EVENT_SYSTEM_MOVESIZEEND,
+                    User32.NativeMethods.EVENT_SYSTEM_MOVESIZEEND,
                     IntPtr.Zero, _foregroundWindowMoved,
                     0,
                     0,

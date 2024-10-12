@@ -140,6 +140,8 @@ namespace SoundSwitch.Audio.Manager.Interop.Com.User
             internal const uint EVENT_SYSTEM_FOREGROUND = 0x0003;
             internal const uint EVENT_SYSTEM_MINIMIZEEND = 0x0017;
             internal const uint EVENT_OBJECT_LOCATIONCHANGE = 0x800B;
+            internal const uint EVENT_SYSTEM_MOVESIZEEND = 0x000B;
+            internal const uint EVENT_SYSTEM_MOVESIZESTART = 0x000A;
             internal const int MAX_PATH = 260;
             //
             // Window text
