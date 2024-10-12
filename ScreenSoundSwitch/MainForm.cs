@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using ScreenSoundSwitch.UI;
 using Microsoft.Win32;
+using static SoundSwitch.Audio.Manager.Interop.Com.User.User32.NativeMethods;
 namespace ScreenSoundSwitch
 {
     public partial class MainForm : Form
@@ -21,7 +22,7 @@ namespace ScreenSoundSwitch
         Dictionary<string, Screen> deviceNameToScreen = new Dictionary<string, Screen>();
         Dictionary<int, IntPtr> processIdHookDict = new Dictionary<int, IntPtr>();
         DeviceControl deviceSelectControl = new DeviceControl();
-        ForegroundProcessWatcher watcher;
+        private  WindowMonitor _windowMonitor;
         bool isBounded = false;//设置音频设备是否已经与显示器绑定
         private NotifyIcon notifyIcon;
         private AppConfig appConfig = new AppConfig();
@@ -244,11 +245,13 @@ namespace ScreenSoundSwitch
         {
             //设置计时器，超时不再监听线程
             //这是一个糟糕的设计，目前通过聚焦窗口来判断窗口是否移动，因此不需要监听大量的无关进程
-            //Thread timerThread = new Thread(LookTimer);
-            //timerThread.Start();
-            watcher = new ForegroundProcessWatcher();
-            watcher.ForegroundProcessChanged += Watcher_ForegroundProcessChanged;
-            watcher.HookNeedDisable += UnWinHook;
+            Thread timerThread = new Thread(LookTimer);
+            timerThread.Start();
+            _windowMonitor = new WindowMonitor();
+
+            // 订阅事件
+            _windowMonitor.ForegroundChanged += OnForegroundChanged;
+            _windowMonitor.ForegroundWindowMoved += OnForegroundWindowMoved;
             if (isBounded)
             {
                 Hide();
@@ -330,72 +333,7 @@ namespace ScreenSoundSwitch
     IntPtr hWnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
 
-            GetWindowThreadProcessId(hWnd, out uint processId);
-            Debug.WriteLine("WinEventProc:Pid " + processId + " is foreground window");
-            if (processInfoDict.ContainsKey(processId))
-            {
-                processInfoDict[processId].process = processInfoDict[processId].process;
-                processInfoDict[processId].process.Refresh();
-            }
-            else
-            {
-                Debug.WriteLine("WinEventProc:not found process");
-                return;
-            }
-            //Process process = Process.GetProcessById((int)processId);
-            IntPtr mainWindowHandle = processInfoDict[processId].process.MainWindowHandle;
 
-            if (mainWindowHandle != hWnd || mainWindowHandle == IntPtr.Zero)
-            {
-                Debug.WriteLine("WinEventProc:mainWindowHandle != hWnd");
-                return;
-            }
-
-            IntPtr hMonitor = MonitorFromWindow(mainWindowHandle, 0x00000002);
-            if (hMonitor == IntPtr.Zero)
-            {
-                Debug.WriteLine("WinEventProc:hMonitor == IntPtr.Zero");
-                return;
-            }
-
-            int lastMonitorIndex = processInfoDict[processId].lastMonitorIndex;
-
-            if (processInfoDict[processId].MonitorIndex.Equals(lastMonitorIndex))
-            {
-                Debug.WriteLine("WinEventProc:same screen");
-                return;
-            }
-            string winTitle = GetWindowTitle(mainWindowHandle);
-            processInfoDict[processId].lastMonitorIndex = processInfoDict[processId].MonitorIndex;
-
-            if (!screenIndexToAudioDeviceName.ContainsKey(processInfoDict[processId].MonitorIndex))
-            {
-                Debug.WriteLine("WinEventProc:No screen selected for " + processInfoDict[processId].MonitorIndex);
-                return;
-            }
-            string screenIndex = screenIndexToAudioDeviceName[processInfoDict[processId].MonitorIndex];
-            if (deviceInfoDict[screenIndex] == null)
-            {
-                Debug.WriteLine("WinEventProc:No audio device selected " + processInfoDict[processId].MonitorIndex);
-                return;
-            }
-            MMDevice? device = deviceInfoDict[screenIndex];
-            if (device != null)
-            {
-                EDataFlow eDataFlow = new EDataFlow();
-                ERole eRole = new ERole();
-                try
-                {
-                    audioSwitcher.SwitchProcessTo(device.ID, eRole, eDataFlow, processId);
-
-                    Debug.WriteLine("WinEventProc:Switching audio process " + processId + " title is " + winTitle + " on Screen: " + processInfoDict[processId].MonitorIndex);
-                }
-                catch (Exception ex)
-                {              
-                    MessageBox.Show("WinEventProc:An error occurred while switching audio process: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                }
-            }
         }
         // ����Windows API����
 
@@ -458,7 +396,7 @@ namespace ScreenSoundSwitch
             }
         }
 
-        private void Watcher_ForegroundProcessChanged(int processId)
+        private void OnForegroundChanged(object? sender,WindowMonitor.Event e)
         {
             /*
             //通过进程与音频设备驱动之间的会话来判断是否在使用音频设备
@@ -470,19 +408,85 @@ namespace ScreenSoundSwitch
                 }
                 return;
             }*/
-            if (processInfoDict.ContainsKey((uint)processId))
+            var processId = e.ProcessId;
+            if (processInfoDict.ContainsKey(processId))
             {
-                processInfoDict[(uint)processId].resetTime();
+                processInfoDict[processId].resetTime();
                 return;
             }
             ProcessInfo processInfo = new ProcessInfo();
-            processInfo.process = Process.GetProcessById(processId);
-            processInfoDict[(uint)processId] = processInfo;
-            Invoke(new Action(() =>
+            processInfo.process = Process.GetProcessById((int)processId);
+            processInfoDict[processId] = processInfo;
+        }
+        private void OnForegroundWindowMoved(object? sender, WindowMonitor.Event e)
+        {
+            var hWnd = e.Hwnd;
+            var processId = e.ProcessId;
+            Debug.WriteLine("WinEventProc:Pid " + processId + " is foreground window");
+            if (processInfoDict.ContainsKey(processId))
             {
-                CreateWinHook(processId);
-            }));
+                processInfoDict[processId].process = processInfoDict[processId].process;
+                processInfoDict[processId].process.Refresh();
+            }
+            else
+            {
+                Debug.WriteLine("WinEventProc:not found process");
+                return;
+            }
+            //Process process = Process.GetProcessById((int)processId);
+            IntPtr mainWindowHandle = processInfoDict[processId].process.MainWindowHandle;
 
+            if (mainWindowHandle != hWnd || mainWindowHandle == IntPtr.Zero)
+            {
+                Debug.WriteLine("WinEventProc:mainWindowHandle != hWnd");
+                return;
+            }
+
+            IntPtr hMonitor = MonitorFromWindow(mainWindowHandle, 0x00000002);
+            if (hMonitor == IntPtr.Zero)
+            {
+                Debug.WriteLine("WinEventProc:hMonitor == IntPtr.Zero");
+                return;
+            }
+
+            int lastMonitorIndex = processInfoDict[processId].lastMonitorIndex;
+
+            if (processInfoDict[processId].MonitorIndex.Equals(lastMonitorIndex))
+            {
+                Debug.WriteLine("WinEventProc:same screen");
+                return;
+            }
+            string winTitle = GetWindowTitle(mainWindowHandle);
+            processInfoDict[processId].lastMonitorIndex = processInfoDict[processId].MonitorIndex;
+
+            if (!screenIndexToAudioDeviceName.ContainsKey(processInfoDict[processId].MonitorIndex))
+            {
+                Debug.WriteLine("WinEventProc:No screen selected for " + processInfoDict[processId].MonitorIndex);
+                return;
+            }
+            string screenIndex = screenIndexToAudioDeviceName[processInfoDict[processId].MonitorIndex];
+            if (deviceInfoDict[screenIndex] == null)
+            {
+                Debug.WriteLine("WinEventProc:No audio device selected " + processInfoDict[processId].MonitorIndex);
+                return;
+            }
+            MMDevice? device = deviceInfoDict[screenIndex];
+            if (device != null)
+            {
+                EDataFlow eDataFlow = new EDataFlow();
+                ERole eRole = new ERole();
+                try
+                {
+                    audioSwitcher.SwitchProcessTo(device.ID, eRole, eDataFlow, processId);
+
+                    Debug.WriteLine("WinEventProc:Switching audio process " + processId + " title is " + winTitle + " on Screen: " + processInfoDict[processId].MonitorIndex);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("WinEventProc:An error occurred while switching audio process: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                }
+            }
         }
         private void LookTimer()
         {

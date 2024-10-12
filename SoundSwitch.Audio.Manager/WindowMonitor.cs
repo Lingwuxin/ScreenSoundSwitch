@@ -52,8 +52,9 @@ namespace SoundSwitch.Audio.Manager
         }
 
         public event EventHandler<Event> ForegroundChanged;
-
+        public event EventHandler<Event> ForegroundWindowMoved;
         private readonly User32.NativeMethods.WinEventDelegate _foregroundWindowChanged;
+        private readonly User32.NativeMethods.WinEventDelegate _foregroundWindowMoved;
 
         public WindowMonitor()
         {
@@ -91,7 +92,51 @@ namespace SoundSwitch.Audio.Manager
                     }
                 });
             };
+            _foregroundWindowMoved = (hook, type, hwnd, idObject, child, thread, time) =>
+            {
+                // Ignore any event not pertaining directly to the window
+                if (idObject != User32.NativeMethods.OBJID_WINDOW)
+                    return;
 
+                // Ignore if this is a bogus hwnd (shouldn't happen)
+                if (hwnd == IntPtr.Zero)
+                    return;
+
+                var (processId, windowText, windowClass) = ProcessWindowInformation(hwnd);
+
+                // Couldn't find the processId of the window
+                if (processId == 0) return;
+
+                if (processId == Environment.ProcessId)
+                {
+                    Log.Information("Window moved = SoundSwitch, don't save.");
+                    return;
+                }
+
+                Task.Factory.StartNew(() =>
+                {
+                    try
+                    {
+                        var process = Process.GetProcessById((int)processId);
+                        var processName = process.MainModule?.FileName ?? "N/A";
+                        ForegroundWindowMoved?.Invoke(this, new Event(processId, processName, windowText, windowClass, hwnd));
+                    }
+                    catch (Exception)
+                    {
+                        // Ignored
+                    }
+                });
+            };
+
+            ComThread.Invoke(() =>
+            {
+                User32.NativeMethods.SetWinEventHook(User32.NativeMethods.EVENT_OBJECT_LOCATIONCHANGE,
+                    User32.NativeMethods.EVENT_OBJECT_LOCATIONCHANGE,
+                    IntPtr.Zero, _foregroundWindowMoved,
+                    0,
+                    0,
+                    User32.NativeMethods.WINEVENT_OUTOFCONTEXT);
+            });
             ComThread.Invoke(() =>
             {
                 User32.NativeMethods.SetWinEventHook(User32.NativeMethods.EVENT_SYSTEM_MINIMIZEEND,

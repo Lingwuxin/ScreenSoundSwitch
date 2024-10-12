@@ -139,6 +139,7 @@ namespace SoundSwitch.Audio.Manager.Interop.Com.User
             internal const int EVENT_OBJECT_DESTROY = 0x8001;
             internal const uint EVENT_SYSTEM_FOREGROUND = 0x0003;
             internal const uint EVENT_SYSTEM_MINIMIZEEND = 0x0017;
+            internal const uint EVENT_OBJECT_LOCATIONCHANGE = 0x800B;
             internal const int MAX_PATH = 260;
             //
             // Window text
