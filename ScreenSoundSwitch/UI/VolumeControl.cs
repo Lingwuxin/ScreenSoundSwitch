@@ -73,6 +73,7 @@ namespace ScreenSoundSwitch
             }
             volumeTrackBar.Value = (int)(audioEndpointVolume.MasterVolumeLevelScalar * 100);
             deviceLable.Text = device.FriendlyName;
+            device.AudioEndpointVolume.OnVolumeNotification += OnVolumeChange;
         }
 
         public VolumeControl()
