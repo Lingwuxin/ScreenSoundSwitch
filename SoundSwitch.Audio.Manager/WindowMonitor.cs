@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
 using SoundSwitch.Audio.Manager.Interop.Com.Threading;
@@ -55,9 +56,9 @@ namespace SoundSwitch.Audio.Manager
         public event EventHandler<Event> ForegroundWindowMoved;
         private readonly User32.NativeMethods.WinEventDelegate _foregroundWindowChanged;
         private readonly User32.NativeMethods.WinEventDelegate _foregroundWindowMoved;
-
+        private CancellationTokenSource _cancellationTokenSource= new CancellationTokenSource();
         public WindowMonitor()
-        {
+        {            
             _foregroundWindowChanged = (hook, type, hwnd, idObject, child, thread, time) =>
             {
                 // ignore any event not pertaining directly to the window
@@ -80,6 +81,8 @@ namespace SoundSwitch.Audio.Manager
 
                 Task.Factory.StartNew(() =>
                 {
+                    if (_cancellationTokenSource.Token.IsCancellationRequested)
+                        return;
                     try
                     {
                         var process = Process.GetProcessById((int) processId);
@@ -90,7 +93,7 @@ namespace SoundSwitch.Audio.Manager
                     {
                       //Ignored
                     }
-                });
+                }, _cancellationTokenSource.Token);
             };
             _foregroundWindowMoved = (hook, type, hwnd, idObject, child, thread, time) =>
             {
@@ -115,6 +118,9 @@ namespace SoundSwitch.Audio.Manager
 
                 Task.Factory.StartNew(() =>
                 {
+                    if (_cancellationTokenSource.Token.IsCancellationRequested)
+                        return;
+
                     try
                     {
                         var process = Process.GetProcessById((int)processId);
@@ -125,7 +131,7 @@ namespace SoundSwitch.Audio.Manager
                     {
                         // Ignored
                     }
-                });
+                }, _cancellationTokenSource.Token);
             };
 
             ComThread.Invoke(() =>
@@ -192,6 +198,21 @@ namespace SoundSwitch.Audio.Manager
 
                 return (processId, wndText, wndClass);
             });
+
+        }
+        public void Stop()
+        {
+            // 请求取消所有正在运行的任务
+            if (_cancellationTokenSource != null)
+            {
+                _cancellationTokenSource.Cancel();
+            }
+        }
+
+        public void Dispose()
+        {
+            Stop(); // 调用 Stop 方法清理资源
         }
     }
+
 }

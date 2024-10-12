@@ -263,6 +263,9 @@ namespace ScreenSoundSwitch
                 e.Cancel = true;
                 Hide();
             }
+            _windowMonitor.ForegroundChanged -= OnForegroundChanged;
+            _windowMonitor.ForegroundWindowMoved -= OnForegroundWindowMoved;
+            _windowMonitor.Dispose();
 
         }
         private void MainForm_FormClosed(object? sender, FormClosedEventArgs e)
@@ -270,7 +273,6 @@ namespace ScreenSoundSwitch
             appConfig.WriteConfig();
             notifyIcon.Dispose();
         }
-
         private void bound_button_Click(object? sender, EventArgs e)
         {
             if (deviceSelectControl.comBoxScreen.SelectedItem != null && deviceSelectControl.comBoxAudio.SelectedItem != null)
@@ -286,31 +288,10 @@ namespace ScreenSoundSwitch
                 isBounded = true;
             }
         }
-
         [DllImport("user32.dll")]
         private static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
-
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc,
-            WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
-        [DllImport("user32.dll")]
-
-        private static extern bool UnhookWinEvent(IntPtr hWinEventHook);
-
-        private delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType,
-            IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
-
-        // ����ö�ٴ��ڵ�ί��
-        public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
-
-
-
         [DllImport("user32.dll", CharSet = CharSet.Ansi, SetLastError = true)]
         public static extern int GetWindowTextLength(IntPtr hWnd);
-
-
-
         public static string GetWindowTitle(IntPtr hWnd)
         {
             int length = GetWindowTextLength(hWnd);
@@ -323,34 +304,8 @@ namespace ScreenSoundSwitch
 
             return stringBuilder.ToString();
         }
-
-        // ����Windows API����
-
         [DllImport("user32.dll")]
         public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
-
-
-
-        public struct RECT
-        {
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
-        }
-
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct MONITORINFO
-        {
-            public int cbSize;
-            public RECT rcMonitor;
-            public RECT rcWork;
-            public uint dwFlags;
-        }
-
-
-
         private void OnForegroundChanged(object? sender,WindowMonitor.Event e)
         {
             /*
