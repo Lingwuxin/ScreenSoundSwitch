@@ -1,12 +1,9 @@
 name: Build and Release .NET Core Desktop App
 
 on:
-  push:
-    branches:
-      - master
   release:
     types:
-      - created
+      - created  # 仅在发布版本时触发
 
 jobs:
   build:
@@ -58,8 +55,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v1.1.2
-          release_name: v1.1.2
+          tag_name: ${{ github.event.release.tag_name }}  # 动态获取发布的标签名称
+          release_name: ${{ github.event.release.tag_name }}
           draft: false
           prerelease: false
 
