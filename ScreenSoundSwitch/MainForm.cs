@@ -11,8 +11,8 @@ namespace ScreenSoundSwitch
     public partial class MainForm : Form
     {
         AudioSwitcher audioSwitcher = AudioSwitcher.Instance;
-        MMDeviceCollection deviceCollection;
         AudioDeviceManger audioDeviceManger = new AudioDeviceManger();
+        MMDeviceCollection deviceCollection;
         Screen[] screens;
         Dictionary<uint, ProcessInfo> processInfoDict = new Dictionary<uint, ProcessInfo>();
         Dictionary<string, MMDevice?> deviceInfoDict = new Dictionary<string, MMDevice?>();
@@ -226,7 +226,6 @@ namespace ScreenSoundSwitch
             Thread timerThread = new Thread(LookTimer);
             timerThread.Start();
             _windowMonitor = new WindowMonitor();
-
             // 订阅事件
             _windowMonitor.ForegroundChanged += OnForegroundChanged;
             _windowMonitor.ForegroundWindowMoved += OnForegroundWindowMoved;
@@ -381,10 +380,7 @@ namespace ScreenSoundSwitch
                     else
                     {
                         audioSwitcher.SwitchProcessTo(device.ID, eRole, eDataFlow, processId);
-                    }
-
-                    
-
+                    }                   
                     Debug.WriteLine("WinEventProc:Switching audio process " + processId + " title is " + winTitle + " on Screen: " + processInfoDict[processId].MonitorIndex);
                 }
                 catch (Exception ex)
