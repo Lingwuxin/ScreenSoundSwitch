@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using ScreenSoundSwitch.UI;
 using Microsoft.Win32;
-using static SoundSwitch.Audio.Manager.Interop.Com.User.User32.NativeMethods;
 namespace ScreenSoundSwitch
 {
     public partial class MainForm : Form
@@ -36,8 +35,14 @@ namespace ScreenSoundSwitch
         }
         private void AddUserControl()
         {
-            
             deviceCollection = audioDeviceManger.GetDevices();
+            screens = Screen.AllScreens;
+            UpdateVolumeControl();
+            InitSelectControl();
+            tabControl.SelectedIndexChanged += SelectPageChange;
+        }
+        private void InitSelectControl()
+        {
             //将所有音频驱动与VolumeControl控件组合
             foreach (var device in deviceCollection)
             {
@@ -46,9 +51,6 @@ namespace ScreenSoundSwitch
 
                 deviceSelectControl.comBoxAudio.Items.Add(device.FriendlyName);
             }
-            setVolumeControl();
-            screens = Screen.AllScreens;
-            screenNameToScreenIndex.Clear();
             for (int i = 0; i < screens.Length; i++)
             {
                 string deviceName = screens[i].DeviceName;
@@ -56,13 +58,11 @@ namespace ScreenSoundSwitch
                 screenNameToScreenIndex[deviceName] = i;
             }
             deviceSelectControl.selectButton.Click += bound_button_Click;
-
-
             selectDevicePage.Controls.Add(deviceSelectControl);
-            tabControl.SelectedIndexChanged += SelectPageChange;
         }
-        private void setVolumeControl()
+        private void UpdateVolumeControl()
         {
+            volumepPageTableLayout.Controls.Clear();
             volumepPageTableLayout.ColumnCount = deviceCollection.Count;
             volumepPageTableLayout.RowCount = 1;
             int count = 0;
@@ -74,32 +74,25 @@ namespace ScreenSoundSwitch
                 count++;
             }
         }
-        private void SelectPageChange(object? sender, EventArgs e)
+        private void UpdateSelectControl()
         {
-            switch (tabControl.SelectedIndex)
+            
+            deviceSelectControl.comBoxAudio.Items.Clear();
+            
+            foreach (var device in deviceCollection)
             {
-                case 0:
-                    if (IsSelectConrtolChanged())
-                    {
-                        UpdateSelectControl();
-                    }
-                    break;
-                case 1:
-                    if (IsAudioDeviceChanged())
-                    {
-                        UpdateVolumeControl();
-                    }
-                    break;
+                deviceInfoDict[device.FriendlyName] = device;
+                deviceSelectControl.comBoxAudio.Items.Add(device.FriendlyName);
             }
         }
-        private bool IsSelectConrtolChanged()
+        private void SelectPageChange(object? sender, EventArgs e)
         {
-
-            if (IsAudioDeviceChanged() || IsScreenChanged())
+            deviceCollection = audioDeviceManger.GetDevices();
+            if(IsScreenChanged()|| IsAudioDeviceChanged())
             {
-                return true;
+                UpdateSelectControl();
+                UpdateVolumeControl();
             }
-            return false;
         }
         private bool IsScreenChanged()
         {
@@ -115,14 +108,18 @@ namespace ScreenSoundSwitch
                         return true;
                     }
                 }
+                return false;
             }
-            return false;
+            else
+            {
+                Debug.WriteLine("IsScreenChanged");
+                return true;
+            }
         }
         //判断音频驱动是否在deviceInfoDict中
         private bool IsAudioDeviceChanged()
         {
-            MMDevice[] audios = audioDeviceManger.GetDevices().ToArray();
-            foreach (MMDevice mMDevice in audios)
+            foreach (MMDevice mMDevice in deviceCollection)
             {
                 if (!deviceInfoDict.ContainsKey(mMDevice.FriendlyName))
                 {
@@ -132,23 +129,7 @@ namespace ScreenSoundSwitch
             }
             return false;
         }
-        private void UpdateSelectControl()
-        {
-            deviceSelectControl.comBoxAudio.Items.Clear();
-            deviceCollection = audioDeviceManger.GetDevices();
-            foreach (var device in deviceCollection)
-            {
-                deviceInfoDict[device.FriendlyName] = device;
-                deviceSelectControl.comBoxAudio.Items.Add(device.FriendlyName);
-            }
-        }
-        private void UpdateVolumeControl()//当点击音频驱动页面时重新加载
-        {
-            Debug.WriteLine("=======================UpdateVolumeControl======================");
-            Debug.WriteLine("δ���");
-            Debug.WriteLine("=======================UpdateVolumeControl======================");
 
-        }
 
         //通过json加载配置
         private void LoadConfig()
@@ -157,11 +138,9 @@ namespace ScreenSoundSwitch
             {
                 foreach (var deviceConfig in appConfig.GetDevicesConfig())
                 {
-                    //������豸����ʹ�ã������Ӹ��豸����Ϣ
                     if (deviceInfoDict.ContainsKey(deviceConfig.FriendlyName) && screenNameToScreenIndex.ContainsKey(deviceConfig.MonitorName))
                     {
                         Debug.WriteLine("Read " + deviceConfig.FriendlyName + " mesg");
-                        //ͨ����Ļ�豸���ƻ�ȡ��Ļ���
                         int monitorIndex = screenNameToScreenIndex[deviceConfig.MonitorName];
                         screenIndexToAudioDeviceName[monitorIndex] = deviceConfig.FriendlyName;
                         deviceSelectControl.updateList(deviceConfig.MonitorName, deviceConfig.FriendlyName);
@@ -263,9 +242,13 @@ namespace ScreenSoundSwitch
                 e.Cancel = true;
                 Hide();
             }
-            _windowMonitor.ForegroundChanged -= OnForegroundChanged;
-            _windowMonitor.ForegroundWindowMoved -= OnForegroundWindowMoved;
-            _windowMonitor.Dispose();
+            else
+            {
+                _windowMonitor.ForegroundChanged -= OnForegroundChanged;
+                _windowMonitor.ForegroundWindowMoved -= OnForegroundWindowMoved;
+                _windowMonitor.Dispose();
+            }
+
 
         }
         private void MainForm_FormClosed(object? sender, FormClosedEventArgs e)
