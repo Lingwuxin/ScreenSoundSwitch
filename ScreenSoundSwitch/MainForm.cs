@@ -1,11 +1,11 @@
+using Microsoft.Win32;
+using NAudio.CoreAudioApi;
+using ScreenSoundSwitch.UI;
 using SoundSwitch.Audio.Manager;
 using SoundSwitch.Audio.Manager.Interop.Enum;
-using NAudio.CoreAudioApi;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
-using ScreenSoundSwitch.UI;
-using Microsoft.Win32;
 namespace ScreenSoundSwitch
 {
     public partial class MainForm : Form
@@ -20,7 +20,7 @@ namespace ScreenSoundSwitch
         Dictionary<string, int> screenNameToScreenIndex = new Dictionary<string, int>();
         Dictionary<string, Screen> deviceNameToScreen = new Dictionary<string, Screen>();
         DeviceControl deviceSelectControl = new DeviceControl();
-        private  WindowMonitor _windowMonitor;
+        private WindowMonitor _windowMonitor;
         bool isBounded = false;//设置音频设备是否已经与显示器绑定
         private NotifyIcon notifyIcon;
         private AppConfig appConfig = new AppConfig();
@@ -43,20 +43,7 @@ namespace ScreenSoundSwitch
         }
         private void InitSelectControl()
         {
-            //将所有音频驱动与VolumeControl控件组合
-            foreach (var device in deviceCollection)
-            {
-                deviceInfoDict.Add(device.FriendlyName, device);
-                Debug.WriteLine(device.FriendlyName + "已添加");
-
-                deviceSelectControl.comBoxAudio.Items.Add(device.FriendlyName);
-            }
-            for (int i = 0; i < screens.Length; i++)
-            {
-                string deviceName = screens[i].DeviceName;
-                deviceSelectControl.comBoxScreen.Items.Add(deviceName);
-                screenNameToScreenIndex[deviceName] = i;
-            }
+            UpdateSelectControl();
             deviceSelectControl.selectButton.Click += bound_button_Click;
             selectDevicePage.Controls.Add(deviceSelectControl);
         }
@@ -76,19 +63,26 @@ namespace ScreenSoundSwitch
         }
         private void UpdateSelectControl()
         {
-            
+
             deviceSelectControl.comBoxAudio.Items.Clear();
-            
+            deviceSelectControl.comBoxScreen.Items.Clear();
             foreach (var device in deviceCollection)
             {
                 deviceInfoDict[device.FriendlyName] = device;
                 deviceSelectControl.comBoxAudio.Items.Add(device.FriendlyName);
             }
+            
+            for (int i = 0; i < screens.Length; i++)
+            {
+                string deviceName = screens[i].DeviceName;
+                deviceSelectControl.comBoxScreen.Items.Add(deviceName);
+                screenNameToScreenIndex[deviceName] = i;
+            }
         }
         private void SelectPageChange(object? sender, EventArgs e)
         {
             deviceCollection = audioDeviceManger.GetDevices();
-            if(IsScreenChanged()|| IsAudioDeviceChanged())
+            if (IsScreenChanged() || IsAudioDeviceChanged())
             {
                 UpdateSelectControl();
                 UpdateVolumeControl();
@@ -96,23 +90,16 @@ namespace ScreenSoundSwitch
         }
         private bool IsScreenChanged()
         {
-            //判断显示器数目是否发生变化
-            Screen[] screens_new = Screen.AllScreens;
-            if (screens.Length == screens_new.Length)
+
+            Screen[] new_screens = Screen.AllScreens;
+            if (screens.Equals(new_screens))
             {
-                for (int i = 0; i < screens_new.Length; i++)
-                {
-                    if (!screens_new[i].DeviceName.Equals(screens[i].DeviceName))
-                    {
-                        Debug.WriteLine("IsScreenChanged");
-                        return true;
-                    }
-                }
                 return false;
             }
             else
             {
                 Debug.WriteLine("IsScreenChanged");
+                screens = new_screens;
                 return true;
             }
         }
@@ -288,7 +275,7 @@ namespace ScreenSoundSwitch
         }
         [DllImport("user32.dll")]
         public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
-        private void OnForegroundChanged(object? sender,WindowMonitor.Event e)
+        private void OnForegroundChanged(object? sender, WindowMonitor.Event e)
         {
             /*
             //通过进程与音频设备驱动之间的会话来判断是否在使用音频设备
@@ -300,7 +287,7 @@ namespace ScreenSoundSwitch
                 }
                 return;
             }*/
-          
+
             var processId = e.ProcessId;
             if (processInfoDict.ContainsKey(processId))
             {
@@ -318,12 +305,13 @@ namespace ScreenSoundSwitch
             Debug.WriteLine($"{e.ProcessName}：{e.ProcessId} is moved");
             if (processInfoDict.ContainsKey(processId))
             {
-                processInfoDict[processId].process = processInfoDict[processId].process;
                 processInfoDict[processId].process.Refresh();
             }
             else
             {
-                Debug.WriteLine("WinEventProc:not found process");
+                ProcessInfo processInfo = new ProcessInfo();
+                processInfo.process = Process.GetProcessById((int)processId);
+                processInfoDict[processId] = processInfo;
                 return;
             }
             //Process process = Process.GetProcessById((int)processId);
@@ -370,7 +358,8 @@ namespace ScreenSoundSwitch
                 ERole eRole = new ERole();
                 try
                 {
-                    if (InvokeRequired) {
+                    if (InvokeRequired)
+                    {
                         Invoke(new Action(() =>
                         {
                             audioSwitcher.SwitchProcessTo(device.ID, eRole, eDataFlow, processId);
@@ -380,7 +369,7 @@ namespace ScreenSoundSwitch
                     else
                     {
                         audioSwitcher.SwitchProcessTo(device.ID, eRole, eDataFlow, processId);
-                    }                   
+                    }
                     Debug.WriteLine("WinEventProc:Switching audio process " + processId + " title is " + winTitle + " on Screen: " + processInfoDict[processId].MonitorIndex);
                 }
                 catch (Exception ex)

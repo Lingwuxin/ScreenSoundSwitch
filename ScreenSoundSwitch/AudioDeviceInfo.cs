@@ -132,5 +132,21 @@ namespace ScreenSoundSwitch
             }
             return -1; // 如果没有进程正在使用音频设备，则返回 -1
         }
+        static bool SetProcessVolume(MMDevice device,uint processId,float volume)
+        {
+            SessionCollection sessions =device.AudioSessionManager.Sessions;
+            if (sessions != null)
+            {
+                for(int i=0; i<sessions.Count; i++)
+                {
+                    if(sessions[i].GetProcessID == processId)
+                    {
+                        sessions[i].SimpleAudioVolume.Volume = volume;
+                        return true;
+                    }                    
+                }               
+            }
+            return false;
+        }
     }
 }
