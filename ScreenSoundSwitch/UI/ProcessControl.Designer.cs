@@ -28,17 +28,41 @@
         /// </summary>
         private void InitializeComponent()
         {
+            allProcessCheckedListBox = new CheckedListBox();
+            flowLayoutPanel = new FlowLayoutPanel();
+            flowLayoutPanel.SuspendLayout();
             SuspendLayout();
+            // 
+            // allProcessCheckedListBox
+            // 
+            allProcessCheckedListBox.FormattingEnabled = true;
+            allProcessCheckedListBox.Location = new Point(3, 3);
+            allProcessCheckedListBox.Name = "allProcessCheckedListBox";
+            allProcessCheckedListBox.Size = new Size(221, 256);
+            allProcessCheckedListBox.TabIndex = 0;
+            // 
+            // flowLayoutPanel
+            // 
+            flowLayoutPanel.Controls.Add(allProcessCheckedListBox);
+            flowLayoutPanel.Location = new Point(3, 3);
+            flowLayoutPanel.Name = "flowLayoutPanel";
+            flowLayoutPanel.Size = new Size(400, 291);
+            flowLayoutPanel.TabIndex = 1;
             // 
             // ProcessControl
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(flowLayoutPanel);
             Name = "ProcessControl";
-            Size = new Size(315, 44);
+            Size = new Size(406, 294);
+            flowLayoutPanel.ResumeLayout(false);
             ResumeLayout(false);
         }
 
         #endregion
+
+        private CheckedListBox allProcessCheckedListBox;
+        private FlowLayoutPanel flowLayoutPanel;
     }
 }

@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ScreenSoundSwitch.WinUI (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ScreenSoundSwitch.WinUI (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

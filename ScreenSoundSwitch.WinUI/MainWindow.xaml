@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="ScreenSoundSwitch.WinUI.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ScreenSoundSwitch.WinUI"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <NavigationView x:Name="nav"
+                    PaneTitle=""
+                    SelectionChanged="{x:Bind NavigationSelectionChanged}"
+                    >
+        <NavigationView.MenuItems>
+            <NavigationViewItem Icon="Edit" Content="Select Device" Tag="SelectDevicePage" />
+            <NavigationViewItem Content="Volume" Tag="VolumePage" >
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xE994;" />
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem Icon="Favorite" Content="Process" Tag="ProcessPage" />
+        </NavigationView.MenuItems>
+        <Frame x:Name="navContentFrame"/>
+    </NavigationView>
+</Window>
