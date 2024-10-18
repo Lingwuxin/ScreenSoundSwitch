@@ -1,28 +1,25 @@
-using NAudio.CoreAudioApi;
+锘縰sing NAudio.CoreAudioApi;
 using NAudio.CoreAudioApi.Interfaces;
 using ScreenSoundSwitch.WinUI.Audio.inter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace ScreenSoundSwitch.WinUI.Audio
 {
-    public class SAudioSessionControl : AudioSessionControl
+    public class ChannelAudioVolume
     {
         readonly IChannelAudioVolume channelAudioVolumeInterface;
-
-        public SAudioSessionControl(AudioSessionControl audioSessionControl) : base((IAudioSessionControl)audioSessionControl)
+        public ChannelAudioVolume(AudioSessionControl sessionControl)
         {
-            channelAudioVolumeInterface = (IChannelAudioVolume)audioSessionControl;
+            var sessionControlIUnknown = Marshal.GetIUnknownForObject((IAudioSessionControl)sessionControl.SimpleAudioVolume);
+            channelAudioVolumeInterface = Marshal.GetTypedObjectForIUnknown(sessionControlIUnknown, typeof(IChannelAudioVolume)) as IChannelAudioVolume;
         }
-
-        // 实现 GetAllVolumes 方法
+        // 瀹炵幇 GetAllVolumes 鏂规硶
         public int GetAllVolumes(uint channelCount, float[] volumes)
         {
             if (channelAudioVolumeInterface == null)
@@ -34,7 +31,7 @@ namespace ScreenSoundSwitch.WinUI.Audio
             return volumes.Length;
         }
 
-        // 实现 GetChannelCount 方法
+        // 瀹炵幇 GetChannelCount 鏂规硶
         public uint GetChannelCount()
         {
             if (channelAudioVolumeInterface == null)
@@ -46,7 +43,7 @@ namespace ScreenSoundSwitch.WinUI.Audio
             return channelCount;
         }
 
-        // 实现 GetChannelVolume 方法
+        // 瀹炵幇 GetChannelVolume 鏂规硶
         public float GetChannelVolume(uint channelIndex)
         {
             if (channelAudioVolumeInterface == null)
@@ -58,7 +55,7 @@ namespace ScreenSoundSwitch.WinUI.Audio
             return volume;
         }
 
-        // 实现 SetAllVolumes 方法
+        // 瀹炵幇 SetAllVolumes 鏂规硶
         public void SetAllVolumes(uint channelCount, float[] volumes, ref Guid eventContext)
         {
             if (channelAudioVolumeInterface == null)
@@ -69,7 +66,7 @@ namespace ScreenSoundSwitch.WinUI.Audio
             Marshal.ThrowExceptionForHR(channelAudioVolumeInterface.SetAllVolumes(channelCount, volumes, eventContext));
         }
 
-        // 实现 SetChannelVolume 方法
+        // 瀹炵幇 SetChannelVolume 鏂规硶
         public void SetChannelVolume(uint channelIndex, float volume, ref Guid eventContext)
         {
             if (channelAudioVolumeInterface == null)

@@ -20,6 +20,6 @@
             </NavigationViewItem>
             <NavigationViewItem Icon="Favorite" Content="Process" Tag="ProcessPage" />
         </NavigationView.MenuItems>
-        <Frame x:Name="navContentFrame"/>
+        <Frame x:Name="navContentFrame"  />
     </NavigationView>
 </Window>

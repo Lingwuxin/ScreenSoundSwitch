@@ -38,7 +38,6 @@ namespace ScreenSoundSwitch.WinUI.View
                 AudioDeviceControl audioDeviceControl = new AudioDeviceControl(device);
                 DevicesStackPanel.Children.Add(audioDeviceControl);
             }
-            
         }
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {

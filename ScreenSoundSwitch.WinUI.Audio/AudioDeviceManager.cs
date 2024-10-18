@@ -12,11 +12,13 @@ namespace ScreenSoundSwitch
     public class AudioDeviceManger
     {
         Guid eventContext = Guid.NewGuid();
+        private MMDeviceCollection devices;
+        private List<AudioSessionControl> AudioSessionControls;
         public MMDeviceCollection GetDevices()
         {
             // 获取所有音频播放设备
             MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
-            MMDeviceCollection devices = enumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active);
+            devices = enumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active);
 
             return devices;
             
@@ -47,7 +49,7 @@ namespace ScreenSoundSwitch
             }
             return false;
         }
-        public string? GetUsingAudioDeviceNameById(int processId, Dictionary<string, MMDevice?> deviceInfoDict)
+        public string GetUsingAudioDeviceNameById(int processId, Dictionary<string, MMDevice?> deviceInfoDict)
         {
             foreach (var deviceInfo in deviceInfoDict)
             {
@@ -92,6 +94,32 @@ namespace ScreenSoundSwitch
             }
             return -1; // 如果没有进程正在使用音频设备，则返回 -1
         }
+        public List<AudioSessionControl> GetSessions()
+        {
+            GetDevices();
+            if(AudioSessionControls == null)
+            {
+                AudioSessionControls = new List<AudioSessionControl>();
+            }
+            AudioSessionControls.Clear();
+            foreach (var device in devices)
+            {
+                SessionCollection sessions = device.AudioSessionManager.Sessions;
+                if (sessions != null)
+                {
+                    for (int i = 0; i < sessions.Count; i++)
+                    {
+                        if (sessions[i].IsSystemSoundsSession == false)
+                        {
+                            AudioSessionControl sessionControl = sessions[i];
+                            AudioSessionControls.Add(sessionControl);
+                        }
+                    }
+                }
+            }
+            return AudioSessionControls;
+
+        }
         public void SetProcessVolume(MMDeviceCollection devices,uint processId,float volume)
         {
             foreach (var device in devices) {
@@ -101,9 +129,8 @@ namespace ScreenSoundSwitch
                     for (int i = 0; i < sessions.Count; i++)
                     {
                         if (sessions[i].GetProcessID == processId)
-                        {
-                            SAudioSessionControl sessionControl = new SAudioSessionControl(sessions[i]);
-                            sessionControl.SimpleAudioVolume.Volume = volume;
+                        { 
+                            sessions[i].SimpleAudioVolume.Volume = volume;
                         }
                     }
                 }
