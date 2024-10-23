@@ -19,6 +19,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Threading.Tasks;
+using NAudio.Wave;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -30,6 +31,7 @@ namespace ScreenSoundSwitch.WinUI.View
         private Process process;
         private AudioSessionControl session;
         private bool sliderLock=false;
+        private MMDevice[] devices;
 
         public ProcessControl(AudioSessionControl session)
         {
@@ -41,6 +43,15 @@ namespace ScreenSoundSwitch.WinUI.View
         public int ProcessId
         {
             get { return process.Id; }
+        }
+        private void Expander_Expanded(Expander sender, ExpanderExpandingEventArgs args)
+        {
+            for (int n = -1; n < WaveOut.DeviceCount; n++)
+            {
+                var caps = WaveOut.GetCapabilities(n);
+                Debug.WriteLine($"{n}: {caps.ProductName}");
+            }
+
         }
         //public ProcessControl(Process process)
         //{

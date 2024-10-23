@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    <Expander MinWidth="450" Margin="5">
+    <Expander MinWidth="450" Margin="5"  Expanding="Expander_Expanded">
         <Expander.Header>
             <!-- 使用Grid代替StackPanel -->
             <Grid>
