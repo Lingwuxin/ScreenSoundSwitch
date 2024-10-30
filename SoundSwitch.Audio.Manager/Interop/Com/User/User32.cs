@@ -55,6 +55,7 @@ namespace SoundSwitch.Audio.Manager.Interop.Com.User
 
         public static class NativeMethods
         {
+
             [StructLayout(LayoutKind.Sequential)]
             public struct HWND : IEquatable<HWND>
             {
@@ -109,6 +110,22 @@ namespace SoundSwitch.Audio.Manager.Interop.Com.User
             }
 
             [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+            public static extern IntPtr SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hMod, uint dwThreadId);
+
+            [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+            [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+            public static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+
+            [DllImport("user32.dll")]
+            public static extern short GetKeyState(int nVirtKey);
+
+            [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+            public static extern IntPtr GetModuleHandle(string lpModuleName);
+
+            [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
             internal static extern IntPtr SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, [Out] StringBuilder lParam);
 
 
@@ -131,6 +148,7 @@ namespace SoundSwitch.Audio.Manager.Interop.Com.User
             public static extern bool IsWindow(HWND hwnd);
 
             public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, HWND hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+            public delegate nint HookProc(int code, IntPtr wParam, IntPtr lParam);
 
             [DllImport("user32.dll")]
             public static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
@@ -163,6 +181,36 @@ namespace SoundSwitch.Audio.Manager.Interop.Com.User
             public const int OBJID_MENU = -3;
             public const int OBJID_SYSMENU = -1;
             public const int OBJID_WINDOW = 0;
+
+
+            //鼠标键盘
+            public const int WH_KEYBOARD_LL = 13;
+            public const int WH_MOUSE_LL = 14;
+            public const int VK_CONTROL = 0x11;
+            public const int VK_MENU = 0x12; // Alt 键
+            public const int WM_MOUSEWHEEL = 0x020A;
+            [DllImport("user32.dll")]
+            public static extern short GetAsyncKeyState(int vKey);
+            [StructLayout(LayoutKind.Sequential)]
+            public struct POINT
+            {
+                public int x;
+                public int y;
+            }
+            [StructLayout(LayoutKind.Sequential)]
+            public struct MSLLHOOKSTRUCT
+            {
+                public POINT pt;
+                public uint mouseData;
+                public uint flags;
+                public uint time;
+                public IntPtr dwExtraInfo;
+            }
+            // HIWORD 提取高位字
+            public static int HIWORD(int value)
+            {
+                return (value >> 16) & 0xFFFF;
+            }
         }
 
         public static uint ForegroundProcessId

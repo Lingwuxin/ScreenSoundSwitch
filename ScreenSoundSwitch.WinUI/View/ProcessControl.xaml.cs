@@ -86,6 +86,10 @@ namespace ScreenSoundSwitch.WinUI.View
                 return bitmapImage;
             }
         }
+        public void ChangeSimpleVolumeLevel(float level)
+        {
+            session.SimpleAudioVolume.Volume += level;
+        }
         private void SimpleVolumeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             if (sliderLock) {
@@ -96,7 +100,6 @@ namespace ScreenSoundSwitch.WinUI.View
         private void VolumeChanged(object sender, EventArgs e)
         {
             sliderLock = true;
-            
             sliderLock=false;
         }
     }

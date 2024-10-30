@@ -36,9 +36,8 @@ namespace ScreenSoundSwitch.WinUI.View
         {
             this.InitializeComponent();
             audioDeviceManger = new AudioDeviceManger();
-            UpdateProcessBySeesion();
         }
-        private void UpdateProcessBySeesion()
+        public void UpdateProcessBySeesion()
         {
             if (mMDevices == null)
             {
@@ -46,6 +45,7 @@ namespace ScreenSoundSwitch.WinUI.View
             }
             foreach(var device in mMDevices)
             {
+                ProcessStackPanel.Children.Clear();
                 var textDeviceName=new TextBlock();
                 textDeviceName.Text = device.FriendlyName;
                 ProcessStackPanel.Children.Add(textDeviceName);
@@ -62,6 +62,7 @@ namespace ScreenSoundSwitch.WinUI.View
               
             }
         }
+
         public void UpdataForegroundProcess(uint processId)
         {
             foreach( var processControl in ProcessStackPanel.Children.OfType<ProcessControl>())
@@ -71,6 +72,21 @@ namespace ScreenSoundSwitch.WinUI.View
                     foregroundProcess=processControl;
                     Debug.WriteLine(processControl.ProcessId);
                 }
+            }
+        }
+        public void UpdataForegroundVolume(int delta)
+        {
+            if(foregroundProcess == null)
+            {
+                return;
+            }
+            if (delta > 0)
+            {
+                foregroundProcess.ChangeSimpleVolumeLevel(0.01f);
+            }
+            else
+            {
+                foregroundProcess.ChangeSimpleVolumeLevel(-0.01f);
             }
         }
         private void OnButtonClick(object sender, RoutedEventArgs e)

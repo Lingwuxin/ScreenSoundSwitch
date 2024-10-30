@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
 using SoundSwitch.Audio.Manager.Interop.Com.Threading;
 using SoundSwitch.Audio.Manager.Interop.Com.User;
-
+using static SoundSwitch.Audio.Manager.Interop.Com.User.User32.NativeMethods;
 namespace SoundSwitch.Audio.Manager
 {
     public class WindowMonitor
@@ -45,17 +46,32 @@ namespace SoundSwitch.Audio.Manager
                 WindowClass = windowClass;
                 Hwnd        = hwnd;
             }
-
+ 
             public override string ToString()
             {
                 return $"{nameof(ProcessId)}: {ProcessId}, {nameof(ProcessName)}: {ProcessName}, {nameof(WindowName)}: {WindowName}, {nameof(WindowClass)}: {WindowClass}";
             }
         }
+        public class MouseWheelEventArgs : EventArgs
+        {
+            public int Delta { get; }
+            public MouseWheelEventArgs(int delta)
+            {
+                Delta = delta;
+            }
+        }
 
+
+  
         public event EventHandler<Event> ForegroundChanged;
         public event EventHandler<Event> ForegroundWindowMoved;
+        public event EventHandler<MouseWheelEventArgs> MouseWheelScrolled;
         private readonly User32.NativeMethods.WinEventDelegate _foregroundWindowChanged;
         private readonly User32.NativeMethods.WinEventDelegate _foregroundWindowMoved;
+        private readonly User32.NativeMethods.WinEventDelegate _mouseWheelScrolled;
+        private readonly User32.NativeMethods.HookProc _mouseProc;
+        private IntPtr _keyboardHookID = IntPtr.Zero;
+        private IntPtr _mouseHookID = IntPtr.Zero;
         private CancellationTokenSource _cancellationTokenSource= new CancellationTokenSource();
         public WindowMonitor()
         {            
@@ -133,6 +149,7 @@ namespace SoundSwitch.Audio.Manager
                     }
                 }, _cancellationTokenSource.Token);
             };
+           
 
             ComThread.Invoke(() =>
             {
@@ -143,6 +160,7 @@ namespace SoundSwitch.Audio.Manager
                     0,
                     User32.NativeMethods.WINEVENT_OUTOFCONTEXT);
             });
+            
             ComThread.Invoke(() =>
             {
                 User32.NativeMethods.SetWinEventHook(User32.NativeMethods.EVENT_SYSTEM_MINIMIZEEND,
@@ -159,8 +177,56 @@ namespace SoundSwitch.Audio.Manager
                     0,
                     User32.NativeMethods.WINEVENT_OUTOFCONTEXT);
             });
+            _mouseProc = HookCallbackMouse;
+            ComThread.Invoke(() => 
+            {
+                _mouseHookID = SetHook(_mouseProc, WH_MOUSE_LL);
+            });
         }
 
+        private IntPtr SetHook(HookProc proc, int evenType)
+        {
+            using (var curProcess = Process.GetCurrentProcess())
+            using (var curModule = curProcess.MainModule)
+            {
+                return SetWindowsHookEx(evenType, proc, GetModuleHandle(curModule.ModuleName), 0);
+            }
+        }
+
+
+
+        private IntPtr HookCallbackMouse(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            if (nCode >= 0 && wParam == (IntPtr)WM_MOUSEWHEEL)
+            {
+                MSLLHOOKSTRUCT mouseHookStruct = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
+                int delta = (short)(mouseHookStruct.mouseData >> 16);
+                // 如果 Ctrl 和 Alt 被按下，触发事件
+                if ((GetKeyState(VK_CONTROL) & 0x8000) != 0 && (GetKeyState(VK_MENU) & 0x8000) != 0)
+                {
+                    Task.Factory.StartNew(() =>
+                    {
+                        if (_cancellationTokenSource.Token.IsCancellationRequested)
+                            return;
+
+                        try
+                        {
+                            MouseWheelScrolled?.Invoke(this, new MouseWheelEventArgs(delta));
+                        }
+                        catch (Exception)
+                        {
+                            // Ignored
+                        }
+                    }, _cancellationTokenSource.Token);
+                   
+                }
+            }
+            return CallNextHookEx(_mouseHookID, nCode, wParam, lParam);
+        }
+        private static bool IsKeyPressed(int key)
+        {
+            return (User32.NativeMethods.GetAsyncKeyState(key) & 0x8000) != 0;
+        }
         public static (uint ProcessId, string WindowText, string WindowClass) ProcessWindowInformation(User32.NativeMethods.HWND hwnd)
         {
             return ComThread.Invoke(() =>
