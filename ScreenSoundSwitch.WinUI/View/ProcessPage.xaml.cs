@@ -43,9 +43,9 @@ namespace ScreenSoundSwitch.WinUI.View
             {
                 mMDevices = audioDeviceManger.GetDevices();
             }
-            foreach(var device in mMDevices)
-            {
-                ProcessStackPanel.Children.Clear();
+            ProcessStackPanel.Children.Clear();
+            foreach (var device in mMDevices)
+            {               
                 var textDeviceName=new TextBlock();
                 textDeviceName.Text = device.FriendlyName;
                 ProcessStackPanel.Children.Add(textDeviceName);
@@ -57,6 +57,7 @@ namespace ScreenSoundSwitch.WinUI.View
                     {
                         continue;
                     }
+                    Debug.WriteLine(1);
                     ProcessStackPanel.Children.Add(new ProcessControl(sessions[i]));
                 }
               

@@ -40,13 +40,27 @@ namespace ScreenSoundSwitch.WinUI
             selectDevicePage = new SelectDevicePage();
             volumePage = new VolumePage();
             processPage = new ProcessPage();
+            processPage.UpdateProcessBySeesion();
             mindowMonitor = new WindowMonitor();
             // 默认显示的页面
             navContentFrame.Content = selectDevicePage;
             mindowMonitor.ForegroundChanged += MindowMonitor_ForegroundChanged;
             mindowMonitor.MouseWheelScrolled += MindowMonitor_KeyIsDown;
+            mindowMonitor.ForegroundWindowMoved += MindowMonitor_ForegroundMoved;
         }
 
+        private void MindowMonitor_ForegroundMoved(object sender, WindowMonitor.Event e)
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                Debug.WriteLine(e.WindowName);
+            });
+        }
+        /// <summary>
+        /// 监听聚焦窗口是否发生变化
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MindowMonitor_ForegroundChanged(object sender, WindowMonitor.Event e)
         {
             DispatcherQueue.TryEnqueue(() =>
@@ -55,6 +69,7 @@ namespace ScreenSoundSwitch.WinUI
             });
             
         }
+
         /// <summary>
         /// 监听Ctrl+Shift+鼠标滚轮，调整当前聚焦窗口的音量
         /// </summary>

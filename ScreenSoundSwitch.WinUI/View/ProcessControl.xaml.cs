@@ -37,8 +37,7 @@ namespace ScreenSoundSwitch.WinUI.View
         {
             this.InitializeComponent();
             this.session = session;
-            SetProcessAsync();
-            
+            SetProcess();
         }
         public int ProcessId
         {
@@ -59,7 +58,7 @@ namespace ScreenSoundSwitch.WinUI.View
         //    this.process = process;
         //    SetProcess();
         //}
-        private async Task SetProcessAsync()
+        private void  SetProcess()
         {
             process = Process.GetProcessById((int)session.GetProcessID);
             ProcessName.Text=process.ProcessName;
@@ -68,13 +67,13 @@ namespace ScreenSoundSwitch.WinUI.View
             if (icon != null)
             {
                 // 将Icon转换为BitmapImage
-                BitmapImage bitmapImage = await ConvertIconToBitmapImage(icon);
+                BitmapImage bitmapImage = ConvertIconToBitmapImage(icon);
 
                 // 将BitmapImage赋值给Image控件
                 SessionIcon.Source = bitmapImage;
             }
         }
-        private async Task<BitmapImage> ConvertIconToBitmapImage(Icon icon)
+        private BitmapImage ConvertIconToBitmapImage(Icon icon)
         {
             using (var stream = new MemoryStream())
             {
@@ -82,7 +81,7 @@ namespace ScreenSoundSwitch.WinUI.View
                 stream.Seek(0, SeekOrigin.Begin);
 
                 BitmapImage bitmapImage = new BitmapImage();
-                await bitmapImage.SetSourceAsync(stream.AsRandomAccessStream());
+                bitmapImage.SetSource(stream.AsRandomAccessStream());
                 return bitmapImage;
             }
         }
