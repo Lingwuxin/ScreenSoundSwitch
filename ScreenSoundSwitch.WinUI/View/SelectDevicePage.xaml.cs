@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Navigation;
 using ScreenSoundSwitch.WinUI.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -30,7 +31,6 @@ namespace ScreenSoundSwitch.WinUI.View
         {
             this.InitializeComponent();
             UpdateScreenSelection();
-            UpdateDeviceSelection();
         }
         public void UpdateScreenSelection()
         {
@@ -43,15 +43,25 @@ namespace ScreenSoundSwitch.WinUI.View
         {
             if (ScreenListView.SelectedItem != null)
             {
+                SceenExpander.Header = ScreenListView.SelectedItem.ToString();
                 // 处理选择的显示器逻辑
                 var selectedScreen = ScreenListView.SelectedItem.ToString();
                 // 例如，你可以将选择的显示器显示在一个 TextBlock 中
                 // MessageBox.Show($"Selected: {selectedScreen}");
+                UpdateDeviceSelection();
+                DeviceListView.Visibility = Visibility.Visible;
             }
         }
         public void UpdateDeviceSelection()
         {
             AudioDeviceManger audioDeviceManger = new AudioDeviceManger();
+            var devices=audioDeviceManger.GetDevices();
+            if (devices.Count == 0)
+            {
+                DeviceListView.Items.Add("Audio device is none!");
+                return;
+            }
+            DeviceListView.Items.Clear();
             foreach (var device in audioDeviceManger.GetDevices()) {
                 DeviceListView.Items.Add(new DeviceMsg(device.FriendlyName));
             }

@@ -29,6 +29,7 @@
     </Page.Resources>
     <StackPanel  Orientation="Horizontal" VerticalAlignment="Center">
         <Expander
+            x:Name="SceenExpander"
              IsExpanded="False"
              ExpandDirection="Down"
              VerticalAlignment="Top"
@@ -54,8 +55,9 @@ source code for the WinUI Gallery. -->
             </ListView>
         </Expander>
         <ListView
+            Visibility="Collapsed"
             x:Name="DeviceListView"
-             SelectionMode="Multiple"
+             SelectionMode="Single"
     ItemTemplate="{StaticResource DeviceListViewTemplate}"/>
     </StackPanel>
     

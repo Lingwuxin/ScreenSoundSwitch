@@ -57,7 +57,6 @@ namespace ScreenSoundSwitch.WinUI.View
                     {
                         continue;
                     }
-                    Debug.WriteLine(1);
                     ProcessStackPanel.Children.Add(new ProcessControl(sessions[i]));
                 }
               
@@ -83,11 +82,11 @@ namespace ScreenSoundSwitch.WinUI.View
             }
             if (delta > 0)
             {
-                foregroundProcess.ChangeSimpleVolumeLevel(0.01f);
+                foregroundProcess.ChangeSimpleVolumeLevel(0.05f);
             }
             else
             {
-                foregroundProcess.ChangeSimpleVolumeLevel(-0.01f);
+                foregroundProcess.ChangeSimpleVolumeLevel(-0.05f);
             }
         }
         private void OnButtonClick(object sender, RoutedEventArgs e)
