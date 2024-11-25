@@ -31,7 +31,7 @@ namespace ScreenSoundSwitch.WinUI.View
         AudioDeviceManger audioDeviceManger;
         MMDeviceCollection mMDevices;
         ProcessControl foregroundProcess;
-
+        public ProcessModel processModel => ((App)Application.Current).processModel;
         public ProcessPage()
         {
             this.InitializeComponent();
@@ -88,6 +88,15 @@ namespace ScreenSoundSwitch.WinUI.View
             {
                 foregroundProcess.ChangeSimpleVolumeLevel(-0.05f);
             }
+        }
+        /// <summary>
+        /// 处理进程所对应的窗口的移动事件，判断进程是否从当前所处的显示器上移动到另一个显示器上，如是则根据processModel中提供的设备组合来切换该进程的播放设备
+        /// </summary>
+        /// <param name="hwnd">当前正在被移动的被聚焦的窗口的句柄</param>
+        /// <param name="pid">对应窗口的进程id</param>
+        public void ForegroundMovedHandle(IntPtr hwnd, uint pid)
+        {
+            throw new NotImplementedException();
         }
         private void OnButtonClick(object sender, RoutedEventArgs e)
         {

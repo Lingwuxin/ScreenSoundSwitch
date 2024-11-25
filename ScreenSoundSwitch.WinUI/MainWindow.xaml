@@ -8,7 +8,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <NavigationView x:Name="nav"
-                    PaneTitle=""
                     SelectionChanged="{x:Bind NavigationSelectionChanged}"
                     >
         <NavigationView.MenuItems>
@@ -20,6 +19,7 @@
             </NavigationViewItem>
             <NavigationViewItem Icon="Favorite" Content="Process" Tag="ProcessPage" />
         </NavigationView.MenuItems>
+        
         <Frame x:Name="navContentFrame"  />
     </NavigationView>
 </Window>

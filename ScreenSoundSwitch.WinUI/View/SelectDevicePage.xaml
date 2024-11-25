@@ -7,7 +7,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local1="using:ScreenSoundSwitch.WinUI.Models"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    >
+    
     <Page.Resources>
         <DataTemplate x:Key="DeviceListViewTemplate" x:DataType="local1:DeviceMsg">
             <Grid>
@@ -54,6 +56,12 @@ source code for the WinUI Gallery. -->
                 </ListView.ItemTemplate>
             </ListView>
         </Expander>
+        <Button
+            Click="Button_Click"
+           Content="Bind"
+            >
+            
+        </Button>
         <ListView
             Visibility="Collapsed"
             x:Name="DeviceListView"

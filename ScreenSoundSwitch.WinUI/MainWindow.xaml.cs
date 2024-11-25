@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using NAudio.CoreAudioApi;
+using ScreenSoundSwitch.WinUI.Models;
 using ScreenSoundSwitch.WinUI.View;
 using SoundSwitch.Audio.Manager;
 using System;
@@ -17,6 +18,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -32,8 +34,11 @@ namespace ScreenSoundSwitch.WinUI
         private SelectDevicePage selectDevicePage;
         private VolumePage volumePage;
         private ProcessPage processPage;
+        ApplicationDataContainer localSettings;
+       
         public MainWindow()
         {
+            localSettings = ApplicationData.Current.LocalSettings;
             this.InitializeComponent();
             this.Title = "ScreenSoundSwicth";
             ExtendsContentIntoTitleBar = true;
@@ -53,7 +58,7 @@ namespace ScreenSoundSwitch.WinUI
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                Debug.WriteLine(e.WindowName);
+                processPage.ForegroundMovedHandle(e.Hwnd,e.ProcessId);
             });
         }
         /// <summary>
