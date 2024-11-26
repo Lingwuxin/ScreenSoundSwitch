@@ -1,25 +1,17 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using System.Diagnostics;
-using ScreenSoundSwitch.WinUI.Audio;
 using NAudio.CoreAudioApi;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Threading.Tasks;
 using NAudio.Wave;
+using System.Windows.Forms;
+using UserControl = Microsoft.UI.Xaml.Controls.UserControl;
+using SoundSwitch.Audio.Manager;
+using Windows.UI.WebUI;
+using SoundSwitch.Audio.Manager.Interop.Enum;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -29,19 +21,43 @@ namespace ScreenSoundSwitch.WinUI.View
     public sealed partial class ProcessControl : UserControl
     {
         private Process process;
+        private Screen screen;
         private AudioSessionControl session;
         private bool sliderLock=false;
-        private MMDevice[] devices;
+        private AudioSwitcher audioSwitcher;
 
         public ProcessControl(AudioSessionControl session)
         {
             this.InitializeComponent();
             this.session = session;
+            audioSwitcher = AudioSwitcher.Instance;
             SetProcess();
         }
         public int ProcessId
         {
             get { return process.Id; }
+        }
+        /// <summary>
+        /// 该进程控件对应的进程所处的屏幕是否发生改变，如发生改变则更新screen属性
+        /// </summary>
+        /// <param name="screen"></param>
+        /// <returns>screen==this.screen -> false</returns>
+        public bool IsScreenChange(Screen screen)
+        {
+            if (this.screen.Equals(screen)) 
+            {                
+                return false;
+            }
+            this.screen = screen;
+            return true;
+        }
+        public void ChangeSimpleVolumeLevel(float level)
+        {
+            session.SimpleAudioVolume.Volume += level;
+        }
+        public void ChangeAudioDevice(MMDevice mMDevice)
+        {
+            audioSwitcher.SwitchProcessTo(mMDevice.ID, ERole.ERole_enum_count,EDataFlow.eRender,(uint)ProcessId);//ERole_enum_count，将该设备分配所有角色任务
         }
         private void Expander_Expanded(Expander sender, ExpanderExpandingEventArgs args)
         {
@@ -52,15 +68,10 @@ namespace ScreenSoundSwitch.WinUI.View
             }
 
         }
-        //public ProcessControl(Process process)
-        //{
-        //    this.InitializeComponent();
-        //    this.process = process;
-        //    SetProcess();
-        //}
         private void  SetProcess()
         {
             process = Process.GetProcessById((int)session.GetProcessID);
+            screen = Screen.FromHandle(process.Handle);
             ProcessName.Text=process.ProcessName;
             SimpleVolumeSlider.Value = session.SimpleAudioVolume.Volume*100;
             var icon = Icon.ExtractAssociatedIcon(process.MainModule?.FileName);
@@ -85,21 +96,13 @@ namespace ScreenSoundSwitch.WinUI.View
                 return bitmapImage;
             }
         }
-        public void ChangeSimpleVolumeLevel(float level)
-        {
-            session.SimpleAudioVolume.Volume += level;
-        }
+
         private void SimpleVolumeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             if (sliderLock) {
                 return;
             }
             session.SimpleAudioVolume.Volume = (float)(e.NewValue/100);
-        }
-        private void VolumeChanged(object sender, EventArgs e)
-        {
-            sliderLock = true;
-            sliderLock=false;
         }
     }
 }

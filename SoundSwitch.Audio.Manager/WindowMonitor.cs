@@ -68,7 +68,6 @@ namespace SoundSwitch.Audio.Manager
         public event EventHandler<MouseWheelEventArgs> MouseWheelScrolled;
         private readonly User32.NativeMethods.WinEventDelegate _foregroundWindowChanged;
         private readonly User32.NativeMethods.WinEventDelegate _foregroundWindowMoved;
-        private readonly User32.NativeMethods.WinEventDelegate _mouseWheelScrolled;
         private readonly User32.NativeMethods.HookProc _mouseProc;
         private IntPtr _keyboardHookID = IntPtr.Zero;
         private IntPtr _mouseHookID = IntPtr.Zero;

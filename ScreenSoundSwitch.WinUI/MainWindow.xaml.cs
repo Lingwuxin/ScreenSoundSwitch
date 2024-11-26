@@ -35,7 +35,6 @@ namespace ScreenSoundSwitch.WinUI
         private VolumePage volumePage;
         private ProcessPage processPage;
         ApplicationDataContainer localSettings;
-       
         public MainWindow()
         {
             localSettings = ApplicationData.Current.LocalSettings;

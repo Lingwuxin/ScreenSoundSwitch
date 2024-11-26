@@ -24,17 +24,19 @@ namespace ScreenSoundSwitch.WinUI.View
     /// </summary>
     public sealed partial class VolumePage : Page
     {
-        AudioDeviceManger audioDeviceManger;        
+        AudioDeviceManager audioDeviceManager;
+        private MMDeviceViewModel MMDeviceViewModel => ((App)Application.Current).MMDeviceViewModel;
         public VolumePage()
         {
             this.InitializeComponent();
-            audioDeviceManger = new AudioDeviceManger();
+            audioDeviceManager = AudioDeviceManager.Instance;
             UpdateDevices();
         }
         private void UpdateDevices()
         {
             DevicesStackPanel.Children.Clear(); // 清空之前的内容
-            var devices=audioDeviceManger.GetDevices();
+            var devices= audioDeviceManager.Devices;
+            MMDeviceViewModel.ShareDate = devices;
             foreach (var device in devices) {
                 AudioDeviceControl audioDeviceControl = new AudioDeviceControl(device);
                 DevicesStackPanel.Children.Add(audioDeviceControl);

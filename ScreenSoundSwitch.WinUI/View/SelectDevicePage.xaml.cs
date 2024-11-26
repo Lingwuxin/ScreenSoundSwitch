@@ -18,8 +18,10 @@ namespace ScreenSoundSwitch.WinUI.View
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class SelectDevicePage : Page
-    {   
-        public ProcessModel processModel => ((App)Application.Current).processModel;
+    {
+        private Dictionary<Screen, MMDevice> screenToAudioDevice;
+        private ProcessModel ProcessModel => ((App)Application.Current).ProcessModel;
+        private MMDeviceViewModel MMDeviceViewModel => ((App)Application.Current).MMDeviceViewModel;
         public SelectDevicePage()
         {
             this.InitializeComponent();
@@ -29,7 +31,7 @@ namespace ScreenSoundSwitch.WinUI.View
         {
             foreach (var screen in Screen.AllScreens)
             {
-                ScreenListView.Items.Add(screen.DeviceName);
+                ScreenListView.Items.Add(screen);
             }
         }
         //待实现
@@ -41,29 +43,29 @@ namespace ScreenSoundSwitch.WinUI.View
                 SceenExpander.Header = ScreenListView.SelectedItem.ToString();
                 // 处理选择的显示器逻辑
                 var selectedScreen = ScreenListView.SelectedItem.ToString();
-                UpdateDeviceSelection(); 
+                UpdateDeviceSelection();
                 DeviceListView.Visibility = Visibility.Visible;
             }
         }
 
         public void UpdateDeviceSelection()
         {
-            AudioDeviceManger audioDeviceManger = new AudioDeviceManger();
-            var devices=audioDeviceManger.GetDevices();
+            var devices = MMDeviceViewModel.ShareDate;
             if (devices.Count == 0)
             {
                 DeviceListView.Items.Add("Audio device is none!");
                 return;
             }
             DeviceListView.Items.Clear();
-            foreach (var device in audioDeviceManger.GetDevices()) {
-                DeviceListView.Items.Add(new DeviceMsg(device.FriendlyName));
+            foreach (var device in devices) {
+                DeviceListView.Items.Add(device);
             }
 
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             //在选择设备后点击按钮确认,存储并提交到processModel
+            
             throw new NotImplementedException();
         }
     }
