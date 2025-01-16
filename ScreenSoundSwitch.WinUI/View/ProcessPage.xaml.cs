@@ -8,6 +8,7 @@ using ScreenSoundSwitch.WinUI.Models;
 using System.Windows.Forms;
 using Application = Microsoft.UI.Xaml.Application;
 using System.Collections.Generic;
+using ScreenSoundSwitch.WinUI.Data;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -20,13 +21,13 @@ namespace ScreenSoundSwitch.WinUI.View
     public sealed partial class ProcessPage : Page
     {
         private ProcessControl foregroundProcessControl;
-        private Dictionary<Screen, MMDevice> screenToAudioDevice;
-        private ProcessModel ProcessModel => ((App)Application.Current).ProcessModel;
+        private ScreenToAudioDevice screenToAudioDevice;
         private MMDeviceViewModel MMDeviceViewModel => ((App)Application.Current).MMDeviceViewModel;
         private MMDeviceCollection mMDevices;
         public ProcessPage()
         {
             this.InitializeComponent();
+            screenToAudioDevice=ScreenToAudioDevice.Instance;
         }
         public void UpdateProcessBySeesion()
         {
@@ -40,7 +41,7 @@ namespace ScreenSoundSwitch.WinUI.View
                 var textDeviceName=new TextBlock();
                 textDeviceName.Text = device.FriendlyName;
                 ProcessStackPanel.Children.Add(textDeviceName);
-                
+                device.AudioSessionManager.RefreshSessions();
                 var sessions = device.AudioSessionManager.Sessions;
                 for (int i=0;i< sessions.Count; i++)
                 {
@@ -90,7 +91,8 @@ namespace ScreenSoundSwitch.WinUI.View
             if (hwnd == IntPtr.Zero) return;
             if (foregroundProcessControl == null) return;
             Screen screen = Screen.FromHandle(hwnd);
-            if (screen != null) return;
+            
+            if (screen == null) return;
             if (!foregroundProcessControl.IsScreenChange(screen))return;
             if (screenToAudioDevice.ContainsKey(screen))
             {

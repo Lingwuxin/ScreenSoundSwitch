@@ -13,7 +13,7 @@ namespace ScreenSoundSwitch
     //或许应该采用单例模式？
     public class AudioDeviceManager : IDisposable
     {
-        private static AudioDeviceManager? _instance;
+        private static AudioDeviceManager _instance;
         private readonly MMDeviceEnumerator _enumerator;
         private readonly AudioDeviceNotificationClient _notificationClient;
         private MMDeviceCollection _devices;
@@ -57,7 +57,28 @@ namespace ScreenSoundSwitch
             }
             return false;
         }
+        public MMDevice GetDeviceByFriendlyName(string _FriendlyName)
+        {
+            MMDevice targetDevice = null;
+            foreach (MMDevice device in Devices)
+            {
+                if (device.FriendlyName == _FriendlyName)
+                {
+                    targetDevice = device;
+                    break;
+                }
+            }
 
+            if (targetDevice != null)
+            {
+                Console.WriteLine($"Found MMDevice: {targetDevice.FriendlyName}");
+            }
+            else
+            {
+                Console.WriteLine("MMDevice not found.");
+            }
+            return targetDevice;
+        }
         public string? GetUsingAudioDeviceNameById(int processId, Dictionary<string, MMDevice?> deviceInfoDict)
         {
             foreach (var deviceInfo in deviceInfoDict)

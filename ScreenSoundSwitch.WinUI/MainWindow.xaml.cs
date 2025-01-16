@@ -20,7 +20,8 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
 using static System.Runtime.InteropServices.JavaScript.JSType;
-
+using H.NotifyIcon;
+using Windows.UI.Shell;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
@@ -35,6 +36,7 @@ namespace ScreenSoundSwitch.WinUI
         private VolumePage volumePage;
         private ProcessPage processPage;
         ApplicationDataContainer localSettings;
+        private TaskbarManager
         public MainWindow()
         {
             localSettings = ApplicationData.Current.LocalSettings;

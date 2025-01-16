@@ -29,44 +29,49 @@
             </Grid>
         </DataTemplate>
     </Page.Resources>
-    <StackPanel  Orientation="Horizontal" VerticalAlignment="Center">
-        <Expander
-            x:Name="SceenExpander"
-             IsExpanded="False"
-             ExpandDirection="Down"
-             VerticalAlignment="Top"
-             Header="select screen"
-             >
-            <!-- Full code to implement dragging and dropping between lists can be found in the
-source code for the WinUI Gallery. -->
+    <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+        <StackPanel  Orientation="Horizontal" VerticalAlignment="Center">
+            <Expander
+                x:Name="SceenExpander"
+                 IsExpanded="False"
+                 ExpandDirection="Down"
+                 VerticalAlignment="Top"
+                 Header="select screen"
+                 >
+                <!-- Full code to implement dragging and dropping between lists can be found in the
+    source code for the WinUI Gallery. -->
 
-            <!-- The following properties should be added to the ListView definitions to build this sample. -->
-            <ListView 
-                    CanDragItems="True" 
-                    CanReorderItems="True" 
-                    AllowDrop="True"
-                    SelectionMode="Single"
-                    x:Name="ScreenListView"
-                    SelectionChanged="ScreenListView_SelectionChanged">
-                <!-- DataTemplate to display screen information -->
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}" />
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </Expander>
-        <Button
-            Click="Button_Click"
-           Content="Bind"
-            >
+                <!-- The following properties should be added to the ListView definitions to build this sample. -->
+                <ListView 
+                        CanDragItems="True" 
+                        CanReorderItems="True" 
+                        AllowDrop="True"
+                        SelectionMode="Single"
+                        x:Name="ScreenListView"
+                        SelectionChanged="ScreenListView_SelectionChanged">
+                    <!-- DataTemplate to display screen information -->
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Expander>
+            <Button
+                Click="Button_Click"
+               Content="Bind"
+                >
             
-        </Button>
-        <ListView
-            Visibility="Collapsed"
-            x:Name="DeviceListView"
-             SelectionMode="Single"
-    ItemTemplate="{StaticResource DeviceListViewTemplate}"/>
+            </Button>
+            <ListView 
+                    x:Name="DeviceListView"
+                    SelectionMode="Single"
+                >
+            </ListView>
+            
+        </StackPanel>
+        <ListView x:Name="BindedList"
+                  Visibility="Collapsed"></ListView>
     </StackPanel>
-    
+
 </Page>
