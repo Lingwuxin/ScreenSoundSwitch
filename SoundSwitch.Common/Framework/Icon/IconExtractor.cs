@@ -56,7 +56,7 @@ namespace SoundSwitch.Common.Framework.Icon
             {
                 return System.Drawing.Icon.FromHandle(largeIcon ? large : small);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new IconExtractionException($"Can't extract icon from file: {file} / index:{iconIndex}", e);
             }

@@ -1,7 +1,7 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using NAudio.CoreAudioApi;
+﻿using NAudio.CoreAudioApi;
 using Newtonsoft.Json;
+using System;
+using System.Text.RegularExpressions;
 
 namespace SoundSwitch.Common.Framework.Audio.Device
 {

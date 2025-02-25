@@ -1,8 +1,8 @@
 ﻿#nullable enable
-using System;
 using NAudio.CoreAudioApi;
 using Newtonsoft.Json;
 using SoundSwitch.Common.Framework.Audio.Icon;
+using System;
 
 namespace SoundSwitch.Common.Framework.Audio.Device
 {

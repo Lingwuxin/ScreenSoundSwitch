@@ -1,12 +1,12 @@
 ﻿#nullable enable
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using Serilog;
 using SoundSwitch.Audio.Manager.Interop.Client.ClientException;
 using SoundSwitch.Audio.Manager.Interop.Client.Extended.Factory;
 using SoundSwitch.Audio.Manager.Interop.Enum;
 using SoundSwitch.Audio.Manager.Interop.Interface.Policy.Extended;
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace SoundSwitch.Audio.Manager.Interop.Client
 {

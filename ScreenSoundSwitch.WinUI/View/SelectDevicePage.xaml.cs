@@ -1,13 +1,10 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using NAudio.CoreAudioApi;
+using ScreenSoundSwitch.WinUI.Audio;
 using ScreenSoundSwitch.WinUI.Data;
 using ScreenSoundSwitch.WinUI.Models;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using  System.Windows.Forms;
-using ScreenSoundSwitch.WinUI.Audio;
+using System.Windows.Forms;
 using Application = Microsoft.UI.Xaml.Application;
 
 
@@ -27,8 +24,8 @@ namespace ScreenSoundSwitch.WinUI.View
         public SelectDevicePage()
         {
             this.InitializeComponent();
-            screenToAudioDevice=ScreenToAudioDevice.Instance;
-            audioDeviceManager=AudioDeviceManager.Instance;
+            screenToAudioDevice = ScreenToAudioDevice.Instance;
+            audioDeviceManager = AudioDeviceManager.Instance;
             UpdateScreenSelection();
             UpdateDeviceSelection();
         }
@@ -44,7 +41,7 @@ namespace ScreenSoundSwitch.WinUI.View
         {
             if (ScreenListView.SelectedItem != null)
             {
-                SceenExpander.Header = ScreenListView.SelectedItem;           
+                SceenExpander.Header = ScreenListView.SelectedItem;
             }
         }
 
@@ -65,27 +62,28 @@ namespace ScreenSoundSwitch.WinUI.View
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (BindedList.Visibility == Visibility.Collapsed) 
+            if (BindedList.Visibility == Visibility.Collapsed)
             {
                 BindedList.Visibility = Visibility.Visible;
             }
-            
+
             //在选择设备后点击按钮确认,存储并提交到processModel
             Screen selectedScreen = ScreenManager.GetScreenByDeviceName(ScreenListView.SelectedItem.ToString());
             MMDevice selectedMMDevice = audioDeviceManager.GetDeviceByFriendlyName(DeviceListView.SelectedItem.ToString());
             if (screenToAudioDevice.ContainsKey(selectedScreen))
             {
-                screenToAudioDevice[selectedScreen] = selectedMMDevice;                
+                screenToAudioDevice[selectedScreen] = selectedMMDevice;
             }
             else
             {
-                screenToAudioDevice.Add(selectedScreen, selectedMMDevice);               
+                screenToAudioDevice.Add(selectedScreen, selectedMMDevice);
             }
             BindedList.Items.Clear();
-            foreach (var item in screenToAudioDevice) {
-                BindedList.Items.Add(item.Key.ToString()+" + "+item.Value.ToString());
+            foreach (var item in screenToAudioDevice)
+            {
+                BindedList.Items.Add(item.Key.ToString() + " + " + item.Value.ToString());
             }
-            
+
         }
     }
 

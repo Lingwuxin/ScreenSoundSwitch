@@ -15,10 +15,12 @@
             <NavigationViewItem Icon="Edit" Content="Select Device" Tag="SelectDevicePage" />
             <NavigationViewItem Content="Volume" Tag="VolumePage" >
                 <NavigationViewItem.Icon>
-                    <FontIcon Glyph="&#xE994;" />
-                </NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xF4C3;" />
+                </NavigationViewItem.Icon> 
             </NavigationViewItem>
-            <NavigationViewItem Icon="Favorite" Content="Process" Tag="ProcessPage" />
+            <NavigationViewItem Icon="AllApps" Content="Process" Tag="ProcessPage" />
+            <NavigationViewItem Icon="Audio" Content="Audio" Tag="AudioPage"/>
+            <NavigationViewItem Icon="Setting" Content="Setting" Tag="SettingPage"/>
         </NavigationView.MenuItems>
         
         <Frame x:Name="navContentFrame"  />

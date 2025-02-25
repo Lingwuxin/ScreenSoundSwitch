@@ -71,7 +71,7 @@ namespace ScreenSoundSwitch
                 deviceInfoDict[device.FriendlyName] = device;
                 deviceSelectControl.comBoxAudio.Items.Add(device.FriendlyName);
             }
-            
+
             for (int i = 0; i < screens.Length; i++)
             {
                 string deviceName = screens[i].DeviceName;

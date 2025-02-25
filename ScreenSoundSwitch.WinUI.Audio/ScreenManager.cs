@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace ScreenSoundSwitch.WinUI.Audio
 {
@@ -24,7 +19,7 @@ namespace ScreenSoundSwitch.WinUI.Audio
         }
         public static Screen GetScreenByDeviceName(string _DeviceName)
         {
-            Screen targetScreen=null;
+            Screen targetScreen = null;
             foreach (Screen screen in Screen.AllScreens)
             {
                 if (screen.DeviceName == _DeviceName)

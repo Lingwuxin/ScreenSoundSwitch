@@ -1,14 +1,12 @@
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Linq;
-using System.Diagnostics;
 using NAudio.CoreAudioApi;
+using ScreenSoundSwitch.WinUI.Data;
 using ScreenSoundSwitch.WinUI.Models;
+using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
 using Application = Microsoft.UI.Xaml.Application;
-using System.Collections.Generic;
-using ScreenSoundSwitch.WinUI.Data;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -27,7 +25,7 @@ namespace ScreenSoundSwitch.WinUI.View
         public ProcessPage()
         {
             this.InitializeComponent();
-            screenToAudioDevice=ScreenToAudioDevice.Instance;
+            screenToAudioDevice = ScreenToAudioDevice.Instance;
         }
         public void UpdateProcessBySeesion()
         {
@@ -37,13 +35,13 @@ namespace ScreenSoundSwitch.WinUI.View
             }
             ProcessStackPanel.Children.Clear();
             foreach (var device in mMDevices)
-            {               
-                var textDeviceName=new TextBlock();
+            {
+                var textDeviceName = new TextBlock();
                 textDeviceName.Text = device.FriendlyName;
                 ProcessStackPanel.Children.Add(textDeviceName);
                 device.AudioSessionManager.RefreshSessions();
                 var sessions = device.AudioSessionManager.Sessions;
-                for (int i=0;i< sessions.Count; i++)
+                for (int i = 0; i < sessions.Count; i++)
                 {
                     if (sessions[i].IsSystemSoundsSession)
                     {
@@ -51,24 +49,26 @@ namespace ScreenSoundSwitch.WinUI.View
                     }
                     ProcessStackPanel.Children.Add(new ProcessControl(sessions[i]));
                 }
-              
+
             }
         }
 
-        public void UpdataForegroundProcess(uint processId)
+        public void UpdataForegroundProcess(uint processId)//更新当前聚焦窗口的pid
         {
-            foreach( var processControl in ProcessStackPanel.Children.OfType<ProcessControl>())
+            foreach (var processControl in ProcessStackPanel.Children.OfType<ProcessControl>())
             {
-                if (processId == processControl.ProcessId)
+                Debug.WriteLine($"processControl.ProcessId={processControl.ProcessId} ForegroundProcessId={processId}");
+                if (processId == processControl.ProcessId)//processControl是当前已经与音频设备建立seesion的进程控件
                 {
-                    foregroundProcessControl = processControl;
+                    foregroundProcessControl = processControl;//当前聚焦的进程与
                     Debug.WriteLine(processControl.ProcessId);
                 }
+
             }
         }
         public void UpdataForegroundVolume(int delta)
         {
-            if(foregroundProcessControl == null)
+            if (foregroundProcessControl == null)
             {
                 return;
             }
@@ -86,14 +86,24 @@ namespace ScreenSoundSwitch.WinUI.View
         /// </summary>
         /// <param name="hwnd">当前正在被移动的被聚焦的窗口的句柄</param>
         /// <param name="pid">对应窗口的进程id</param>
-        public void ForegroundMovedHandle(IntPtr hwnd, uint pid)
+        public void ForegroundMovedHandle(IntPtr hwnd, uint processId)
         {
+            Debug.WriteLine($"Into ForegroundMovedHandle: hwnd={hwnd},pid={processId}");
             if (hwnd == IntPtr.Zero) return;
-            if (foregroundProcessControl == null) return;
+            if (foregroundProcessControl == null)
+            {
+                Debug.WriteLine("foregroundProcessControl==null");
+                return;
+            }
+            if(processId!= foregroundProcessControl.ProcessId)
+            {
+                Debug.WriteLine($"Process:{processId} is not using Audio Devices ");
+                return;
+            }
             Screen screen = Screen.FromHandle(hwnd);
-            
+
             if (screen == null) return;
-            if (!foregroundProcessControl.IsScreenChange(screen))return;
+            if (!foregroundProcessControl.IsScreenChange(screen)) return;
             if (screenToAudioDevice.ContainsKey(screen))
             {
                 foregroundProcessControl.ChangeAudioDevice(screenToAudioDevice[screen]);

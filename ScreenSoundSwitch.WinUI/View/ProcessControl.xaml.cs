@@ -1,17 +1,15 @@
-using System;
-using System.IO;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using System.Diagnostics;
-using NAudio.CoreAudioApi;
 using Microsoft.UI.Xaml.Media.Imaging;
-using System.Drawing;
+using NAudio.CoreAudioApi;
 using NAudio.Wave;
+using SoundSwitch.Audio.Manager;
+using SoundSwitch.Audio.Manager.Interop.Enum;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using UserControl = Microsoft.UI.Xaml.Controls.UserControl;
-using SoundSwitch.Audio.Manager;
-using Windows.UI.WebUI;
-using SoundSwitch.Audio.Manager.Interop.Enum;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -23,7 +21,7 @@ namespace ScreenSoundSwitch.WinUI.View
         private Process process;
         private Screen screen;
         private AudioSessionControl session;
-        private bool sliderLock=false;
+        private bool sliderLock = false;
         private AudioSwitcher audioSwitcher;
 
         public ProcessControl(AudioSessionControl session)
@@ -44,8 +42,8 @@ namespace ScreenSoundSwitch.WinUI.View
         /// <returns>screen==this.screen -> false</returns>
         public bool IsScreenChange(Screen screen)
         {
-            if (this.screen.Equals(screen)) 
-            {                
+            if (this.screen.Equals(screen))
+            {
                 return false;
             }
             this.screen = screen;
@@ -57,7 +55,7 @@ namespace ScreenSoundSwitch.WinUI.View
         }
         public void ChangeAudioDevice(MMDevice mMDevice)
         {
-            audioSwitcher.SwitchProcessTo(mMDevice.ID, ERole.ERole_enum_count,EDataFlow.eRender,(uint)ProcessId);//ERole_enum_count，将该设备分配所有角色任务
+            audioSwitcher.SwitchProcessTo(mMDevice.ID, ERole.ERole_enum_count, EDataFlow.eRender, (uint)ProcessId);//ERole_enum_count，将该设备分配所有角色任务
         }
         private void Expander_Expanded(Expander sender, ExpanderExpandingEventArgs args)
         {
@@ -68,12 +66,12 @@ namespace ScreenSoundSwitch.WinUI.View
             }
 
         }
-        private void  SetProcess()
+        private void SetProcess()
         {
             process = Process.GetProcessById((int)session.GetProcessID);
             screen = Screen.FromHandle(process.Handle);
-            ProcessName.Text=process.ProcessName;
-            SimpleVolumeSlider.Value = session.SimpleAudioVolume.Volume*100;
+            ProcessName.Text = process.ProcessName;
+            SimpleVolumeSlider.Value = session.SimpleAudioVolume.Volume * 100;
             var icon = Icon.ExtractAssociatedIcon(process.MainModule?.FileName);
             if (icon != null)
             {
@@ -99,10 +97,11 @@ namespace ScreenSoundSwitch.WinUI.View
 
         private void SimpleVolumeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            if (sliderLock) {
+            if (sliderLock)
+            {
                 return;
             }
-            session.SimpleAudioVolume.Volume = (float)(e.NewValue/100);
+            session.SimpleAudioVolume.Volume = (float)(e.NewValue / 100);
         }
     }
 }

@@ -1,10 +1,5 @@
 ﻿using NAudio.CoreAudioApi;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ScreenSoundSwitch.WinUI.Models
 {
@@ -13,9 +8,9 @@ namespace ScreenSoundSwitch.WinUI.Models
         private MMDeviceCollection _mMDevices;
         public MMDeviceCollection ShareDate
         {
-            get => _mMDevices; 
-            set 
-            { 
+            get => _mMDevices;
+            set
+            {
                 _mMDevices = value;
                 OnPropertyChanged(nameof(ShareDate));
             }

@@ -2,11 +2,9 @@
 using NAudio.CoreAudioApi;
 using NAudio.CoreAudioApi.Interfaces;
 using ScreenSoundSwitch.WinUI.Audio;
-using ScreenSoundSwitch.WinUI.Audio.inter;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Windows.Media.Audio;
 
 namespace ScreenSoundSwitch
 {

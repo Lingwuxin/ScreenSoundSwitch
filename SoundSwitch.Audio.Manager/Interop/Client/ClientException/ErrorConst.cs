@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SoundSwitch.Audio.Manager.Interop.Client.ClientException
+﻿namespace SoundSwitch.Audio.Manager.Interop.Client.ClientException
 {
     internal class ErrorConst
     {

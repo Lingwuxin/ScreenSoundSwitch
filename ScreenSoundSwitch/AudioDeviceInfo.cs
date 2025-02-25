@@ -15,11 +15,11 @@ namespace ScreenSoundSwitch
             MMDeviceCollection devices = enumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active);
 
             return devices;
-            
+
         }
-        bool GetAudioDeviceAllProcessId(Dictionary<string,MMDevice?> deviceInfoDict,Dictionary<uint,ProcessInfo> processInfoDict)
+        bool GetAudioDeviceAllProcessId(Dictionary<string, MMDevice?> deviceInfoDict, Dictionary<uint, ProcessInfo> processInfoDict)
         {
-            List<int> processIdList=new List<int>();
+            List<int> processIdList = new List<int>();
             foreach (var deviceInfo in deviceInfoDict)
             {
                 if (deviceInfo.Value.AudioSessionManager.Sessions == null)
@@ -52,16 +52,16 @@ namespace ScreenSoundSwitch
                     }
                 }
             }
-            foreach(var processId in processIdList)
+            foreach (var processId in processIdList)
             {
-                if(!processInfoDict.ContainsKey((uint)processId))
+                if (!processInfoDict.ContainsKey((uint)processId))
                 {
                     processInfoDict.Remove((uint)processId);
                 }
             }
             return true;
         }
-        public bool IsUsingAudioDeviceByProcessId(int processId,Dictionary<string,MMDevice?> deviceInfoDict)
+        public bool IsUsingAudioDeviceByProcessId(int processId, Dictionary<string, MMDevice?> deviceInfoDict)
         {
             foreach (var deviceInfo in deviceInfoDict)
             {
@@ -132,19 +132,19 @@ namespace ScreenSoundSwitch
             }
             return -1; // 如果没有进程正在使用音频设备，则返回 -1
         }
-        static bool SetProcessVolume(MMDevice device,uint processId,float volume)
+        static bool SetProcessVolume(MMDevice device, uint processId, float volume)
         {
-            SessionCollection sessions =device.AudioSessionManager.Sessions;
+            SessionCollection sessions = device.AudioSessionManager.Sessions;
             if (sessions != null)
             {
-                for(int i=0; i<sessions.Count; i++)
+                for (int i = 0; i < sessions.Count; i++)
                 {
-                    if(sessions[i].GetProcessID == processId)
+                    if (sessions[i].GetProcessID == processId)
                     {
                         sessions[i].SimpleAudioVolume.Volume = volume;
                         return true;
-                    }                    
-                }               
+                    }
+                }
             }
             return false;
         }

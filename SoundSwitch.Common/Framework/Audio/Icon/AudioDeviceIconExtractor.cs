@@ -12,18 +12,18 @@
 * GNU General Public License for more details.
 ********************************************************************/
 
-using System;
 using Microsoft.Extensions.Caching.Memory;
 using NAudio.CoreAudioApi;
 using Serilog;
 using SoundSwitch.Common.Framework.Icon;
 using SoundSwitch.Common.Properties;
+using System;
 
 namespace SoundSwitch.Common.Framework.Audio.Icon
 {
     public class AudioDeviceIconExtractor
     {
-        private static readonly System.Drawing.Icon DefaultSpeakers   = Resources.defaultSpeakers;
+        private static readonly System.Drawing.Icon DefaultSpeakers = Resources.defaultSpeakers;
         private static readonly System.Drawing.Icon DefaultMicrophone = Resources.defaultMicrophone;
 
         private static readonly IMemoryCache IconCache = new MemoryCache(new MemoryCacheOptions());
@@ -67,8 +67,8 @@ namespace SoundSwitch.Common.Framework.Audio.Icon
                         return System.Drawing.Icon.ExtractAssociatedIcon(path);
                     }
 
-                    var iconInfo  = path.Split(',');
-                    var dllPath   = iconInfo[0];
+                    var iconInfo = path.Split(',');
+                    var dllPath = iconInfo[0];
                     var iconIndex = int.Parse(iconInfo[1]);
                     return IconExtractor.Extract(dllPath, iconIndex, largeIcon);
                 }
@@ -78,8 +78,8 @@ namespace SoundSwitch.Common.Framework.Audio.Icon
                     return dataFlow switch
                     {
                         DataFlow.Capture => DefaultMicrophone,
-                        DataFlow.Render  => DefaultSpeakers,
-                        _                => throw new ArgumentOutOfRangeException()
+                        DataFlow.Render => DefaultSpeakers,
+                        _ => throw new ArgumentOutOfRangeException()
                     };
                 }
             });

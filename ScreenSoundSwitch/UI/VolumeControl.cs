@@ -1,6 +1,5 @@
 ﻿using NAudio.CoreAudioApi;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 namespace ScreenSoundSwitch
 {
@@ -21,7 +20,7 @@ namespace ScreenSoundSwitch
         {
             Invoke(new Action(() =>
             {
-                audioEndpointVolume.MasterVolumeLevelScalar = volumeTrackBar.Value/100f;
+                audioEndpointVolume.MasterVolumeLevelScalar = volumeTrackBar.Value / 100f;
             }));
         }
         private void LeftChannelTrackBar_Scroll(object? sender, EventArgs e)
@@ -45,7 +44,7 @@ namespace ScreenSoundSwitch
                 volumeTrackBar.Value = (int)(data.MasterVolume * 100);//data.MasterVolume * 100要加括号，否则会先将data.MasterVolume转换成整数再运算
                 if (leftChannel != null && rightChannel != null)
                 {
-                    leftTrackBar.Value = (int)(leftChannel.VolumeLevelScalar* 100);
+                    leftTrackBar.Value = (int)(leftChannel.VolumeLevelScalar * 100);
                     rightTrackBar.Value = (int)(rightChannel.VolumeLevelScalar * 100);
                 }
             }));
@@ -89,18 +88,18 @@ namespace ScreenSoundSwitch
                 Debug.WriteLine("设备为空");
                 return;
             }
-            if (this.device!=null&&this.device.ID.Equals(device.ID))
+            if (this.device != null && this.device.ID.Equals(device.ID))
             {
                 Debug.WriteLine("设备已设置");
                 return;
             }
             this.device = device;
-            audioEndpointVolume=device.AudioEndpointVolume;
+            audioEndpointVolume = device.AudioEndpointVolume;
             SetChannels();
             SetDeviceMsg();
             audioEndpointVolume.OnVolumeNotification += OnVolumeChange;
         }
-       
+
         public int getVolumeByBar()
         {
             return volumeTrackBar.Value;

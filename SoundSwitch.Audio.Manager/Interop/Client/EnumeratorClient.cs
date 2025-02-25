@@ -1,9 +1,9 @@
 ﻿#nullable enable
-using System;
-using System.Runtime.InteropServices;
 using NAudio.CoreAudioApi;
 using SoundSwitch.Audio.Manager.Interop.Enum;
 using SoundSwitch.Audio.Manager.Interop.Interface;
+using System;
+using System.Runtime.InteropServices;
 
 namespace SoundSwitch.Audio.Manager.Interop.Client
 {

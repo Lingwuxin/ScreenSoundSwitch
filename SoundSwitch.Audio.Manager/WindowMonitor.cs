@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Serilog;
+using SoundSwitch.Audio.Manager.Interop.Com.Threading;
+using SoundSwitch.Audio.Manager.Interop.Com.User;
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Serilog;
-using SoundSwitch.Audio.Manager.Interop.Com.Threading;
-using SoundSwitch.Audio.Manager.Interop.Com.User;
 using static SoundSwitch.Audio.Manager.Interop.Com.User.User32.NativeMethods;
 namespace SoundSwitch.Audio.Manager
 {
@@ -40,13 +40,13 @@ namespace SoundSwitch.Audio.Manager
 
             public Event(uint processId, string processName, string windowName, string windowClass, User32.NativeMethods.HWND hwnd)
             {
-                ProcessId   = processId;
+                ProcessId = processId;
                 ProcessName = processName;
-                WindowName  = windowName;
+                WindowName = windowName;
                 WindowClass = windowClass;
-                Hwnd        = hwnd;
+                Hwnd = hwnd;
             }
- 
+
             public override string ToString()
             {
                 return $"{nameof(ProcessId)}: {ProcessId}, {nameof(ProcessName)}: {ProcessName}, {nameof(WindowName)}: {WindowName}, {nameof(WindowClass)}: {WindowClass}";
@@ -62,7 +62,7 @@ namespace SoundSwitch.Audio.Manager
         }
 
 
-  
+
         public event EventHandler<Event> ForegroundChanged;
         public event EventHandler<Event> ForegroundWindowMoved;
         public event EventHandler<MouseWheelEventArgs> MouseWheelScrolled;
@@ -71,9 +71,9 @@ namespace SoundSwitch.Audio.Manager
         private readonly User32.NativeMethods.HookProc _mouseProc;
         private IntPtr _keyboardHookID = IntPtr.Zero;
         private IntPtr _mouseHookID = IntPtr.Zero;
-        private CancellationTokenSource _cancellationTokenSource= new CancellationTokenSource();
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         public WindowMonitor()
-        {            
+        {
             _foregroundWindowChanged = (hook, type, hwnd, idObject, child, thread, time) =>
             {
                 // ignore any event not pertaining directly to the window
@@ -100,13 +100,13 @@ namespace SoundSwitch.Audio.Manager
                         return;
                     try
                     {
-                        var process = Process.GetProcessById((int) processId);
+                        var process = Process.GetProcessById((int)processId);
                         var processName = process.MainModule?.FileName ?? "N/A";
                         ForegroundChanged?.Invoke(this, new Event(processId, processName, windowText, windowClass, hwnd));
                     }
                     catch (Exception)
                     {
-                      //Ignored
+                        //Ignored 
                     }
                 }, _cancellationTokenSource.Token);
             };
@@ -148,7 +148,7 @@ namespace SoundSwitch.Audio.Manager
                     }
                 }, _cancellationTokenSource.Token);
             };
-           
+
 
             ComThread.Invoke(() =>
             {
@@ -159,7 +159,7 @@ namespace SoundSwitch.Audio.Manager
                     0,
                     User32.NativeMethods.WINEVENT_OUTOFCONTEXT);
             });
-            
+
             ComThread.Invoke(() =>
             {
                 User32.NativeMethods.SetWinEventHook(User32.NativeMethods.EVENT_SYSTEM_MINIMIZEEND,
@@ -177,7 +177,7 @@ namespace SoundSwitch.Audio.Manager
                     User32.NativeMethods.WINEVENT_OUTOFCONTEXT);
             });
             _mouseProc = HookCallbackMouse;
-            ComThread.Invoke(() => 
+            ComThread.Invoke(() =>
             {
                 _mouseHookID = SetHook(_mouseProc, WH_MOUSE_LL);
             });
@@ -217,7 +217,7 @@ namespace SoundSwitch.Audio.Manager
                             // Ignored
                         }
                     }, _cancellationTokenSource.Token);
-                   
+
                 }
             }
             return CallNextHookEx(_mouseHookID, nCode, wParam, lParam);
@@ -231,8 +231,8 @@ namespace SoundSwitch.Audio.Manager
             return ComThread.Invoke(() =>
             {
                 uint processId = 0;
-                var  wndText   = "";
-                var  wndClass  = "";
+                var wndText = "";
+                var wndClass = "";
                 try
                 {
                     wndText = User32.GetWindowText(hwnd);

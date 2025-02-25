@@ -164,7 +164,7 @@ namespace SoundSwitch.Audio.Manager.Interop.Com.User
             //
             // Window text
             //
-            
+
             internal const uint WM_GETTEXTLENGTH = 0x000E;
             internal const uint WM_GETTEXT = 0x000D;
 
@@ -229,7 +229,7 @@ namespace SoundSwitch.Audio.Manager.Interop.Com.User
         public static string GetWindowText(NativeMethods.HWND window)
         {
             var length = (int)NativeMethods.SendMessage(window, NativeMethods.WM_GETTEXTLENGTH, IntPtr.Zero, null);
-            var sb = new StringBuilder(length+1);
+            var sb = new StringBuilder(length + 1);
             var result = NativeMethods.SendMessage(window, NativeMethods.WM_GETTEXT, sb.Capacity, sb);
             var lastWin32Error = Marshal.GetLastWin32Error();
 

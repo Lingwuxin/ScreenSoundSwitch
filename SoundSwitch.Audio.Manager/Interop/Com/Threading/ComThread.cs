@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Serilog;
 
 namespace SoundSwitch.Audio.Manager.Interop.Com.Threading
 {
@@ -65,7 +65,7 @@ namespace SoundSwitch.Audio.Manager.Interop.Com.Threading
                     Log.Warning(e, "Issue while running func in {class}", nameof(ComThread));
                     return default;
                 }
-               
+
             }, CancellationToken.None, TaskCreationOptions.None, Scheduler);
         }
     }

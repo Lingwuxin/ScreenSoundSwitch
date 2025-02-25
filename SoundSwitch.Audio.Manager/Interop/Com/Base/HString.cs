@@ -31,7 +31,7 @@ namespace SoundSwitch.Audio.Manager.Interop.Com.Base
 
         public static HSTRING Cast(IntPtr h)
         {
-           return new HSTRING(h);
+            return new HSTRING(h);
         }
 
 

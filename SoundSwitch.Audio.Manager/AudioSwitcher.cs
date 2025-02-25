@@ -1,7 +1,4 @@
 ﻿#nullable enable
-using System;
-using System.Diagnostics;
-using System.Linq;
 using NAudio.CoreAudioApi;
 using Serilog;
 using SoundSwitch.Audio.Manager.Interop.Client;
@@ -9,6 +6,9 @@ using SoundSwitch.Audio.Manager.Interop.Com.Threading;
 using SoundSwitch.Audio.Manager.Interop.Com.User;
 using SoundSwitch.Audio.Manager.Interop.Enum;
 using SoundSwitch.Common.Framework.Audio.Device;
+using System;
+using System.Diagnostics;
+using System.Linq;
 
 namespace SoundSwitch.Audio.Manager
 {
@@ -211,15 +211,15 @@ namespace SoundSwitch.Audio.Manager
                 return;
 
             var nextDevice = GetDevice(device.Id);
-            
-            if(nextDevice == null)
+
+            if (nextDevice == null)
                 return;
-            
+
             InteractWithMmDevice(nextDevice, mmDevice =>
             {
                 if (mmDevice is not { State: DeviceState.Active })
                     return nextDevice;
-                
+
                 if (mmDevice.AudioEndpointVolume == null)
                     return nextDevice;
 
@@ -229,7 +229,7 @@ namespace SoundSwitch.Audio.Manager
                     mmDevice.AudioEndpointVolume.Channels[1].VolumeLevelScalar = audioInfo.Volume;
                 }
                 else
-                { 
+                {
                     mmDevice.AudioEndpointVolume.MasterVolumeLevelScalar = audioInfo.Volume;
                 }
                 mmDevice.AudioEndpointVolume.Mute = audioInfo.IsMuted;

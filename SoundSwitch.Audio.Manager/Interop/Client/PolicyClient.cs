@@ -1,9 +1,9 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using SoundSwitch.Audio.Manager.Interop.Client.ClientException;
+﻿using SoundSwitch.Audio.Manager.Interop.Client.ClientException;
 using SoundSwitch.Audio.Manager.Interop.Enum;
 using SoundSwitch.Audio.Manager.Interop.Interface;
 using SoundSwitch.Audio.Manager.Interop.Interface.Policy;
+using System;
+using System.Runtime.InteropServices;
 
 namespace SoundSwitch.Audio.Manager.Interop.Client
 {
@@ -46,7 +46,7 @@ namespace SoundSwitch.Audio.Manager.Interop.Client
                     Marshal.ThrowExceptionForHR(_configVista.SetDefaultEndpoint(devId, eRole));
                 }
             }
-            catch (COMException e) when((e.ErrorCode & ErrorConst.COM_ERROR_MASK) == ErrorConst.COM_ERROR_NOT_FOUND)
+            catch (COMException e) when ((e.ErrorCode & ErrorConst.COM_ERROR_MASK) == ErrorConst.COM_ERROR_NOT_FOUND)
             {
                 throw new DeviceNotFoundException($"Can't set default as {devId} with role {eRole}", e, devId);
             }

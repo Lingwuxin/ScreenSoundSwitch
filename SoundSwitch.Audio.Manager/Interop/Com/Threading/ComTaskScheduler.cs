@@ -31,7 +31,8 @@ namespace SoundSwitch.Audio.Manager.Interop.Com.Threading
 
                 //lightweight pump of the thread
                 Thread.CurrentThread.Join(1);
-            }) {Name = "ComThread", IsBackground = true};
+            })
+            { Name = "ComThread", IsBackground = true };
 
             _thread.SetApartmentState(ApartmentState.STA);
 

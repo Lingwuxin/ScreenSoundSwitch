@@ -11,9 +11,11 @@
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
+    <UseWindowsForms>False</UseWindowsForms>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="View\AudioDeviceControl.xaml" />
+    <None Remove="View\AudioPage.xaml" />
     <None Remove="View\ProcessControl.xaml" />
     <None Remove="View\ProcessPage.xaml" />
     <None Remove="View\SelectDevicePage.xaml" />
@@ -47,6 +49,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ScreenSoundSwitch.WinUI.Audio\ScreenSoundSwitch.WinUI.Audio.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="View\AudioPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="View\ProcessControl.xaml">

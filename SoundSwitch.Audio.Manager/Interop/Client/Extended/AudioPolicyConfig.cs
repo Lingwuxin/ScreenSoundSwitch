@@ -1,9 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.InteropServices;
-using SoundSwitch.Audio.Manager.Interop.Com.Base;
+﻿using SoundSwitch.Audio.Manager.Interop.Com.Base;
 using SoundSwitch.Audio.Manager.Interop.Enum;
 using SoundSwitch.Audio.Manager.Interop.Interface.Policy.Extended;
+using System;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace SoundSwitch.Audio.Manager.Interop.Client.Extended
 {
@@ -84,7 +84,7 @@ namespace SoundSwitch.Audio.Manager.Interop.Client.Extended
             var gchandle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
             try
             {
-                var guid = (Guid) (Marshal.PtrToStructure(gchandle.AddrOfPinnedObject(), typeof(Guid)) ?? throw new Exception($"Unable to convert GUID"));
+                var guid = (Guid)(Marshal.PtrToStructure(gchandle.AddrOfPinnedObject(), typeof(Guid)) ?? throw new Exception($"Unable to convert GUID"));
                 return $"{guid.Data1:x8}-{guid.Data2:x4}-{guid.Data3:x4}-{guid.Data4[0]:x2}{guid.Data4[1]:x2}-{guid.Data4[2]:x2}{guid.Data4[3]:x2}{guid.Data4[4]:x2}{guid.Data4[5]:x2}{guid.Data4[6]:x2}{guid.Data4[7]:x2}";
             }
             finally

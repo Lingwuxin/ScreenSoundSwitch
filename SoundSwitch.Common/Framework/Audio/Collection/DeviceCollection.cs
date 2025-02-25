@@ -1,8 +1,8 @@
-﻿using System;
+﻿using SoundSwitch.Common.Framework.Audio.Device;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using SoundSwitch.Common.Framework.Audio.Device;
 
 namespace SoundSwitch.Common.Framework.Audio.Collection;
 

@@ -9,7 +9,8 @@ namespace ScreenSoundSwitch
         Screen[] allScreens = Screen.AllScreens;
 
         public Process process { get; set; }
-        public int MonitorIndex {
+        public int MonitorIndex
+        {
             get { return GetMonitorIndex(); }
             set { MonitorIndex = value; }
         }
@@ -19,11 +20,11 @@ namespace ScreenSoundSwitch
 
         private int GetMonitorIndex()
         {
-            
+
             int monitorIndex = -1; // 默认为-1表示找不到
-            Screen targetScreen=Screen.FromHandle(process.MainWindowHandle);
-            
-            for(int i = 0; i < allScreens.Length; i++)
+            Screen targetScreen = Screen.FromHandle(process.MainWindowHandle);
+
+            for (int i = 0; i < allScreens.Length; i++)
             {
                 if (allScreens[i].Equals(targetScreen))
                 {
@@ -70,7 +71,7 @@ namespace ScreenSoundSwitch
         // 定义事件
         public event ForegroundProcessChangedEventHandler ForegroundProcessChanged;
         public event HookNeedDisableEventHandler HookNeedDisable;
-        private List<Thread>  threads = new List<Thread>();
+        private List<Thread> threads = new List<Thread>();
         private CancellationTokenSource cts = new CancellationTokenSource();
         // 构造函数
         public ForegroundProcessWatcher()
@@ -109,7 +110,7 @@ namespace ScreenSoundSwitch
             bgThread.Start();
             threads.Add(bgThread);
         }
-        
+
         // 禁用钩子
         public void DisableHook(IntPtr hook)
         {

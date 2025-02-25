@@ -1,27 +1,9 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using NAudio.CoreAudioApi;
-using ScreenSoundSwitch.WinUI.Models;
 using ScreenSoundSwitch.WinUI.View;
 using SoundSwitch.Audio.Manager;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using H.NotifyIcon;
-using Windows.UI.Shell;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
@@ -30,22 +12,25 @@ namespace ScreenSoundSwitch.WinUI
     /// <summary>
     /// An empty window that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainWindow : Window {
+    public sealed partial class MainWindow : Window
+    {
         WindowMonitor mindowMonitor;
         private SelectDevicePage selectDevicePage;
         private VolumePage volumePage;
         private ProcessPage processPage;
+        private AudioPage audioPage;
         ApplicationDataContainer localSettings;
-        private TaskbarManager
         public MainWindow()
         {
             localSettings = ApplicationData.Current.LocalSettings;
             this.InitializeComponent();
             this.Title = "ScreenSoundSwicth";
             ExtendsContentIntoTitleBar = true;
+            this.Closed += OnWindowClosed;
             selectDevicePage = new SelectDevicePage();
             volumePage = new VolumePage();
             processPage = new ProcessPage();
+            audioPage = new AudioPage();
             processPage.UpdateProcessBySeesion();
             mindowMonitor = new WindowMonitor();
             // 默认显示的页面
@@ -59,7 +44,7 @@ namespace ScreenSoundSwitch.WinUI
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                processPage.ForegroundMovedHandle(e.Hwnd,e.ProcessId);
+                processPage.ForegroundMovedHandle(e.Hwnd, e.ProcessId);
             });
         }
         /// <summary>
@@ -71,9 +56,10 @@ namespace ScreenSoundSwitch.WinUI
         {
             DispatcherQueue.TryEnqueue(() =>
             {
+                Debug.WriteLine("Into MindowMonitor_ForegroundChanged");
                 processPage.UpdataForegroundProcess(e.ProcessId);
             });
-            
+
         }
 
         /// <summary>
@@ -99,7 +85,6 @@ namespace ScreenSoundSwitch.WinUI
             }
         }
 
-
         // 根据 Tag 导航到不同页面
         private void NavigateToPage(string pageTag)
         {
@@ -115,7 +100,15 @@ namespace ScreenSoundSwitch.WinUI
                     processPage.UpdateProcessBySeesion();
                     navContentFrame.Content = processPage;
                     break;
+                case "AudioPage":
+                    navContentFrame.Content = audioPage;
+                    break;
             }
+        }
+        private void OnWindowClosed(object sender, WindowEventArgs args)
+        {
+            // 在此处添加窗口关闭时的处理逻辑
+            mindowMonitor.Dispose();
         }
     }
 }
