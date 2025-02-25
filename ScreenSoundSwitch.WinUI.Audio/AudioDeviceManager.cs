@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace ScreenSoundSwitch
 {
-    //或许应该采用单例模式？
+    //单例类型
     public class AudioDeviceManager : IDisposable
     {
         private static AudioDeviceManager _instance;

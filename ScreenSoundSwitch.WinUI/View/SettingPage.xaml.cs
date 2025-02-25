@@ -75,16 +75,6 @@ namespace ScreenSoundSwitch.WinUI.View
         private void LoadSettings()
         {
             var localSettings = ApplicationData.Current.LocalSettings;
-
-            if (localSettings.Values.TryGetValue("IsFeatureEnabled", out object value) && value is bool isEnabled)
-            {
-                FeatureToggleSwitch.IsOn = isEnabled;
-            }
-            else
-            {
-                // 如果没有存储该设置，则设定一个默认值
-                FeatureToggleSwitch.IsOn = false;
-            }
         }
     }
 }

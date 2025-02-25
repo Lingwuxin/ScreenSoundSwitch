@@ -1,8 +1,12 @@
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Input;
 using NAudio.CoreAudioApi;
 using System;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -11,9 +15,12 @@ namespace ScreenSoundSwitch.WinUI.View
 {
     public sealed partial class AudioDeviceControl : UserControl
     {
+        private CancellationTokenSource? _scrollCancellationTokenSource;
+        private bool _isScrolling = false; // 记录是否正在滚动
         MMDevice device;
         bool block = false;
         private AudioEndpointVolume audioEndpointVolume;
+        public StackPanel _ProcessStackPanel;
         public AudioDeviceControl()
         {
             this.InitializeComponent();
@@ -22,7 +29,82 @@ namespace ScreenSoundSwitch.WinUI.View
         {
             this.InitializeComponent();
             this.device = device;
+            this._ProcessStackPanel = ProcessStackPanel;
             UpdateDeviceMsg();
+        }
+        private async void DeviceNameScrollViewer_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            var scrollViewer = sender as ScrollViewer;
+            if (scrollViewer == null || _isScrolling) return;
+
+            _isScrolling = true; // 标记正在滚动
+            _scrollCancellationTokenSource?.Cancel(); // 取消之前的任务
+            _scrollCancellationTokenSource = new CancellationTokenSource();
+            var token = _scrollCancellationTokenSource.Token;
+
+            double scrollWidth = DeviceNameTextBlock.ActualWidth - scrollViewer.ActualWidth;
+            if (scrollWidth <= 0)
+            {
+                _isScrolling = false;
+                return; // 如果文本宽度小于 ScrollViewer，则不滚动
+            }
+
+            try
+            {
+                // 向右滚动
+                for (double i = 0; i <= scrollWidth; i += 1)
+                {
+                    token.ThrowIfCancellationRequested(); // 检查是否被取消
+                    scrollViewer.ChangeView(i, null, null);
+                    await Task.Delay(20, token); // 控制滚动速度
+                }
+
+                // 短暂停留
+                await Task.Delay(500, token);
+                token.ThrowIfCancellationRequested();
+
+                // 向左滚动回去
+                for (double i = scrollWidth; i >= 0; i -= 1)
+                {
+                    token.ThrowIfCancellationRequested();
+                    scrollViewer.ChangeView(i, null, null);
+                    await Task.Delay(20, token);
+                }
+            }
+            catch (TaskCanceledException ex)
+            {
+                Debug.WriteLine($"ScroolCamcell");
+            }
+            catch (OperationCanceledException ex)
+            {
+                Debug.WriteLine($"ScroolCamcell");
+            }
+            finally
+            {
+                _isScrolling = false; // 任务结束，允许下一次触发
+            }
+        }
+
+        private void DeviceNameScrollViewer_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            _scrollCancellationTokenSource?.Cancel(); // 取消当前滚动任务
+            _isScrolling = false;
+            (sender as ScrollViewer)?.ChangeView(0, null, null); // 立即回到初始位置
+        }
+
+        private void Expander_Expanded(Expander sender, ExpanderExpandingEventArgs args)
+        {
+            ProcessStackPanel.Children.Clear();
+            device.AudioSessionManager.RefreshSessions();
+            var sessions = device.AudioSessionManager.Sessions;
+            for (int i = 0; i < sessions.Count; i++)
+            {
+                if (sessions[i].IsSystemSoundsSession)
+                {
+                    continue;
+                }
+                ProcessStackPanel.Children.Add(new ProcessControl(sessions[i]));
+            }
         }
 
         private void RightChannelSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)

@@ -5,6 +5,7 @@ using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using SoundSwitch.Audio.Manager;
 using SoundSwitch.Audio.Manager.Interop.Enum;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -57,15 +58,7 @@ namespace ScreenSoundSwitch.WinUI.View
         {
             audioSwitcher.SwitchProcessTo(mMDevice.ID, ERole.ERole_enum_count, EDataFlow.eRender, (uint)ProcessId);//ERole_enum_count，将该设备分配所有角色任务
         }
-        private void Expander_Expanded(Expander sender, ExpanderExpandingEventArgs args)
-        {
-            for (int n = -1; n < WaveOut.DeviceCount; n++)
-            {
-                var caps = WaveOut.GetCapabilities(n);
-                Debug.WriteLine($"{n}: {caps.ProductName}");
-            }
 
-        }
         private void SetProcess()
         {
             process = Process.GetProcessById((int)session.GetProcessID);

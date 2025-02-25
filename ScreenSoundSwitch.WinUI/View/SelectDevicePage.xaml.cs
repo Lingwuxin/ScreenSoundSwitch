@@ -47,15 +47,19 @@ namespace ScreenSoundSwitch.WinUI.View
 
         public void UpdateDeviceSelection()
         {
-            //var devices = MMDeviceViewModel.ShareDate;
-            var devices = audioDeviceManager.Devices;
-            if (devices.Count == 0)
+            //var devices = ;
+            if(MMDeviceViewModel.ShareDate is null)
+            {
+                MMDeviceViewModel.ShareDate = audioDeviceManager.Devices;
+            }
+            var mMdevices = audioDeviceManager.Devices;
+            if (mMdevices.Count == 0)
             {
                 DeviceListView.Items.Add("Audio device is none!");
                 return;
             }
             DeviceListView.Items.Clear();
-            foreach (var device in devices)
+            foreach (var device in mMdevices)
             {
                 DeviceListView.Items.Add(device.FriendlyName);
             }

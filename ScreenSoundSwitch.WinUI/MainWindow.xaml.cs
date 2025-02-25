@@ -14,11 +14,12 @@ namespace ScreenSoundSwitch.WinUI
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        WindowMonitor mindowMonitor;
-        private SelectDevicePage selectDevicePage;
-        private VolumePage volumePage;
-        private ProcessPage processPage;
-        private AudioPage audioPage;
+        
+        //private SelectDevicePage selectDevicePage;
+        //private VolumePage volumePage;
+        //private ProcessPage processPage;
+        //private AudioPage audioPage;
+        //private SettingPage settingPage;
         ApplicationDataContainer localSettings;
         public MainWindow()
         {
@@ -26,56 +27,19 @@ namespace ScreenSoundSwitch.WinUI
             this.InitializeComponent();
             this.Title = "ScreenSoundSwicth";
             ExtendsContentIntoTitleBar = true;
-            this.Closed += OnWindowClosed;
-            selectDevicePage = new SelectDevicePage();
-            volumePage = new VolumePage();
-            processPage = new ProcessPage();
-            audioPage = new AudioPage();
-            processPage.UpdateProcessBySeesion();
-            mindowMonitor = new WindowMonitor();
+            //selectDevicePage = new SelectDevicePage();
+            //volumePage = new VolumePage();
+            //processPage = new ProcessPage();
+            //audioPage = new AudioPage();
+            //settingPage = new SettingPage();
+
+           
             // 默认显示的页面
-            navContentFrame.Content = selectDevicePage;
-            mindowMonitor.ForegroundChanged += MindowMonitor_ForegroundChanged;
-            mindowMonitor.MouseWheelScrolled += MindowMonitor_KeyIsDown;
-            mindowMonitor.ForegroundWindowMoved += MindowMonitor_ForegroundMoved;
+            navContentFrame.Navigate(typeof(SelectDevicePage));
+          
         }
 
-        private void MindowMonitor_ForegroundMoved(object sender, WindowMonitor.Event e)
-        {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                processPage.ForegroundMovedHandle(e.Hwnd, e.ProcessId);
-            });
-        }
-        /// <summary>
-        /// 监听聚焦窗口是否发生变化
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MindowMonitor_ForegroundChanged(object sender, WindowMonitor.Event e)
-        {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                Debug.WriteLine("Into MindowMonitor_ForegroundChanged");
-                processPage.UpdataForegroundProcess(e.ProcessId);
-            });
-
-        }
-
-        /// <summary>
-        /// 监听Ctrl+Shift+鼠标滚轮，调整当前聚焦窗口的音量
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MindowMonitor_KeyIsDown(object sender, WindowMonitor.MouseWheelEventArgs e)
-        {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                Debug.WriteLine(e.Delta);
-                processPage.UpdataForegroundVolume(e.Delta);
-            });
-        }
-
+      
         private void NavigationSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             if (args.SelectedItem is NavigationViewItem selectedItem)
@@ -91,24 +55,18 @@ namespace ScreenSoundSwitch.WinUI
             switch (pageTag)
             {
                 case "SelectDevicePage":
-                    navContentFrame.Content = selectDevicePage;
+                    navContentFrame.Navigate(typeof(SelectDevicePage));
                     break;
                 case "VolumePage":
-                    navContentFrame.Content = volumePage;
-                    break;
-                case "ProcessPage":
-                    processPage.UpdateProcessBySeesion();
-                    navContentFrame.Content = processPage;
+                    navContentFrame.Navigate(typeof(VolumePage));
                     break;
                 case "AudioPage":
-                    navContentFrame.Content = audioPage;
+                    navContentFrame.Navigate(typeof(AudioPage));
                     break;
+                case "SettingPage":
+                    navContentFrame.Navigate(typeof(SettingPage));
+                    break; 
             }
-        }
-        private void OnWindowClosed(object sender, WindowEventArgs args)
-        {
-            // 在此处添加窗口关闭时的处理逻辑
-            mindowMonitor.Dispose();
         }
     }
 }

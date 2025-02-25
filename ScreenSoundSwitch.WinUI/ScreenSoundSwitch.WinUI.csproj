@@ -17,7 +17,6 @@
     <None Remove="View\AudioDeviceControl.xaml" />
     <None Remove="View\AudioPage.xaml" />
     <None Remove="View\ProcessControl.xaml" />
-    <None Remove="View\ProcessPage.xaml" />
     <None Remove="View\SelectDevicePage.xaml" />
     <None Remove="View\VolumePage.xaml" />
   </ItemGroup>
@@ -66,11 +65,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="View\ProcessPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
     <Page Update="View\VolumePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -79,6 +73,9 @@
     <Page Update="page\SelectPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="View\Control\" />
   </ItemGroup>
 
   <!--
