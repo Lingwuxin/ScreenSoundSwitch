@@ -15,7 +15,7 @@ namespace ScreenSoundSwitch.WinUI.View
 {
     public sealed partial class AudioDeviceControl : UserControl
     {
-        private CancellationTokenSource? _scrollCancellationTokenSource;
+        private CancellationTokenSource _scrollCancellationTokenSource;
         private bool _isScrolling = false; // 记录是否正在滚动
         MMDevice device;
         bool block = false;
@@ -71,11 +71,11 @@ namespace ScreenSoundSwitch.WinUI.View
                     await Task.Delay(20, token);
                 }
             }
-            catch (TaskCanceledException ex)
+            catch (TaskCanceledException)
             {
                 Debug.WriteLine($"ScroolCamcell");
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
                 Debug.WriteLine($"ScroolCamcell");
             }
@@ -123,12 +123,13 @@ namespace ScreenSoundSwitch.WinUI.View
                         if (device.AudioEndpointVolume.Channels.Count == 2)
                         {
                             device.AudioEndpointVolume.Channels[1].VolumeLevelScalar = (float)(e.NewValue / 100);
+                            RightChannelVolumeText.Text = ((int)e.NewValue).ToString();
                         }
                     }
                 }
                 catch
                 {
-                    throw new NotImplementedException("Error: RightChannelSlider_ValueChanged");
+                    throw new Exception("Error: RightChannelSlider_ValueChanged");
                 }
             });
 
@@ -149,13 +150,14 @@ namespace ScreenSoundSwitch.WinUI.View
                         if (device.AudioEndpointVolume.Channels.Count == 2)
                         {
                             device.AudioEndpointVolume.Channels[0].VolumeLevelScalar = (float)(e.NewValue / 100);
+                            LeftChannelVolumeText.Text = ((int)e.NewValue).ToString();
                         }
                     }
 
                 }
                 catch
                 {
-                    throw new NotImplementedException("Error: LeftChannelSlider_ValueChanged");
+                    throw new Exception("Error: LeftChannelSlider_ValueChanged");
                 }
             });
 

@@ -14,11 +14,12 @@
     <UseWindowsForms>False</UseWindowsForms>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="View\AudioDeviceControl.xaml" />
-    <None Remove="View\AudioPage.xaml" />
-    <None Remove="View\ProcessControl.xaml" />
-    <None Remove="View\SelectDevicePage.xaml" />
-    <None Remove="View\VolumePage.xaml" />
+    <None Remove="Views\AudioDeviceControl.xaml" />
+    <None Remove="Views\AudioPage.xaml" />
+    <None Remove="Views\Control\ScreenControl.xaml" />
+    <None Remove="Views\ProcessControl.xaml" />
+    <None Remove="Views\SelectDevicePage.xaml" />
+    <None Remove="Views\VolumePage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="H.NotifyIcon" Version="2.2.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.240923002" />
@@ -75,7 +77,12 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="View\Control\" />
+    <Folder Include="Bases\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\Control\ScreenControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!--

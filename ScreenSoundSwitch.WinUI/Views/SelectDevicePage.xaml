@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="ScreenSoundSwitch.WinUI.View.SelectDevicePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ScreenSoundSwitch.WinUI.ViewModels"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local1="using:ScreenSoundSwitch.WinUI.Models"
+    mc:Ignorable="d"
+    NavigationCacheMode="Enabled"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    >
+    <Page.DataContext>
+        <local:ScreenViewModel />
+    </Page.DataContext>
+
+
+    <Grid>
+        <!-- 元素展示区域 -->
+        <ItemsControl ItemsSource="{Binding Elements}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas Background="LightGray" 
+                            Width="650" Height="300"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+
+                    <Setter Property="Canvas.Left" 
+                            Value="{Binding Path=(Canvas.Left)}"/>
+                    <Setter Property="Canvas.Top" 
+                            Value="{Binding Path=(Canvas.Top) }"/>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+        </ItemsControl>
+
+    
+        <StackPanel Orientation="Horizontal"
+                   VerticalAlignment="Bottom"
+                   HorizontalAlignment="Center"
+                   Margin="10" Spacing="10">
+            <Button Content="添加矩形" 
+                    Command="{Binding AddElementCommand}"
+                    Padding="15 5"/>
+            
+            <Button Content="移除最后项" 
+                    Command="{Binding RemoveLastElementCommand}"
+                    Padding="15 5"/>
+        </StackPanel>
+
+
+    </Grid>
+
+</Page>

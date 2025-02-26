@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="ScreenSoundSwitch.WinUI.View.AudioDeviceControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ScreenSoundSwitch.WinUI.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Expander MinWidth="450" Margin="5" Expanding="Expander_Expanded">
+        <Expander.Header>
+            <StackPanel Orientation="Vertical" Margin="5,0,0,0" MinWidth="50">
+                <ScrollViewer x:Name="DeviceNameScrollViewer"
+              HorizontalScrollBarVisibility="Hidden"
+              VerticalScrollBarVisibility="Hidden"
+              Width="200"
+              Height="30"
+              PointerEntered="DeviceNameScrollViewer_PointerEntered"
+              PointerExited="DeviceNameScrollViewer_PointerExited">
+                    <TextBlock x:Name="DeviceNameTextBlock"
+               FontSize="16"
+               FontWeight="Bold"
+               Text="This is a very long device name that needs scrolling..."
+               TextWrapping="NoWrap" />
+                </ScrollViewer>
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon Glyph="&#xE767;" />
+                    <Slider 
+                        x:Name="MainVolumeSlider" 
+                        ValueChanged="MainVolumeSlider_ValueChanged"
+                        Orientation="Horizontal"
+                        Minimum="0" 
+                        Maximum="100" 
+                        Width="250"
+                        Value="50"
+                        Margin="10,0,0,0"
+                        />
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Padding="15,5,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="LeftChannelVolumeText" Text="100"/>
+                        <Slider 
+                            x:Name="LeftChannelSlider" 
+                            ValueChanged="LeftChannelSlider_ValueChanged"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            Minimum="0" 
+                            Maximum="100" 
+                            Value="50" 
+                            Width="150"
+                            Margin="10,0,0,0"
+                            />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="RightChannelVolumeText" Text="100"/>
+                        <Slider 
+                            x:Name="RightChannelSlider" 
+                            ValueChanged="RightChannelSlider_ValueChanged"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            Minimum="0" 
+                            Maximum="100" 
+                            Value="50" 
+                            Width="150"
+                            Margin="10,0,0,0"
+                            />
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Expander.Header>
+
+        <Expander.Content>
+            <StackPanel x:Name="ProcessStackPanel">
+                
+            </StackPanel>
+ 
+        </Expander.Content>
+    </Expander>
+    
+</UserControl>

@@ -63,7 +63,7 @@ namespace ScreenSoundSwitch.WinUI
                 case "AudioPage":
                     navContentFrame.Navigate(typeof(AudioPage));
                     break;
-                case "SettingPage":
+                case "Settings":
                     navContentFrame.Navigate(typeof(SettingPage));
                     break; 
             }
