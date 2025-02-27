@@ -77,9 +77,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Bases\" />
-  </ItemGroup>
-  <ItemGroup>
     <Page Update="Views\Control\ScreenControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -92,5 +89,6 @@
   -->
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 </Project>

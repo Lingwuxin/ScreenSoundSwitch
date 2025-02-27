@@ -12,6 +12,7 @@ using Windows.UI;
 using ScreenSoundSwitch.WinUI.Views.Control;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using System.Xml.Linq;
 
 
 namespace ScreenSoundSwitch.WinUI.ViewModels
@@ -19,12 +20,32 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
     /// <summary>
     /// 屏幕视图模型
     /// </summary>
-    partial class ScreenViewModel : ObservableObject
+    public partial class ScreenViewModel : ObservableObject
     {
         [ObservableProperty]
         private ObservableCollection<ScreenControl> elements = new();
+        [ObservableProperty]
+        public partial string selectDeviceTextBlockText { get; set; } ="请选择屏幕";
 
-
+        public ScreenViewModel()
+        {
+            InitializeElements();
+            Elements.CollectionChanged += Elements_CollectionChanged;
+        }
+        private void Elements_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+            {
+                // 在这里添加你想要执行的代码
+                foreach (var item in e.NewItems)
+                {
+                    
+                    ScreenControl element = item as ScreenControl;
+                    Debug.WriteLine(element.DeviceNameText);
+                    // 处理新添加的元素
+                }
+            }
+        }
         /// <summary>
         /// 实例化所有屏幕控件
         /// </summary>
@@ -39,31 +60,15 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
             }
             foreach (var screen in Screen.AllScreens)
             {
-                var rect = new ScreenControl(screen);
-                Debug.WriteLine(screen.Bounds);
+                var rect = new ScreenControl(screen, this);
                 Canvas.SetLeft(rect,screen.Bounds.X/10);
                 Canvas.SetTop(rect, screen.Bounds.Y/10);
                 Elements.Add(rect);
             }
         }
-
-        [RelayCommand]
-        private void AddElement()
+        public void SelectScreen(string name)
         {
-            InitializeElements();
-            //var rect = new ScreenControl(Screen.PrimaryScreen);
-            //Debug.WriteLine(Screen.PrimaryScreen.Bounds);
-            //Canvas.SetLeft(rect, 50 * Elements.Count);
-            //Elements.Add(rect);
-        }
-
-        [RelayCommand]
-        private void RemoveLastElement()
-        {
-            if (Elements.Count > 0)
-            {
-                Elements.RemoveAt(Elements.Count - 1);
-            }
+            selectDeviceTextBlockText = name;
         }
 
     }

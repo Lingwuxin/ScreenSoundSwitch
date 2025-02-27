@@ -17,7 +17,7 @@
 
     <Grid>
         <!-- 元素展示区域 -->
-        <ItemsControl ItemsSource="{Binding Elements}">
+        <ItemsControl x:Name="ScreenItemsControl" ItemsSource="{Binding Elements}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas Background="LightGray" 
@@ -40,15 +40,18 @@
                    VerticalAlignment="Bottom"
                    HorizontalAlignment="Center"
                    Margin="10" Spacing="10">
-            <Button Content="添加矩形" 
-                    Command="{Binding AddElementCommand}"
-                    Padding="15 5"/>
-            
-            <Button Content="移除最后项" 
-                    Command="{Binding RemoveLastElementCommand}"
-                    Padding="15 5"/>
+                   <TextBlock  Text="{Binding selectDeviceTextBlockText}" FontSize="24" />
+                    
         </StackPanel>
-
+        <StackPanel Orientation="Vertical">
+            <Expander Header="选择音频设备">
+                <Expander.Content>
+                    <ListView >
+                        <!--音频设备列表-->
+                    </ListView>
+                </Expander.Content>
+            </Expander>
+        </StackPanel>
 
     </Grid>
 

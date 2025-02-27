@@ -6,6 +6,9 @@
     xmlns:local="using:ScreenSoundSwitch.WinUI.Views.Control"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    PointerEntered="ScreenControl_PointerEntered"
+    PointerExited="ScreenControl_PointerExited"
+    PointerPressed="ScreenControl_PointerPressed"
     mc:Ignorable="d">
     <Grid>
         <Rectangle x:Name="ScreenRect" Fill="{ThemeResource SystemAccentColor}"/>

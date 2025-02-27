@@ -6,6 +6,7 @@ using ScreenSoundSwitch.WinUI.Data;
 using ScreenSoundSwitch.WinUI.Models;
 using ScreenSoundSwitch.WinUI.ViewModels;
 using System;
+using System.CodeDom;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -32,6 +33,7 @@ namespace ScreenSoundSwitch.WinUI.View
             this.InitializeComponent();
             screenToAudioDevice = ScreenToAudioDevice.Instance;
             audioDeviceManager = AudioDeviceManager.Instance;
+            Canvas canvas = ScreenItemsControl.ItemsPanelRoot as Canvas;
             //UpdateScreenSelection();
             //UpdateDeviceSelection();
         }
