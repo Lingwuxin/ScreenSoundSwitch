@@ -7,76 +7,88 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    <Expander MinWidth="450" Margin="5" Expanding="Expander_Expanded">
-        <Expander.Header>
-            <StackPanel Orientation="Vertical" Margin="5,0,0,0" MinWidth="50">
-                <ScrollViewer x:Name="DeviceNameScrollViewer"
+    <StackPanel>
+        <StackPanel Orientation="Vertical" Margin="5,0,0,0" MinWidth="450">
+        <ScrollViewer x:Name="DeviceNameScrollViewer"
               HorizontalScrollBarVisibility="Hidden"
               VerticalScrollBarVisibility="Hidden"
               Width="200"
               Height="30"
               PointerEntered="DeviceNameScrollViewer_PointerEntered"
               PointerExited="DeviceNameScrollViewer_PointerExited">
-                    <TextBlock x:Name="DeviceNameTextBlock"
-               FontSize="16"
-               FontWeight="Bold"
-               Text="This is a very long device name that needs scrolling..."
-               TextWrapping="NoWrap" />
-                </ScrollViewer>
-                <StackPanel Orientation="Horizontal">
-                    <FontIcon Glyph="&#xE767;" />
-                    <Slider 
-                        x:Name="MainVolumeSlider" 
-                        ValueChanged="MainVolumeSlider_ValueChanged"
-                        Orientation="Horizontal"
-                        Minimum="0" 
-                        Maximum="100" 
-                        Width="250"
-                        Value="50"
-                        Margin="10,0,0,0"
-                        />
-                </StackPanel>
+            <TextBlock x:Name="DeviceNameTextBlock"
+                   FontSize="16"
+                   FontWeight="Bold"
+                   Text="This is a very long device name that needs scrolling..."
+                   TextWrapping="NoWrap" />
+        </ScrollViewer>
+            <Expander HorizontalContentAlignment="Right">
+                <Expander.Header>
+                    <StackPanel Orientation="Horizontal" Width="600">
+                        <TextBlock Text="Volume"/>
 
-                <StackPanel Orientation="Vertical" Padding="15,5,0,0">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock x:Name="LeftChannelVolumeText" Text="100"/>
+                        <FontIcon Glyph="&#xE767;" 
+                            Margin="0,0,0,0"/>
+
                         <Slider 
-                            x:Name="LeftChannelSlider" 
-                            ValueChanged="LeftChannelSlider_ValueChanged"
+                            x:Name="MainVolumeSlider" 
+                            ValueChanged="MainVolumeSlider_ValueChanged"
                             Orientation="Horizontal"
-                            HorizontalAlignment="Left"
                             Minimum="0" 
                             Maximum="100" 
-                            Value="50" 
-                            Width="150"
-                            Margin="10,0,0,0"
-                            />
+                            Width="250"
+                            Value="50"
+                            Margin="10,0,0,0"/>
                     </StackPanel>
+                </Expander.Header>
+                <Expander.Content>
+                    <StackPanel Orientation="Vertical" Padding="15,5,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Name="LeftChannelVolumeText" Text="100"/>
+                            <Slider 
+                                x:Name="LeftChannelSlider" 
+                                ValueChanged="LeftChannelSlider_ValueChanged"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Left"
+                                Minimum="0" 
+                                Maximum="100" 
+                                Value="50" 
+                                Width="150"
+                                Margin="10,0,0,0"
+                                />
+                        </StackPanel>
 
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock x:Name="RightChannelVolumeText" Text="100"/>
-                        <Slider 
-                            x:Name="RightChannelSlider" 
-                            ValueChanged="RightChannelSlider_ValueChanged"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Left"
-                            Minimum="0" 
-                            Maximum="100" 
-                            Value="50" 
-                            Width="150"
-                            Margin="10,0,0,0"
-                            />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Name="RightChannelVolumeText" Text="100"/>
+                            <Slider 
+                                x:Name="RightChannelSlider" 
+                                ValueChanged="RightChannelSlider_ValueChanged"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Left"
+                                Minimum="0" 
+                                Maximum="100" 
+                                Value="50" 
+                                Width="150"
+                                Margin="10,0,0,0"
+                                />
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
-            </StackPanel>
-        </Expander.Header>
+                </Expander.Content>
+            </Expander>
+        
 
+        
+    </StackPanel>
+    <Expander MinWidth="450" Margin="5" Expanding="Expander_Expanded" HorizontalContentAlignment="Left">
+            <Expander.Header>
+                <TextBlock Text="正在使用播放设备的进程"></TextBlock>
+            </Expander.Header>
         <Expander.Content>
             <StackPanel x:Name="ProcessStackPanel">
-                
+
             </StackPanel>
- 
+
         </Expander.Content>
     </Expander>
-    
+    </StackPanel>
 </UserControl>

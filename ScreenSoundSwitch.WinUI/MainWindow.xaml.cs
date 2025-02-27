@@ -26,6 +26,7 @@ namespace ScreenSoundSwitch.WinUI
             localSettings = ApplicationData.Current.LocalSettings;
             this.InitializeComponent();
             this.Title = "ScreenSoundSwicth";
+            this.AppWindow.Resize(new Windows.Graphics.SizeInt32(1200, 750));
             ExtendsContentIntoTitleBar = true;
             //selectDevicePage = new SelectDevicePage();
             //volumePage = new VolumePage();

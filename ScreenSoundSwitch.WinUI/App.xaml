@@ -3,7 +3,8 @@
     x:Class="ScreenSoundSwitch.WinUI.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:ScreenSoundSwitch.WinUI">
+    xmlns:local="using:ScreenSoundSwitch.WinUI"
+    >
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

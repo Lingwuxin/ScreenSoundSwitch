@@ -11,10 +11,15 @@
     PointerPressed="ScreenControl_PointerPressed"
     mc:Ignorable="d">
     <Grid>
-        <Rectangle x:Name="ScreenRect" Fill="{ThemeResource SystemAccentColor}"/>
+        <Rectangle 
+            x:Name="ScreenRect" 
+            Fill="{ThemeResource SystemAccentColor}"
+            RadiusX="10" 
+            RadiusY="10"/>
         <TextBlock x:Name="DeviceName" 
                FontSize="24" 
-               HorizontalAlignment="Center" 
+               HorizontalAlignment="Center"
+               Foreground="{ThemeResource SystemColorHighlightTextColor}"
                VerticalAlignment="Center"/>
     </Grid>
 

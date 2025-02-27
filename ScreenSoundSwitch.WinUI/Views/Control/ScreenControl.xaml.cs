@@ -15,33 +15,67 @@ namespace ScreenSoundSwitch.WinUI.Views.Control
 
     public sealed partial class ScreenControl : UserControl
     {
-        public bool isSelected { get; set; }=false;
+        //当isSelected被设置为true时，将该控件高亮，并通知ViewModel层选中了某个屏幕
+        //当isSelected被设置为false时，将该控件恢复原状
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                if (_isSelected != value)
+                {
+                    _isSelected = value;
+                    if (_isSelected)
+                    {
+                        // 高亮显示控件
+                        HighlightControl();
+                        // 通知ViewModel选中了某个屏幕
+                        ViewModel.SelectScreen(screen);
+                    }
+                    else
+                    {
+                        // 恢复控件原状
+                        ResetControl();
+                    }
+                }
+            }
+        }
+        private bool _isSelected = false;
         public string DeviceNameText { get; set; }
         private ScreenViewModel ViewModel { get; set; }
-        public ScreenControl(Screen screen,ScreenViewModel viewModel)
+        public Screen screen;
+        public ScreenControl(Screen screen,ScreenViewModel viewModel,double scale)
         {
             this.InitializeComponent();
-            ViewModel=viewModel;
+            this.screen=screen;
+            ViewModel =viewModel;
             DeviceNameText = screen.DeviceName;
             DeviceName.Text=screen.DeviceName;
-            ScreenRect.Width = screen.Bounds.Width/10;
-            ScreenRect.Height = screen.Bounds.Height/10;
+            ScreenRect.Width = screen.Bounds.Width* scale;
+            ScreenRect.Height = screen.Bounds.Height* scale;
         }
-        private void ScreenControl_PointerEntered(object sender, PointerRoutedEventArgs e)
+        private void HighlightControl()
         {
-            // 使用系统预设的高亮色
-            Color heighLightColor= ColorUtils.GetHighlightColor((Color)Application.Current.Resources["SystemAccentColor"]);
+            Color heighLightColor = (Color)Application.Current.Resources["SystemAccentColorLight1"];
             ScreenRect.Fill = new SolidColorBrush(heighLightColor);
         }
-        private void ScreenControl_PointerExited(object sender, PointerRoutedEventArgs e)
+        private void ResetControl()
         {
             ScreenRect.Fill = new SolidColorBrush((Color)Application.Current.Resources["SystemAccentColor"]);
         }
+        private void ScreenControl_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {      
+            if (!IsSelected)
+            ScreenRect.Fill = new SolidColorBrush((Color)Application.Current.Resources["SystemAccentColorDark1"]);
+        }
+        private void ScreenControl_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            if (!IsSelected)
+             ResetControl();            
+        }
         private void ScreenControl_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            isSelected = true;
-            
-            ViewModel.SelectScreen(DeviceNameText);
+            IsSelected = true;
             //通知ViewModel层选中了某个屏幕
         }
     } 
