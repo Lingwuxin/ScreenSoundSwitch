@@ -5,7 +5,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ScreenSoundSwitch.WinUI.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local1="using:ScreenSoundSwitch.WinUI.Models"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:local1="using:ScreenSoundSwitch.WinUI.Models" 
+    xmlns:control="using:ScreenSoundSwitch.WinUI.Controls"
     mc:Ignorable="d"
     NavigationCacheMode="Enabled"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
@@ -34,31 +36,36 @@
                 </Style>
             </ItemsControl.ItemContainerStyle>
         </ItemsControl>
+        <control:ContentControl Title="Select Screen And Audio Device">
+             <control:ContentControl.Icon>
+                <FontIcon Glyph="&#xE7F3;" />
+             </control:ContentControl.Icon>
+            <control:ContentControl.RightContent>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding SelectDeviceTextBlockText}" />
+                    <TextBlock Text="{Binding AudioDeviceExpanderHeader}" Margin="5,0,0,0"/>
+                </StackPanel>
+            </control:ContentControl.RightContent>
+        </control:ContentControl>
 
-    
-        <StackPanel Orientation="Horizontal"
-                   VerticalAlignment="Bottom"
-                   HorizontalAlignment="Center"
-                   Margin="10" Spacing="10">
-                   <TextBlock  Text="{Binding selectDeviceTextBlockText}" FontSize="24" />
-                    
-        </StackPanel>
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-            <Expander Header="选择音频设备" HorizontalContentAlignment="Left" Width="650">
-                <Expander.Content  >
-                    <ListView ItemsSource ="{Binding AudioDevices}">
-                        <!--音频设备列表-->
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" >
-                                    <TextBlock Text="{Binding FriendlyName}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </Expander.Content>
-            </Expander>
-        </StackPanel>
+        <control:ContentControl 
+            Title="Select Audio Device">
+            <control:ContentControl.Icon>
+                <FontIcon Glyph="&#xE767;" />
+            </control:ContentControl.Icon>
+            <control:ContentControl.RightContent>
+                <ComboBox ItemsSource ="{Binding AudioDevices}" SelectionChanged="ListView_SelectionChanged" Width="300" >
+                    <!--音频设备列表-->
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" >
+                                <TextBlock Text="{Binding FriendlyName}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+             </control:ContentControl.RightContent>
+        </control:ContentControl>
 
     </StackPanel>
 

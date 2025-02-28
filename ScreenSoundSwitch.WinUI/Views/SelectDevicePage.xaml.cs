@@ -27,18 +27,23 @@ namespace ScreenSoundSwitch.WinUI.View
     {
         private ScreenToAudioDevice screenToAudioDevice;
         private AudioDeviceManager audioDeviceManager;
+       ScreenViewModel screenViewModel;
         public SelectDevicePage()
         {
             
             this.InitializeComponent();
             screenToAudioDevice = ScreenToAudioDevice.Instance;
             audioDeviceManager = AudioDeviceManager.Instance;
-            Canvas canvas = ScreenItemsControl.ItemsPanelRoot as Canvas;
+            screenViewModel=this.DataContext as ScreenViewModel;
+            //Canvas canvas = ScreenItemsControl.ItemsPanelRoot as Canvas;
             //UpdateScreenSelection();
             //UpdateDeviceSelection();
         }
 
-
+        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            screenViewModel.AudioDeviceSelectionChanged(sender);
+        }
     }
 
 }
