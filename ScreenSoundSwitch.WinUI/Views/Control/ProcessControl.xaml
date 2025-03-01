@@ -12,11 +12,13 @@
     <UserControl.DataContext>
         <local1:ProcessControlViewModel />
     </UserControl.DataContext>
-        <control:ContentControl Title="{Binding ProcessModel.ProcessName}">
+        <control:ContentControl>
             <control:ContentControl.Icon>
                 <Image Source="{Binding ProcessModel.Icon}" />
             </control:ContentControl.Icon>
-
+        <control:ContentControl.LeftContent>
+            <TextBlock Text="{Binding ProcessModel.ProcessName}"/>
+        </control:ContentControl.LeftContent>
         <control:ContentControl.RightContent>
             <Slider
                 x:Name="SimpleVolumeSlider" 

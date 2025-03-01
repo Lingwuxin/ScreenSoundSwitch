@@ -20,17 +20,7 @@ namespace ScreenSoundSwitch.WinUI.Controls
         {
             this.DefaultStyleKey = typeof(ContentControl);
         }
-        public static readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register(
-                "Title",
-                typeof(string),
-                typeof(ContentControl),
-                new PropertyMetadata("默认标题"));
-        public string Title
-        {
-            get => (string)GetValue(TitleProperty);
-            set => SetValue(TitleProperty, value);
-        }
+
 
         // 图标属性
         public static readonly DependencyProperty IconProperty =
@@ -46,7 +36,21 @@ namespace ScreenSoundSwitch.WinUI.Controls
             set => SetValue(IconProperty, value);
         }
 
+        // 左侧内容属性
+        public static readonly DependencyProperty LeftContentProperty =
+            DependencyProperty.Register(
+                "LeftContent",
+                typeof(object),
+                typeof(ContentControl),
+                new PropertyMetadata(null));
 
+        public object LeftContent
+        {
+            get => GetValue(LeftContentProperty);
+            set => SetValue(LeftContentProperty, value);
+        }
+
+        // 右侧内容属性
         public static readonly DependencyProperty RightContentProperty =
             DependencyProperty.Register(
                 "RightContent",

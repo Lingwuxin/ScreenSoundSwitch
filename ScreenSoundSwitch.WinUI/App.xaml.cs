@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using ScreenSoundSwitch.WinUI.Models;
+using System;
 using System.Runtime.InteropServices;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -28,8 +29,17 @@ namespace ScreenSoundSwitch.WinUI
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            m_window = new MainWindow();
-            m_window.Activate();
+            try
+            {
+                m_window = new MainWindow();
+                m_window.Activate();
+            }
+            catch (Exception ex)
+            {
+                // 处理异常，例如记录日志或显示消息
+                Console.WriteLine($"Error activating window: {ex.Message}");
+            }
+        
         }
 
         public static Window m_window;

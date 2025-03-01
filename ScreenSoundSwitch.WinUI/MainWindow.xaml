@@ -16,8 +16,7 @@
     <NavigationView x:Name="nav"
                     SelectionChanged="{x:Bind NavigationSelectionChanged}"
                     PaneTitle="ScreenSoundSwitch"
-                    IsBackButtonVisible="Collapsed"
-                    
+                    IsBackButtonVisible="Collapsed"                    
                     >
         <NavigationView.MenuItems >
             <NavigationViewItem FontSize="20" Icon="Edit" Content="Select Device" Tag="SelectDevicePage" />

@@ -15,33 +15,30 @@
                         BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         >
-                    <Grid
-                        
-                        Height="48"
+                    <Grid Height="55">
 
-                        >
-
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
 
                         <!-- Icon -->
-                        <ContentPresenter Grid.Column="0"
-                                      Content="{TemplateBinding Icon}"
+                            <ContentPresenter Grid.Column="0"
+                                Content="{TemplateBinding Icon}"
+                                Margin="12,0"
+                                Padding="0,10,0,10"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Right"/>
+
+                            <ContentPresenter Grid.Column="1"
+                                      Content="{TemplateBinding LeftContent}"
                                       Margin="12,0"
                                       VerticalAlignment="Center"
-                                      HorizontalAlignment="Right"/>
+                                      HorizontalAlignment="Left"/>
 
-                        <!-- Title -->
-                        <TextBlock Grid.Column="1"
-                               Text="{TemplateBinding Title}"
-                               VerticalAlignment="Center"
-                               FontSize="14"
-                               Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
 
-                        <!-- Right Content -->
+                            <!-- Right Content -->
                         <ContentPresenter Grid.Column="2"
                                       Content="{TemplateBinding RightContent}"
                                       Margin="12,0"

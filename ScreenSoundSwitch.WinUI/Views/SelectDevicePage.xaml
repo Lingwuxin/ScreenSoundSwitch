@@ -36,10 +36,13 @@
                 </Style>
             </ItemsControl.ItemContainerStyle>
         </ItemsControl>
-        <control:ContentControl Title="Select Screen And Audio Device">
+        <control:ContentControl >
              <control:ContentControl.Icon>
                 <FontIcon Glyph="&#xE7F3;" />
              </control:ContentControl.Icon>
+            <control:ContentControl.LeftContent>
+                <TextBlock Text="Select Screen And Audio Device"/>
+            </control:ContentControl.LeftContent>
             <control:ContentControl.RightContent>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding SelectedScreen.DeviceName}" />
@@ -48,11 +51,13 @@
             </control:ContentControl.RightContent>
         </control:ContentControl>
 
-        <control:ContentControl 
-            Title="Select Audio Device">
+        <control:ContentControl>
             <control:ContentControl.Icon>
                 <FontIcon Glyph="&#xE767;" />
             </control:ContentControl.Icon>
+            <control:ContentControl.LeftContent>
+                <TextBlock Text="Select Audio Device"/>
+            </control:ContentControl.LeftContent>
             <control:ContentControl.RightContent>
                 <ComboBox  ItemsSource ="{Binding AudioDevices}" SelectionChanged="ListView_SelectionChanged" Width="300" >
                     <!--音频设备列表-->

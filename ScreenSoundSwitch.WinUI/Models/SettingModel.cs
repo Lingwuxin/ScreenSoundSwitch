@@ -7,8 +7,8 @@ using Windows.Storage;
 
 namespace ScreenSoundSwitch.WinUI.Models
 {
-    public partial class SettingModel
+    public  class SettingModel
     {
-        public StorageFolder AduioFileFolder { get; set; }
+        public string AudioFilePath { get; set; }= "Path";
     }
 }

@@ -16,6 +16,7 @@ using Windows.Storage.AccessCache;
 using Windows.Storage.Pickers;
 using Windows.Storage;
 using ScreenSoundSwitch.WinUI.ViewModels;
+using System.Diagnostics;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -29,7 +30,7 @@ namespace ScreenSoundSwitch.WinUI.View
     {
         //¥Ê¥¢…Ë÷√–≈œ¢
         private ApplicationDataContainer localSettings;
-        private SettingViewModel ViewModel;
+        private readonly SettingViewModel ViewModel;
         public SettingPage()
         {
             this.InitializeComponent();
@@ -63,7 +64,7 @@ namespace ScreenSoundSwitch.WinUI.View
                 StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", folder);
                 ViewModel.SetAudioFileFolder(folder);
             }
-
+            Debug.WriteLine(ViewModel.SettingModel.AudioFilePath);
             //re-enable the button
             senderButton.IsEnabled = true;
         }

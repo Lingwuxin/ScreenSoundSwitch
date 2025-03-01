@@ -63,7 +63,10 @@
             <Expander.Content>
 
                 <StackPanel Orientation="Vertical" Padding="15,5,0,0">
-                    <control:ContentControl Title="LeftChannel">
+                    <control:ContentControl>
+                        <control:ContentControl.LeftContent>
+                            <TextBlock Text="LeftChannel"/>
+                        </control:ContentControl.LeftContent>
                         <control:ContentControl.RightContent>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock x:Name="LeftChannelVolumeText" Text="100"/>
@@ -81,7 +84,10 @@
                             </StackPanel>
                         </control:ContentControl.RightContent>
                     </control:ContentControl>
-                    <control:ContentControl Title="RightChannel">
+                    <control:ContentControl>
+                        <control:ContentControl.LeftContent>
+                            <TextBlock Text="RightChannel"/>
+                        </control:ContentControl.LeftContent>
                         <control:ContentControl.RightContent>
                             <StackPanel Orientation="Horizontal">
                                 <StackPanel Orientation="Horizontal">

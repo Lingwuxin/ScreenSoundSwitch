@@ -15,10 +15,17 @@
         <viewModel:SettingViewModel/>
     </Page.DataContext>
     <StackPanel>
-        <control:ContentControl Title="Select a floder to load audio files">
+        <control:ContentControl 
+            >
             <control:ContentControl.Icon>
                 <FontIcon Glyph="&#xEC50;" />
             </control:ContentControl.Icon>
+            <control:ContentControl.LeftContent>
+                <StackPanel>
+                    <TextBlock Text="Open a folder to load audio files"/>
+                    <TextBlock Text="{Binding SettingModel.AudioFilePath}"/>
+                </StackPanel>
+            </control:ContentControl.LeftContent>
             <control:ContentControl.RightContent>
                 <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
                     <Button Content="Open a folder"
