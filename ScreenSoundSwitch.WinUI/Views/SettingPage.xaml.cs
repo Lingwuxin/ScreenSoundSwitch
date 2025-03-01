@@ -15,6 +15,7 @@ using Windows.Foundation.Collections;
 using Windows.Storage.AccessCache;
 using Windows.Storage.Pickers;
 using Windows.Storage;
+using ScreenSoundSwitch.WinUI.ViewModels;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -26,9 +27,13 @@ namespace ScreenSoundSwitch.WinUI.View
     /// </summary>
     public sealed partial class SettingPage : Page
     {
+        //¥Ê¥¢…Ë÷√–≈œ¢
+        private ApplicationDataContainer localSettings;
+        private SettingViewModel ViewModel;
         public SettingPage()
         {
             this.InitializeComponent();
+            ViewModel =this.DataContext as SettingViewModel;
         }
         private async void PickFolderButton_Click(object sender, RoutedEventArgs e)
         {
@@ -36,11 +41,8 @@ namespace ScreenSoundSwitch.WinUI.View
             var senderButton = sender as Button;
             senderButton.IsEnabled = false;
 
-            // Clear previous returned file name, if it exists, between iterations of this scenario
-            PickFolderOutputTextBlock.Text = "";
-
             // Create a folder picker
-            FolderPicker openPicker = new Windows.Storage.Pickers.FolderPicker();
+            FolderPicker openPicker = new FolderPicker();
 
             // Retrieve the window handle (HWND) of the current WinUI 3 window.
 
@@ -59,11 +61,7 @@ namespace ScreenSoundSwitch.WinUI.View
             if (folder != null)
             {
                 StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", folder);
-                PickFolderOutputTextBlock.Text = "Picked folder: " + folder.Name;
-            }
-            else
-            {
-                PickFolderOutputTextBlock.Text = "Operation cancelled.";
+                ViewModel.SetAudioFileFolder(folder);
             }
 
             //re-enable the button
@@ -74,7 +72,7 @@ namespace ScreenSoundSwitch.WinUI.View
         /// </summary>
         private void LoadSettings()
         {
-            var localSettings = ApplicationData.Current.LocalSettings;
+            localSettings = ApplicationData.Current.LocalSettings;
         }
     }
 }

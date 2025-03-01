@@ -42,8 +42,8 @@
              </control:ContentControl.Icon>
             <control:ContentControl.RightContent>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding SelectDeviceTextBlockText}" />
-                    <TextBlock Text="{Binding AudioDeviceExpanderHeader}" Margin="5,0,0,0"/>
+                    <TextBlock Text="{Binding SelectedScreen.DeviceName}" />
+                    <TextBlock Text="{Binding SelectedAudioDevice.FriendlyName}" Margin="5,0,0,0"/>
                 </StackPanel>
             </control:ContentControl.RightContent>
         </control:ContentControl>
@@ -54,7 +54,7 @@
                 <FontIcon Glyph="&#xE767;" />
             </control:ContentControl.Icon>
             <control:ContentControl.RightContent>
-                <ComboBox ItemsSource ="{Binding AudioDevices}" SelectionChanged="ListView_SelectionChanged" Width="300" >
+                <ComboBox  ItemsSource ="{Binding AudioDevices}" SelectionChanged="ListView_SelectionChanged" Width="300" >
                     <!--音频设备列表-->
                     <ComboBox.ItemTemplate>
                         <DataTemplate>

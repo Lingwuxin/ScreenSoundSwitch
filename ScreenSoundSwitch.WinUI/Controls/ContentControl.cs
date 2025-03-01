@@ -53,6 +53,7 @@ namespace ScreenSoundSwitch.WinUI.Controls
                 typeof(object),
                 typeof(ContentControl),
                 new PropertyMetadata(null));
+       
         public object RightContent
         {
             get => GetValue(RightContentProperty);

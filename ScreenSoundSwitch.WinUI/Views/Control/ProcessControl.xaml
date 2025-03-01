@@ -4,31 +4,31 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ScreenSoundSwitch.WinUI.View"
+    xmlns:control="using:ScreenSoundSwitch.WinUI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:local1="using:ScreenSoundSwitch.WinUI.ViewModels"
     mc:Ignorable="d">
-    <Grid HorizontalAlignment="Left">
-        <Grid.ColumnDefinitions>
-            <!-- 第一列宽度为自动, 让图标和进程名称占据 -->
-            <ColumnDefinition Width="Auto"/>
-            <!-- 第二列为*号，让Slider占据剩余空间 -->
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+    <UserControl.DataContext>
+        <local1:ProcessControlViewModel />
+    </UserControl.DataContext>
+        <control:ContentControl Title="{Binding ProcessModel.ProcessName}">
+            <control:ContentControl.Icon>
+                <Image Source="{Binding ProcessModel.Icon}" />
+            </control:ContentControl.Icon>
 
-        <StackPanel Orientation="Horizontal" Grid.Column="0">
-            <Image x:Name="SessionIcon" Width="20" Height="20" Margin="5"/>
-            <TextBlock x:Name="ProcessName" VerticalAlignment="Center"/>
-        </StackPanel>
+        <control:ContentControl.RightContent>
+            <Slider
+                x:Name="SimpleVolumeSlider" 
+                ValueChanged="SimpleVolumeSlider_ValueChanged" 
+                MinWidth="175"
+                MaxWidth="200"
+                Margin="40,0,0,0"
+                HorizontalAlignment="Right"
+                Grid.Column="1"
+                />
+            </control:ContentControl.RightContent>
+        </control:ContentControl>
 
         <!-- 让Slider在第二列中右对齐 -->
-        <Slider
-                    x:Name="SimpleVolumeSlider" 
-                    ValueChanged="SimpleVolumeSlider_ValueChanged" 
-                    MinWidth="175"
-                    MaxWidth="200"
-                    Margin="40,0,0,0"
-                    HorizontalAlignment="Right"
-                    Grid.Column="1"
-                    />
-    </Grid>
 </UserControl>

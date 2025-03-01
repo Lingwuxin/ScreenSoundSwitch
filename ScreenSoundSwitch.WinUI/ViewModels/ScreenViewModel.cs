@@ -32,18 +32,19 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
         [ObservableProperty]
         private MMDeviceCollection audioDevices;
         [ObservableProperty]
-        public partial string SelectDeviceTextBlockText { get; set; }="请选择屏幕";
+        public partial Screen SelectedScreen { get; set; }
         [ObservableProperty]
-        public partial string AudioDeviceExpanderHeader { get; set; } = "No Audio device selected";
+        public partial MMDevice SelectedAudioDevice { get; set; }
         private ScreenToAudioDevice screenToAudioDevice;
         private AudioDeviceManager audioDeviceManager;
-        private Screen selectedScreen;      
         public ScreenViewModel()
         {
+            audioDeviceManager = AudioDeviceManager.Instance;
+            audioDevices = audioDeviceManager.Devices;
+            screenToAudioDevice = ScreenToAudioDevice.Instance;
             InitializeElements();
-            audioDeviceManager =AudioDeviceManager.Instance;
-            audioDevices=audioDeviceManager.Devices;
         }
+
         /// <summary>
         /// 实例化所有屏幕控件
         /// </summary>
@@ -66,10 +67,12 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
             double scale=Math.Min(650/width,300/height);
             double centerX = width / 2*scale;
             double centerY = height / 2*scale;
-
+            //默认为每个显示器分配系统使用的音频设备
+            
             foreach (var screen in Screen.AllScreens)
             {
                 var rect = new ScreenControl(screen, this,scale);
+                screenToAudioDevice.Add(screen, audioDeviceManager.GetDefaultAudioEndpoint());
                 if (rect.screen.Primary)
                 {
                     rect.IsSelected = true;
@@ -82,12 +85,12 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
                 Canvas.SetTop(rect, sitY);
 
                 Elements.Add(rect);
+                
             }
         }
         public void SelectScreen(Screen screen)
         {
-            SelectDeviceTextBlockText = screen.DeviceName;
-            selectedScreen = screen;
+            SelectedScreen = screen;
             //遍历其他屏幕控件，将当前屏幕控件的选中状态设置为false
             foreach (var element in Elements)
             {
@@ -96,15 +99,30 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
                     element.IsSelected = false;
                 }
             }
+            //根据当前选中的屏幕，获取对应的音频设备
+            if (screenToAudioDevice.ContainsKey(screen) && screenToAudioDevice[screen]!= null)
+            {
+                AudioDeviceSelectionChanged(screenToAudioDevice[screen]);          
+            }
         }
         public void AudioDeviceSelectionChanged(object sender)
         {
-            Debug.WriteLine("AudioDeviceSelectionChanged");
-            if (sender is ComboBox comboBox && comboBox.SelectedItem is MMDevice selectedDevice)
+            if (sender is ComboBox comboBox && comboBox.SelectedItem is MMDevice mMDevice)
             {
-                // 假设 Header 的名称是 "选择音频设备"
-                // 替换为您的 Expander 名称
-                   AudioDeviceExpanderHeader = selectedDevice.FriendlyName; // 修改 Header 为选中的设备名称
+                   SelectedAudioDevice = mMDevice;
+                if (!screenToAudioDevice.ContainsKey(SelectedScreen))
+                {
+                    screenToAudioDevice.Add(SelectedScreen, mMDevice);
+                }
+                else
+                {
+                    screenToAudioDevice[SelectedScreen] = mMDevice;
+                }
+            }
+            if (sender is MMDevice _mMDevice)
+            {
+                SelectedAudioDevice = _mMDevice;
+                screenToAudioDevice[SelectedScreen] = _mMDevice;
             }
         }
 

@@ -9,6 +9,10 @@
     mc:Ignorable="d"
     NavigationCacheMode="Enabled"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-    <StackPanel x:Name="DevicesStackPanel" Orientation="Vertical">
+    <StackPanel Orientation="Vertical" >
+        <TextBlock Text="Output Devices"/>
+        <StackPanel x:Name="DevicesStackPanel" Orientation="Vertical">
+            
+        </StackPanel>
     </StackPanel>
 </Page>

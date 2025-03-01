@@ -55,6 +55,10 @@ namespace ScreenSoundSwitch
             }
             return false;
         }
+        public MMDevice GetDefaultAudioEndpoint()
+        {
+            return _enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Console);
+        }
         public MMDevice GetDeviceByFriendlyName(string _FriendlyName)
         {
             MMDevice targetDevice = null;

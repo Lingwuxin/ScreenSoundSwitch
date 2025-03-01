@@ -5,16 +5,31 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ScreenSoundSwitch.WinUI.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:viewModel="using:ScreenSoundSwitch.WinUI.ViewModels"
+    xmlns:control="using:ScreenSoundSwitch.WinUI.Controls"
     mc:Ignorable="d"
     NavigationCacheMode="Enabled"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-    
-    <Grid>
-        <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
-            <Button x:Name="PickFolderButton" Content="Open a folder"
-            Click="PickFolderButton_Click" Margin="0,0,0,10"/>
-            <TextBlock x:Name="PickFolderOutputTextBlock" TextWrapping="Wrap" Padding="20,5,0,0"/>
-        </StackPanel>
-    </Grid>
+    <Page.DataContext>
+        <viewModel:SettingViewModel/>
+    </Page.DataContext>
+    <StackPanel>
+        <control:ContentControl Title="Select a floder to load audio files">
+            <control:ContentControl.Icon>
+                <FontIcon Glyph="&#xEC50;" />
+            </control:ContentControl.Icon>
+            <control:ContentControl.RightContent>
+                <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
+                    <Button Content="Open a folder"
+                        Click="PickFolderButton_Click" 
+                            Margin="0,0,0,10"/>
+                    
+                </StackPanel>
+            </control:ContentControl.RightContent>
+        </control:ContentControl>
+
+        
+
+    </StackPanel>
 </Page>

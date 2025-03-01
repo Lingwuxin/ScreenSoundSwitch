@@ -29,6 +29,6 @@
             </NavigationViewItem>
             <NavigationViewItem FontSize="20" Icon="Audio" Content="Audio" Tag="AudioPage"/>
         </NavigationView.MenuItems>
-        <Frame x:Name="navContentFrame" />
+        <Frame x:Name="navContentFrame" Margin="0,20,0,0"/>
     </NavigationView>
 </Window>

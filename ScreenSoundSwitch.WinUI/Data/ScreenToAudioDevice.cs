@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace ScreenSoundSwitch.WinUI.Data
 {
-    class ScreenToAudioDevice : Dictionary<Screen, MMDevice>
+    public class ScreenToAudioDevice : Dictionary<Screen, MMDevice>
     {
         private static ScreenToAudioDevice _Instance;
         private ScreenToAudioDevice()

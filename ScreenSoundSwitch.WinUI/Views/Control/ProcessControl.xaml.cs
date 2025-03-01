@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media.Imaging;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
+using ScreenSoundSwitch.WinUI.ViewModels;
 using SoundSwitch.Audio.Manager;
 using SoundSwitch.Audio.Manager.Interop.Enum;
 using System;
@@ -24,10 +25,12 @@ namespace ScreenSoundSwitch.WinUI.View
         private AudioSessionControl session;
         private bool sliderLock = false;
         private AudioSwitcher audioSwitcher;
+        private ProcessControlViewModel viewModel;
 
         public ProcessControl(AudioSessionControl session)
         {
             this.InitializeComponent();
+            viewModel=this.DataContext as ProcessControlViewModel;
             this.session = session;
             audioSwitcher = AudioSwitcher.Instance;
             SetProcess();
@@ -62,17 +65,18 @@ namespace ScreenSoundSwitch.WinUI.View
         private void SetProcess()
         {
             process = Process.GetProcessById((int)session.GetProcessID);
+            viewModel.SetProcessName(process.ProcessName);
             screen = Screen.FromHandle(process.Handle);
-            ProcessName.Text = process.ProcessName;
             SimpleVolumeSlider.Value = session.SimpleAudioVolume.Volume * 100;
             var icon = Icon.ExtractAssociatedIcon(process.MainModule?.FileName);
+            
             if (icon != null)
             {
                 // 将Icon转换为BitmapImage
                 BitmapImage bitmapImage = ConvertIconToBitmapImage(icon);
 
-                // 将BitmapImage赋值给Image控件
-                SessionIcon.Source = bitmapImage;
+                viewModel.SetImage(bitmapImage);
+                
             }
         }
         private BitmapImage ConvertIconToBitmapImage(Icon icon)
