@@ -15,6 +15,7 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
     {
         [ObservableProperty]
         public partial SettingModel SettingModel { get; set; }
+        ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
         public SettingViewModel()
         {
             SettingModel = new SettingModel();
@@ -23,6 +24,7 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
         internal void SetAudioFileFolder(StorageFolder folder)
         {
             SettingModel.AudioFilePath = folder.Path;
+            localSettings.Values["AudioFilePath"] = SettingModel.AudioFilePath;
         }
     }
 }

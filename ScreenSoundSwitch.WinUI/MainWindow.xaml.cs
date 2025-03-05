@@ -28,19 +28,9 @@ namespace ScreenSoundSwitch.WinUI
             this.Title = "ScreenSoundSwicth";
             this.AppWindow.Resize(new Windows.Graphics.SizeInt32(1200, 750));
             ExtendsContentIntoTitleBar = true;
-            nav.SelectedItem = nav.MenuItems[0];
+            //nav.SelectedItem = nav.MenuItems[0];
             //当窗口实例化完成后，初始化各个页面
             //navContentFrame.Navigate(typeof(SelectDevicePage));
-            //selectDevicePage = new SelectDevicePage();
-            //volumePage = new VolumePage();
-            //processPage = new ProcessPage();
-            //audioPage = new AudioPage();
-            //settingPage = new SettingPage();
-
-
-            // 默认显示的页面
-
-
         }
 
 
@@ -71,6 +61,11 @@ namespace ScreenSoundSwitch.WinUI
                     navContentFrame.Navigate(typeof(SettingPage));
                     break; 
             }
+        }
+
+        private void AudioMediaTransportControls_PreviewKeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            Debug.WriteLine(e.Key);
         }
     }
 }

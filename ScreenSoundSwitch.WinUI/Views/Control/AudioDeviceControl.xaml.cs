@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.WinUI.UI.Controls;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -97,7 +98,7 @@ namespace ScreenSoundSwitch.WinUI.View
             (sender as ScrollViewer)?.ChangeView(0, null, null); // 立即回到初始位置
         }
 
-        private void Expander_Expanded(Expander sender, ExpanderExpandingEventArgs args)
+        private void SessionList_Expanded(Expander sender, ExpanderExpandingEventArgs args)
         {
             ProcessStackPanel.Children.Clear();
             device.AudioSessionManager.RefreshSessions();
@@ -108,7 +109,7 @@ namespace ScreenSoundSwitch.WinUI.View
                 {
                     continue;
                 }
-                ProcessStackPanel.Children.Add(new ProcessControl(sessions[i]));
+                ProcessStackPanel.Children.Add(new ProcessControl(sessions[i]));//重构建议——提交给viewModel
             }
         }
 

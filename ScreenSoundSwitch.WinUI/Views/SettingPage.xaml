@@ -23,7 +23,7 @@
             <control:ContentControl.LeftContent>
                 <StackPanel>
                     <TextBlock Text="Open a folder to load audio files"/>
-                    <TextBlock Text="{Binding SettingModel.AudioFilePath}"/>
+                    <TextBlock x:Name="AudioFolderPathTextBlock" Text="Path"/>
                 </StackPanel>
             </control:ContentControl.LeftContent>
             <control:ContentControl.RightContent>

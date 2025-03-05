@@ -118,7 +118,7 @@
             HorizontalAlignment="Stretch"
             HorizontalContentAlignment="Stretch"
             Margin="10,3,10,3"
-            Expanding="Expander_Expanded">
+            Expanding="SessionList_Expanded">
             <Expander.Header>
                 <StackPanel>
                     <TextBlock Text="Sessions of "></TextBlock>

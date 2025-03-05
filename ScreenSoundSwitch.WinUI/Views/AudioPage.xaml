@@ -4,33 +4,39 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:models="using:ScreenSoundSwitch.WinUI.Models"
+    xmlns:viewModels="using:ScreenSoundSwitch.WinUI.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d"
     NavigationCacheMode="Enabled"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-    <Page.Resources>
-        <!-- 定义 AudioFileMsg 的数据模板 -->
-        <DataTemplate x:Key="AudioFileMsgListViewTemplate" x:DataType="models:AudioFileMsg">
-            <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                <!-- 显示标题 -->
-                <TextBlock Text="{x:Bind Title}" FontWeight="Bold" Margin="0,0,10,0"/>
-                <!-- 显示作者 -->
-                <TextBlock Text="{x:Bind Author}" Margin="0,0,10,0"/>
-                <!-- 显示时长（可以进一步格式化TimeSpan）-->
-                <TextBlock Text="{x:Bind Duration}" />
-            </StackPanel>
-        </DataTemplate>
-    </Page.Resources>
-    <Grid>
+    <Page.DataContext>
+        <viewModels:AudioViewModel />
+    </Page.DataContext>
 
-        <ListView
-            x:Name="AudioMsgListView"
-            ItemTemplate="{StaticResource AudioFileMsgListViewTemplate}"
+    <controls:DataGrid
+
             BorderThickness="1"
             BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"
-            Width="350"
-            Height="400"
-            HorizontalAlignment="Left"/>
-    </Grid>
+            ItemsSource="{Binding AudioFileModels}"
+            AutoGenerateColumns="False"
+            HeadersVisibility="Column"
+            CanUserSortColumns="True"
+            CanUserResizeColumns="True"
+            CanUserReorderColumns="True"
+            DoubleTapped="DataGrid_DoubleTapped"
+            IsReadOnly="True">
+
+        <controls:DataGrid.Columns>
+            <!-- 音乐标题 -->
+            <controls:DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="Auto"/>
+
+            <!-- 艺术家 -->
+            <controls:DataGridTextColumn Header="Author" Binding="{Binding Author}" Width="Auto"/>
+
+            <!-- 时长 -->
+            <controls:DataGridTextColumn Header="Duration" Binding="{Binding Duration}" Width="Auto"/>
+        </controls:DataGrid.Columns>
+    </controls:DataGrid>
 </Page>

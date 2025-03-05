@@ -35,6 +35,17 @@ namespace ScreenSoundSwitch.WinUI.View
         {
             this.InitializeComponent();
             ViewModel =this.DataContext as SettingViewModel;
+            Page_Loaded(this, null);
+        }
+        //加载配置localSettings.Values["AudioFilePath"]
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            LoadSettings();
+            if (localSettings.Values.ContainsKey("AudioFilePath"))
+            {
+                ViewModel.SetAudioFileFolder(StorageFolder.GetFolderFromPathAsync(localSettings.Values["AudioFilePath"].ToString()).AsTask().Result);
+                AudioFolderPathTextBlock.Text = localSettings.Values["AudioFilePath"].ToString();
+            }
         }
         private async void PickFolderButton_Click(object sender, RoutedEventArgs e)
         {
@@ -61,10 +72,11 @@ namespace ScreenSoundSwitch.WinUI.View
             StorageFolder folder = await openPicker.PickSingleFolderAsync();
             if (folder != null)
             {
-                StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", folder);
+                StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedAudioFolderToken", folder);
                 ViewModel.SetAudioFileFolder(folder);
+                //本应该在Viewmodel中同步，但是由于未知原因并不能同步
+                AudioFolderPathTextBlock.Text = folder.Path;
             }
-            Debug.WriteLine(ViewModel.SettingModel.AudioFilePath);
             //re-enable the button
             senderButton.IsEnabled = true;
         }

@@ -20,19 +20,19 @@ namespace ScreenSoundSwitch.WinUI.View
     public sealed partial class VolumePage : Page
     {
         private MMDeviceCollection previousDevices;
-        private WindowMonitor mindowMonitor;
+        private WindowMonitor windowMonitor;
         private ProcessControl foregroundProcessControl;
         private ScreenToAudioDevice screenToAudioDevice;
         public VolumePage()
         {
             this.InitializeComponent();
             screenToAudioDevice = ScreenToAudioDevice.Instance;
-            mindowMonitor = new WindowMonitor();
-            mindowMonitor.ForegroundChanged += MindowMonitor_ForegroundChanged;
-            mindowMonitor.MouseWheelScrolled += MindowMonitor_KeyIsDown;
-            mindowMonitor.ForegroundWindowMoved += MindowMonitor_ForegroundMoved;
+            windowMonitor = new WindowMonitor();
+            windowMonitor.ForegroundChanged += WindowMonitor_ForegroundChanged;
+            windowMonitor.MouseWheelScrolled += WindowMonitor_KeyIsDown;
+            windowMonitor.ForegroundWindowMoved += WindowMonitor_ForegroundMoved;
         }
-        private void MindowMonitor_ForegroundMoved(object sender, WindowMonitor.Event e)
+        private void WindowMonitor_ForegroundMoved(object sender, WindowMonitor.Event e)
         {
             DispatcherQueue.TryEnqueue(() =>
             {
@@ -44,7 +44,7 @@ namespace ScreenSoundSwitch.WinUI.View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void MindowMonitor_ForegroundChanged(object sender, WindowMonitor.Event e)
+        private void WindowMonitor_ForegroundChanged(object sender, WindowMonitor.Event e)
         {
             DispatcherQueue.TryEnqueue(() =>
             {
@@ -59,7 +59,7 @@ namespace ScreenSoundSwitch.WinUI.View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void MindowMonitor_KeyIsDown(object sender, WindowMonitor.MouseWheelEventArgs e)
+        private void WindowMonitor_KeyIsDown(object sender, WindowMonitor.MouseWheelEventArgs e)
         {
             DispatcherQueue.TryEnqueue(() =>
             {
