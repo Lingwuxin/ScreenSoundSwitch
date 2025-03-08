@@ -28,14 +28,27 @@
             IsBackButtonVisible="Collapsed"                    
                         >
             <NavigationView.MenuItems >
-                <NavigationViewItem FontSize="20" Icon="Edit" Content="Select Device" Tag="SelectDevicePage" />
-                <NavigationViewItem FontSize="20" Content="Volume" Tag="VolumePage" >
+                <NavigationViewItem Icon="Edit" Content="Select Device" Tag="SelectDevicePage" />
+                <NavigationViewItem  Content="Volume" Tag="VolumePage" >
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xF4C3;" />                    
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem FontSize="20" Icon="Audio" Content="Audio" Tag="AudioPage"/>
+                <NavigationViewItem  Icon="Audio" Content="Audio" Tag="AudioPage"/>
+                <NavigationViewItemSeparator/>
+                <NavigationViewItem Content="PlayList" Tag="PlayListPage" >
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE728;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
             </NavigationView.MenuItems>
+            <NavigationView.FooterMenuItems>
+                <NavigationViewItem  Content="User" Tag="UserPage" >
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE77B;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.FooterMenuItems>
             <Frame x:Name="navContentFrame" Margin="0,20,0,0"/>
         </NavigationView>
         <StackPanel
@@ -76,7 +89,6 @@
                         NextTrackCommand="{Binding NextTrackCommand}"
                         PreviousTrackCommand="{Binding PreviousTrackCommand}"
                         >
-
                     </controls:AudioMediaTransportControls>
                 </MediaPlayerElement.TransportControls>
             </MediaPlayerElement>

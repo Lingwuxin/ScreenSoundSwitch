@@ -19,8 +19,10 @@
     <None Remove="Views\AudioDeviceControl.xaml" />
     <None Remove="Views\AudioPage.xaml" />
     <None Remove="Views\Control\ScreenControl.xaml" />
+    <None Remove="Views\PlayListPage.xaml" />
     <None Remove="Views\ProcessControl.xaml" />
     <None Remove="Views\SelectDevicePage.xaml" />
+    <None Remove="Views\UserPage.xaml" />
     <None Remove="Views\VolumePage.xaml" />
   </ItemGroup>
 
@@ -54,6 +56,16 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ScreenSoundSwitch.WinUI.Audio\ScreenSoundSwitch.WinUI.Audio.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\UserPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\PlayListPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Controls\AudioMediaTransportControls\AudioMediaTransport.xaml">

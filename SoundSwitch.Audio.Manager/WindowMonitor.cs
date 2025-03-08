@@ -192,8 +192,6 @@ namespace SoundSwitch.Audio.Manager
             }
         }
 
-
-
         private IntPtr HookCallbackMouse(int nCode, IntPtr wParam, IntPtr lParam)
         {
             if (nCode >= 0 && wParam == (IntPtr)WM_MOUSEWHEEL)

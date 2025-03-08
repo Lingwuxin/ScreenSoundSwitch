@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using ScreenSoundSwitch.WinUI.View;
+using ScreenSoundSwitch.WinUI.Views;
 using SoundSwitch.Audio.Manager;
 using System.Diagnostics;
 using Windows.Storage;
@@ -57,15 +58,18 @@ namespace ScreenSoundSwitch.WinUI
                 case "AudioPage":
                     navContentFrame.Navigate(typeof(AudioPage));
                     break;
+                case "PlayListPage":
+                    navContentFrame.Navigate(typeof(PlayListPage));
+                    break;
+                case "UserPage":
+                    navContentFrame.Navigate(typeof(UserPage));
+                    break;
                 case "Settings":
                     navContentFrame.Navigate(typeof(SettingPage));
                     break; 
             }
         }
 
-        private void AudioMediaTransportControls_PreviewKeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
-        {
-            Debug.WriteLine(e.Key);
-        }
+
     }
 }
