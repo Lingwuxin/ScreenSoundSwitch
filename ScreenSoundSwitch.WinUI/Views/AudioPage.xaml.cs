@@ -20,6 +20,8 @@ using CommunityToolkit.WinUI.UI.Controls;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using ScreenSoundSwitch.WinUI.ViewModels;
+using Windows.Media.Core;
+using Windows.Media.Playback;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -33,20 +35,22 @@ namespace ScreenSoundSwitch.WinUI.View
 
     public sealed partial class AudioPage : Page
     {
-        AudioViewModel viewModel;
+        AudioViewModel audioViewModel;
+        AudioPlayerViewModel audioPlayerViewModel;
         public AudioPage()
         {
             this.InitializeComponent();
-            viewModel = (AudioViewModel)this.DataContext;
+            audioPlayerViewModel = (AudioPlayerViewModel)this.DataContext;
+            audioViewModel = (AudioViewModel) this.AudioListView.DataContext;
             //AudioMsgListView.ItemsSource = AudioFileMsg.GetContactsAsync();
         }
 
-        private void DataGrid_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        private void ContentControl_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            DataGrid dataGrid = (DataGrid)sender;
-            AudioFileModel audioFileModel= (AudioFileModel)dataGrid.SelectedItem;
-            Debug.WriteLine(audioFileModel.File.Name);
+            ListView listView = (ListView)sender;
+            AudioFileModel audioFileModel = (AudioFileModel)listView.SelectedItem;
+            audioPlayerViewModel.AddAudioFlie(audioFileModel.File);
+
         }
-        
     }
 } 

@@ -7,36 +7,94 @@
     xmlns:viewModels="using:ScreenSoundSwitch.WinUI.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls" 
+    xmlns:myControls="using:ScreenSoundSwitch.WinUI.Controls"
     mc:Ignorable="d"
     NavigationCacheMode="Enabled"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.DataContext>
-        <viewModels:AudioViewModel />
+        <viewModels:AudioPlayerViewModel />
     </Page.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <!--  <Slider 
+     HorizontalAlignment="Stretch"
+     Minimum="500" Maximum="1000" StepFrequency="10"
 
-    <controls:DataGrid
+     Margin="20,0,20,0"    />
+ <StackPanel
+     Orientation="Horizontal"
+     HorizontalAlignment="Center">
+     <Button>
+         <FontIcon Glyph="&#xE892;" />
+     </Button>
+     <Button>
+         <FontIcon Glyph="&#xE768;" />
+     </Button>
+     <Button>
+         <FontIcon Glyph="&#xE893;" />
+     </Button>
+ </StackPanel> -->
 
-            BorderThickness="1"
-            BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"
-            ItemsSource="{Binding AudioFileModels}"
-            AutoGenerateColumns="False"
-            HeadersVisibility="Column"
-            CanUserSortColumns="True"
-            CanUserResizeColumns="True"
-            CanUserReorderColumns="True"
-            DoubleTapped="DataGrid_DoubleTapped"
-            IsReadOnly="True">
+        <ListView 
+            Grid.Row="0"
+            x:Name="AudioListView"
+            ItemsSource="{Binding AudioFileModels}" DoubleTapped="ContentControl_DoubleTapped">
+            <ListView.DataContext>
+                <viewModels:AudioViewModel/>
+            </ListView.DataContext>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <myControls:ContentControl>
+                        <myControls:ContentControl.Icon>
+                            <Image Source="{Binding CoverImage}" />
+                        </myControls:ContentControl.Icon>
+                        <myControls:ContentControl.LeftContent>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding File.DisplayName}"></TextBlock>
+                                <TextBlock Grid.Column="1" Text="{Binding Author}"></TextBlock>
+                            </Grid>
+                            
+                        </myControls:ContentControl.LeftContent>
+                        <myControls:ContentControl.RightContent>
+                            <TextBlock Text="{Binding FormattedDuration}"></TextBlock>
+                        </myControls:ContentControl.RightContent>
 
-        <controls:DataGrid.Columns>
-            <!-- 音乐标题 -->
-            <controls:DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="Auto"/>
+                    </myControls:ContentControl>
+                    
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
 
-            <!-- 艺术家 -->
-            <controls:DataGridTextColumn Header="Author" Binding="{Binding Author}" Width="Auto"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+            <MediaPlayerElement                 
+                x:Name="AudioMediaPlayerElement"
+            Source="{Binding PlaybackList}"
+                AutoPlay="False"
+                Margin="0,10,0,10"
+                HorizontalAlignment="Stretch"
+                AreTransportControlsEnabled="True"
+                >
 
-            <!-- 时长 -->
-            <controls:DataGridTextColumn Header="Duration" Binding="{Binding Duration}" Width="Auto"/>
-        </controls:DataGrid.Columns>
-    </controls:DataGrid>
+                <MediaPlayerElement.TransportControls>
+                    <myControls:AudioMediaTransportControls 
+                        NextTrackCommand="{Binding NextTrackCommand}"
+                        PreviousTrackCommand="{Binding PreviousTrackCommand}"
+                        MediaPlayList="{Binding PlayListFiles}"
+                        >
+
+                    </myControls:AudioMediaTransportControls>
+                </MediaPlayerElement.TransportControls>
+            </MediaPlayerElement>
+        </StackPanel>
+
+    </Grid>
+
 </Page>

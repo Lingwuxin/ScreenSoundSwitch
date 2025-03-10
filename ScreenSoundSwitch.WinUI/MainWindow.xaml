@@ -22,7 +22,7 @@
         </Grid.RowDefinitions>
         <NavigationView 
             Grid.Row="0"
-            x:Name="nav"
+            x:Name="Nav"
             SelectionChanged="{x:Bind NavigationSelectionChanged}"
             PaneTitle="ScreenSoundSwitch"
             IsBackButtonVisible="Collapsed"                    
@@ -34,13 +34,19 @@
                         <FontIcon Glyph="&#xF4C3;" />                    
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem  Icon="Audio" Content="Audio" Tag="AudioPage"/>
-                <NavigationViewItemSeparator/>
-                <NavigationViewItem Content="PlayList" Tag="PlayListPage" >
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE728;" />
-                    </NavigationViewItem.Icon>
+                <NavigationViewItem  Icon="Audio" Content="Audio" Tag="AudioPage">
+                    <!--
+                                        <NavigationViewItem.MenuItems>
+                        <NavigationViewItem Content="PlayList" Tag="PlayListPage" >
+                            <NavigationViewItem.Icon>
+                                <FontIcon Glyph="&#xE728;" />
+                            </NavigationViewItem.Icon>
+                        </NavigationViewItem>
+                    </NavigationViewItem.MenuItems>
+                    -->
+
                 </NavigationViewItem>
+
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
                 <NavigationViewItem  Content="User" Tag="UserPage" >
@@ -51,48 +57,7 @@
             </NavigationView.FooterMenuItems>
             <Frame x:Name="navContentFrame" Margin="0,20,0,0"/>
         </NavigationView>
-        <StackPanel
-            Grid.Row="1"
-            Orientation="Vertical"
-            >
-            <!--  <Slider 
-     HorizontalAlignment="Stretch"
-     Minimum="500" Maximum="1000" StepFrequency="10"
 
-     Margin="20,0,20,0"    />
- <StackPanel
-     Orientation="Horizontal"
-     HorizontalAlignment="Center">
-     <Button>
-         <FontIcon Glyph="&#xE892;" />
-     </Button>
-     <Button>
-         <FontIcon Glyph="&#xE768;" />
-     </Button>
-     <Button>
-         <FontIcon Glyph="&#xE893;" />
-     </Button>
- </StackPanel> -->
-            <MediaPlayerElement 
-                
-                x:Name="mediaPlayerElement"
-                AutoPlay="False"
-                Margin="0,10,0,10"
-                HorizontalAlignment="Stretch"
-                AreTransportControlsEnabled="True"
-                >
-                <MediaPlayerElement.DataContext>
-                    <viewModel:AudioPlayerViewModel></viewModel:AudioPlayerViewModel>
-                    </MediaPlayerElement.DataContext>
-                <MediaPlayerElement.TransportControls>
-                    <controls:AudioMediaTransportControls 
-                        NextTrackCommand="{Binding NextTrackCommand}"
-                        PreviousTrackCommand="{Binding PreviousTrackCommand}"
-                        >
-                    </controls:AudioMediaTransportControls>
-                </MediaPlayerElement.TransportControls>
-            </MediaPlayerElement>
-        </StackPanel>
 
      </Grid>
     

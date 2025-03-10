@@ -50,7 +50,9 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style x:Key="AudioMediaTransportControlsStyle" TargetType="local2:AudioMediaTransportControls">
+
+    <Style TargetType="local2:AudioMediaTransportControls">
+        <!--MediaTransportControls�Ĺ��캯�����ÿ���ؼ������Ƿ�ɼ������ԣ��������ʹ��ĳ���ؼ���Ӧ����AudioMediaTransportControls�Ĺ��캯�������ã�����ֱ��ɾ��������ؼ�-->
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="FlowDirection" Value="LeftToRight" />
@@ -497,13 +499,37 @@
                                                     <FontIcon Glyph="&#xE799;" />
                                                 </AppBarButton.Icon>
                                             </AppBarButton>
+                                            <!--                                           
                                             <AppBarButton x:Name='CastButton'
+                                                          Visibility="Collapsed"
                           Style='{StaticResource AppBarButtonStyle}'
                           MediaTransportControlsHelper.DropoutOrder='11'>
                                                 <AppBarButton.Icon>
                                                     <FontIcon Glyph="&#xEC15;" />
                                                 </AppBarButton.Icon>
                                             </AppBarButton>
+                                            -->
+                                            <AppBarButton x:Name='PlayListButton'
+                                                          Visibility="{TemplateBinding IsPlaylistButtonVisible}"
+                                                          Command="{TemplateBinding PlaylistButtonCommand}"
+                          Style='{StaticResource AppBarButtonStyle}'
+                          MediaTransportControlsHelper.DropoutOrder='24'>
+                                                <AppBarButton.Flyout>
+                                                    <Flyout>
+                                                        <ListView ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, Path=MediaPlayList}">
+                                                            <ListView.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding  DisplayName}" />
+                                                                </DataTemplate>
+                                                            </ListView.ItemTemplate>
+                                                        </ListView>
+                                                    </Flyout>
+                                                </AppBarButton.Flyout>
+                                                <AppBarButton.Icon>
+                                                    <FontIcon Glyph="&#xEA37;" />
+                                                </AppBarButton.Icon>
+                                            </AppBarButton>
+
                                             <!-- TODO 39683362: Uncomment once Full Screen is supported -->
                                             <!-- <AppBarButton x:Name='CompactOverlayButton'
                           Style='{StaticResource AppBarButtonStyle}'
@@ -523,6 +549,7 @@
                                 </Border>
                             </Grid>
                         </Border>
+                        
 
                     </Grid>
 
@@ -530,8 +557,24 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style TargetType="local2:AudioMediaTransportControls" BasedOn="{StaticResource AudioMediaTransportControlsStyle}">
-        
-    </Style>
 
+
+    <Style TargetType="local2:AudioFileControl" xmlns:local2="using:ScreenSoundSwitch.WinUI.Controls">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local2:AudioFileControl">
+                    <Border
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                        <local2:ContentControl>
+                            <local2:ContentControl.RightContent>
+                                <TextBlock Text="{TemplateBinding Title}" Style="{StaticResource MediaTextBlockStyle}"></TextBlock>
+                            </local2:ContentControl.RightContent>
+                        </local2:ContentControl>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

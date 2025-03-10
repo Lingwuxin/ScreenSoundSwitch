@@ -9,29 +9,49 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ScreenSoundSwitch.WinUI.Models;
 using Windows.Media.Audio;
+using Windows.Media.Core;
+using Windows.Media.Playback;
+using Windows.Storage;
 namespace ScreenSoundSwitch.WinUI.ViewModels
 {
     public partial class AudioPlayerViewModel:ObservableObject
     {
+
         [ObservableProperty]
-        public partial AudioFileModel AudioFileModel { get; set; }
+        public partial MediaPlaybackList PlaybackList { get; set; }
+        [ObservableProperty]
+        public ObservableCollection<StorageFile> playListFiles=new();
         public AudioPlayerViewModel()
         {
+            PlaybackList = new MediaPlaybackList();
+            PlaybackList.AutoRepeatEnabled = true;
+            PlayListFiles = [];
+        }
+        public void SetPlaybackList(MediaPlaybackList playbackList)
+        {
+            PlaybackList = playbackList;
             
         }
-        public void SetAudioPlayer(AudioFileModel audioFileModel)
-        {
-            AudioFileModel = audioFileModel;
+        public void AddAudioFlie(StorageFile file)
+        {        
+            PlaybackList.Items.Add(new MediaPlaybackItem(MediaSource.CreateFromStorageFile(file)));
+            PlayListFiles.Add(file);
         }
         [RelayCommand]
         private void NextTrack()
         {
-            Debug.WriteLine("Next Track");
+            PlaybackList.MoveNext();
         }
         [RelayCommand]
         private void PreviousTrack()
         {
-            Debug.WriteLine("Previous Track");
+            PlaybackList.MovePrevious();
         }
+        //[RelayCommand]
+        //private void PlaylistButton()
+        //{
+        //    IsPopupOpen = true;
+        //    Debug.WriteLine("Open Playlist");
+        //}
     }
 }

@@ -3,7 +3,10 @@ using Microsoft.UI.Xaml.Controls;
 using ScreenSoundSwitch.WinUI.View;
 using ScreenSoundSwitch.WinUI.Views;
 using SoundSwitch.Audio.Manager;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using Windows.Storage;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -22,6 +25,7 @@ namespace ScreenSoundSwitch.WinUI
         //private AudioPage audioPage;
         //private SettingPage settingPage;
         ApplicationDataContainer localSettings;
+        Dictionary<string, NavigationViewItem> navigationViewItems;
         public MainWindow()
         {
             localSettings = ApplicationData.Current.LocalSettings;
@@ -43,7 +47,17 @@ namespace ScreenSoundSwitch.WinUI
                 NavigateToPage(selectedTag);
             }
         }
-
+        private void GetAllMenuItems(IList<object> items)
+        {            
+            foreach (NavigationViewItem item in items)
+            {
+                navigationViewItems.Add(item.Tag.ToString(), item);
+                if (item.MenuItems.Count != 0)
+                {
+                    GetAllMenuItems(item.MenuItems);
+                }
+            }
+        }
         // 根据 Tag 导航到不同页面
         private void NavigateToPage(string pageTag)
         {
@@ -58,18 +72,17 @@ namespace ScreenSoundSwitch.WinUI
                 case "AudioPage":
                     navContentFrame.Navigate(typeof(AudioPage));
                     break;
-                case "PlayListPage":
-                    navContentFrame.Navigate(typeof(PlayListPage));
-                    break;
+                //case "PlayListPage":
+                //    navContentFrame.Navigate(typeof(PlayListPage));
+                //    break;
                 case "UserPage":
                     navContentFrame.Navigate(typeof(UserPage));
                     break;
                 case "Settings":
                     navContentFrame.Navigate(typeof(SettingPage));
                     break; 
+
             }
         }
-
-
     }
 }
