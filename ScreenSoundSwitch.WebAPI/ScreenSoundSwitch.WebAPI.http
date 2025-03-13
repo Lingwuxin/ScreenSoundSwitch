@@ -1,0 +1,6 @@
+@ScreenSoundSwitch.WebAPI_HostAddress = http://localhost:5253
+
+GET {{ScreenSoundSwitch.WebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

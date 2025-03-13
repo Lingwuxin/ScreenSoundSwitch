@@ -86,6 +86,10 @@ namespace ScreenSoundSwitch.WinUI.View
         private void LoadSettings()
         {
             localSettings = ApplicationData.Current.LocalSettings;
+            foreach(var key in localSettings.Values.Keys)
+            {
+                Debug.WriteLine(key);
+            }
         }
     }
 }
