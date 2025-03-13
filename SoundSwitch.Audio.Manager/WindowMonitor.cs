@@ -198,7 +198,6 @@ namespace SoundSwitch.Audio.Manager
             {
                 MSLLHOOKSTRUCT mouseHookStruct = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
                 int delta = (short)(mouseHookStruct.mouseData >> 16);
-                // 如果 Ctrl 和 Alt 被按下，触发事件
                 if ((GetKeyState(VK_CONTROL) & 0x8000) != 0 && (GetKeyState(VK_MENU) & 0x8000) != 0)
                 {
                     Task.Factory.StartNew(() =>
@@ -212,7 +211,7 @@ namespace SoundSwitch.Audio.Manager
                         }
                         catch (Exception)
                         {
-                            // Ignored
+                            Debug.WriteLine("MouseWheelScrolled event handler threw an exception");
                         }
                     }, _cancellationTokenSource.Token);
 

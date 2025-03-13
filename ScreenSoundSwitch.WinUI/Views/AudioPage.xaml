@@ -76,7 +76,7 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
             <MediaPlayerElement                 
                 x:Name="AudioMediaPlayerElement"
-            Source="{Binding PlaybackList}"
+            Source="{Binding PlaybackList}"             
                 AutoPlay="False"
                 Margin="0,10,0,10"
                 HorizontalAlignment="Stretch"
