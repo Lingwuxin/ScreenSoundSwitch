@@ -12,4 +12,21 @@ namespace ScreenSoundSwitch.WebAPI.Models
         [Required]
         public string PasswordHash { get; set; } = string.Empty;
     }
+
+    public class UserRegisterDto
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
+
+    public class UserLoginDto
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
+
+    public class JwtResponseDto
+    {
+        public string Token { get; set; }
+    }
 }

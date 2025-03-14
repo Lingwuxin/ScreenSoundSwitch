@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using ScreenSoundSwitch.WebAPI.Models;
 
 namespace ScreenSoundSwitch.WebAPI
