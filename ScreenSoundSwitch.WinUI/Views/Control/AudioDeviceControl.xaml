@@ -36,7 +36,7 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" >
                         <TextBlock Text="{Binding AudioDeviceControlModel.DeviceName}"/>
-                        <TextBlock Text="Master Volume"/>
+                        <TextBlock x:Uid="MasterVolumeTextBlock"/>
                     </StackPanel>
                     
                     <StackPanel 
@@ -65,7 +65,7 @@
                 <StackPanel Orientation="Vertical" Padding="15,5,0,0">
                     <control:ContentControl>
                         <control:ContentControl.LeftContent>
-                            <TextBlock Text="LeftChannel"/>
+                            <TextBlock x:Uid="LeftChannelTextBlock"/>
                         </control:ContentControl.LeftContent>
                         <control:ContentControl.RightContent>
                             <StackPanel Orientation="Horizontal">
@@ -86,7 +86,7 @@
                     </control:ContentControl>
                     <control:ContentControl>
                         <control:ContentControl.LeftContent>
-                            <TextBlock Text="RightChannel"/>
+                            <TextBlock x:Uid="RightChannelTextBlock"/>
                         </control:ContentControl.LeftContent>
                         <control:ContentControl.RightContent>
                             <StackPanel Orientation="Horizontal">
@@ -121,7 +121,7 @@
             Expanding="SessionList_Expanded">
             <Expander.Header>
                 <StackPanel>
-                    <TextBlock Text="Sessions of "></TextBlock>
+                    <TextBlock x:Uid="SessionTextBlock"/>
                     <TextBlock Text="{Binding AudioDeviceControlModel.DeviceName}"/>
                 </StackPanel>
 

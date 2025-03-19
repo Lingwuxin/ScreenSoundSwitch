@@ -6,7 +6,9 @@ using SoundSwitch.Audio.Manager;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using System.Threading;
 using Windows.Storage;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.

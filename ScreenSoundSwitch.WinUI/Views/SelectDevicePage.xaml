@@ -41,7 +41,7 @@
                 <FontIcon Glyph="&#xE7F3;" />
              </control:ContentControl.Icon>
             <control:ContentControl.LeftContent>
-                <TextBlock Text="Select Screen And Audio Device"/>
+                <TextBlock x:Uid="SelectDeviceTextBlock"/>
             </control:ContentControl.LeftContent>
             <control:ContentControl.RightContent>
                 <StackPanel Orientation="Horizontal">
@@ -56,7 +56,7 @@
                 <FontIcon Glyph="&#xE767;" />
             </control:ContentControl.Icon>
             <control:ContentControl.LeftContent>
-                <TextBlock Text="Select Audio Device"/>
+                <TextBlock x:Uid="SelectAudioDeviceTextBlock"/>
             </control:ContentControl.LeftContent>
             <control:ContentControl.RightContent>
                 <ComboBox  ItemsSource ="{Binding AudioDevices}" SelectionChanged="ListView_SelectionChanged" Width="300" >

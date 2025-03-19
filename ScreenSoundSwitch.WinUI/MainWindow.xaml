@@ -22,19 +22,23 @@
         </Grid.RowDefinitions>
         <NavigationView 
             Grid.Row="0"
+            x:Uid="Nav"
             x:Name="Nav"
-            SelectionChanged="{x:Bind NavigationSelectionChanged}"
-            PaneTitle="ScreenSoundSwitch"
+            SelectionChanged="{x:Bind NavigationSelectionChanged}"            
             IsBackButtonVisible="Collapsed"                    
                         >
             <NavigationView.MenuItems >
-                <NavigationViewItem Icon="Edit" Content="Select Device" Tag="SelectDevicePage" />
-                <NavigationViewItem  Content="Volume" Tag="VolumePage" >
+                <NavigationViewItem x:Uid="SelectDevicePage" Tag="SelectDevicePage" >
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xEC77;" />
+                    </NavigationViewItem.Icon>                    
+                </NavigationViewItem>
+                <NavigationViewItem  x:Uid="VolumePage" Tag="VolumePage" >
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xF4C3;" />                    
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem  Icon="Audio" Content="Audio" Tag="AudioPage">
+                <NavigationViewItem  x:Uid="AudioPage" Icon="Audio" Tag="AudioPage">
                     <!--
                                         <NavigationViewItem.MenuItems>
                         <NavigationViewItem Content="PlayList" Tag="PlayListPage" >
@@ -49,9 +53,9 @@
 
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem  Content="User" Tag="UserPage" >
+                <NavigationViewItem  x:Uid="UserPage" Tag="UserPage" >
                     <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE77B;" />
+                        <FontIcon Glyph="&#xE779;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.FooterMenuItems>

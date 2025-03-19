@@ -27,5 +27,10 @@ namespace ScreenSoundSwitch.WinUI.Views
         {
             this.InitializeComponent();
         }
+
+        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

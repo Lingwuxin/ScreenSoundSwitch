@@ -12,6 +12,7 @@
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
     <UseWindowsForms>False</UseWindowsForms>
+    <DefaultLanguage>zh-CN</DefaultLanguage>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Controls\AudioMediaTransportControls\AudioPlayer.xaml" />
