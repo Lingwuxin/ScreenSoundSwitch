@@ -1,6 +1,5 @@
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using ScreenSoundSwitch.WinUI.Bases;
 using System.Windows.Forms;
 using UserControl = Microsoft.UI.Xaml.Controls.UserControl;
 using Windows.UI;
@@ -10,7 +9,7 @@ using ScreenSoundSwitch.WinUI.ViewModels;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace ScreenSoundSwitch.WinUI.Views.Control
+namespace ScreenSoundSwitch.WinUI.Views
 {
 
     public sealed partial class ScreenControl : UserControl

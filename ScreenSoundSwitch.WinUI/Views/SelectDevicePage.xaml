@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Page
-    x:Class="ScreenSoundSwitch.WinUI.View.SelectDevicePage"
+    x:Class="ScreenSoundSwitch.WinUI.Views.SelectDevicePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ScreenSoundSwitch.WinUI.ViewModels"

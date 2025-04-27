@@ -8,7 +8,7 @@ namespace ScreenSoundSwitch.WebAPI
     {
         public DbSet<User> Users { get; set; }
         public DbSet<UserSetting> UserSettings { get; set; }
-
+        public DbSet<AudioFile> audios { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
     }
 }

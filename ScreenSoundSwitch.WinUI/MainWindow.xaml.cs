@@ -1,6 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using ScreenSoundSwitch.WinUI.View;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using ScreenSoundSwitch.WinUI.Views;
 using SoundSwitch.Audio.Manager;
 using System.Collections.Generic;
@@ -77,14 +77,19 @@ namespace ScreenSoundSwitch.WinUI
                 //case "PlayListPage":
                 //    navContentFrame.Navigate(typeof(PlayListPage));
                 //    break;
-                case "UserPage":
-                    navContentFrame.Navigate(typeof(UserPage));
-                    break;
+                //case "UserPage":
+                //    navContentFrame.Navigate(typeof(UserPage));
+                //    break;
                 case "Settings":
                     navContentFrame.Navigate(typeof(SettingPage));
                     break; 
 
             }
+        }
+
+        private void NavigationViewItem_User_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            FlyoutBase.ShowAttachedFlyout((FrameworkElement)sender);
         }
     }
 }

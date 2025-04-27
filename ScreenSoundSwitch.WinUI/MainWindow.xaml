@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:ScreenSoundSwitch.WinUI.Controls"
     xmlns:viewModel="using:ScreenSoundSwitch.WinUI.ViewModels"
+    xmlns:view="using:ScreenSoundSwitch.WinUI.Views"
     mc:Ignorable="d"
     >
     <Window.SystemBackdrop>
@@ -52,10 +53,16 @@
                 </NavigationViewItem>
 
             </NavigationView.MenuItems>
+
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem  x:Uid="UserPage" Tag="UserPage" >
+                <NavigationViewItem Tapped="NavigationViewItem_User_Tapped" x:Uid="UserPage" Tag="UserPage" >
+                    <FlyoutBase.AttachedFlyout>
+                        <Flyout>
+                            <view:UserPage></view:UserPage>
+                        </Flyout>
+                    </FlyoutBase.AttachedFlyout>
                     <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE779;" />
+                        <ImageIcon Source="/Assets/DefaultUser.jpg"></ImageIcon>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.FooterMenuItems>

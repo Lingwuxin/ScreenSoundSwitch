@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ScreenSoundSwitch.WebAPI.Models;
 namespace ScreenSoundSwitch.WebAPI.Controllers
 {
     [Route("api/test")]
@@ -12,8 +14,9 @@ namespace ScreenSoundSwitch.WebAPI.Controllers
         {
             _context = context;
         }
-
+       
         [HttpGet("check-connection")]
+        [Authorize]
         public IActionResult CheckConnection()
         {
             try

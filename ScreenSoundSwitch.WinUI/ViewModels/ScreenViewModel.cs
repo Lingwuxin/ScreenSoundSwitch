@@ -1,23 +1,14 @@
 ﻿using System.Collections.ObjectModel;
-using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Shapes;
-using Microsoft.UI.Xaml.Media;
-using System.Diagnostics;
 using System;
-using Windows.UI;
-using ScreenSoundSwitch.WinUI.Views.Control;
 using System.Windows.Forms;
-using System.Xml.Serialization;
-using System.Xml.Linq;
 using ScreenSoundSwitch.WinUI.Data;
 using NAudio.CoreAudioApi;
 using System.Linq;
 using ListView = Microsoft.UI.Xaml.Controls.ListView;
 using ComboBox = Microsoft.UI.Xaml.Controls.ComboBox;
+using ScreenSoundSwitch.WinUI.Views;
 
 
 namespace ScreenSoundSwitch.WinUI.ViewModels
