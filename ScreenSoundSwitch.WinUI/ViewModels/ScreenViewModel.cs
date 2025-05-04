@@ -43,8 +43,10 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
         public void InitializeElements()
         {
             Screen[] screens = Screen.AllScreens;
-            double width = screens.Max(e => e.Bounds.X + e.Bounds.Width);
-            double height = screens.Max(e => e.Bounds.Y + e.Bounds.Height);
+            double minX = screens.Min(e => e.Bounds.X);
+            double minY = screens.Min(e => e.Bounds.Y);
+            double width = screens.Max(e => e.Bounds.X + e.Bounds.Width)-minX;
+            double height = screens.Max(e => e.Bounds.Y + e.Bounds.Height)-minY;
 
             Elements.Clear();
             if(Screen.AllScreens.Length == 0)
@@ -69,8 +71,8 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
                 {
                     rect.IsSelected = true;
                 }
-                double x = screen.Bounds.X * scale - centerX;//当前显示器到中心点的距离
-                double y = screen.Bounds.Y * scale - centerY;
+                double x = (screen.Bounds.X-minX) * scale - centerX;//当前显示器到中心点的距离
+                double y = (screen.Bounds.Y-minY) * scale - centerY;
                 double sitX = x  + 325;
                 double sitY = y  + 150;
                 Canvas.SetLeft(rect, sitX);
