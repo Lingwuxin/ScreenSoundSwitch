@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using ScreenSoundSwitch.WinUI.Models;
+using ScreenSoundSwitch.WinUI.Utils;
 using System;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ScreenSoundSwitch.WinUI.ViewModels
 {
@@ -9,26 +11,29 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
     {
         [ObservableProperty]
         public partial UserModel User { get; set; }
+        private WebAPIHttpHelper webAPIHttpHelper = WebAPIHttpHelper.Instance;
         public UserViewModel()
         {
             User = new UserModel();
         }
-        private string HashPassword(string password)
-        {
-            using var sha256 = System.Security.Cryptography.SHA256.Create();
-            var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(bytes);
-        }
-        public void UserLogin(string username,string password)
+        public async Task<UserModel> UserLogin(string username,string password)
         {
             User.Username = username;
-            User.Password = HashPassword(password);
+            User.Password = password;
+            await webAPIHttpHelper.Login(User);
+            return User;
         }
-        public void UserRegister(string username, string password)
+        public async Task<UserModel> UserRegister(string username, string password)
         {
             User.Username = username;
-            User.Password = HashPassword(password);
+            User.Password = password;
+            await webAPIHttpHelper.Register(User);
+            return User;
         }
-
+        public async Task<UserModel> UserLogout()
+        {
+            webAPIHttpHelper.Logout();
+            return User;
+        }
     }
 }

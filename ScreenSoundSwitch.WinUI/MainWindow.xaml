@@ -15,7 +15,7 @@
         <MicaBackdrop />
 
     </Window.SystemBackdrop>
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -25,7 +25,7 @@
             Grid.Row="0"
             x:Uid="Nav"
             x:Name="Nav"
-            SelectionChanged="{x:Bind NavigationSelectionChanged}"            
+            SelectionChanged="{x:Bind NavigationSelectionChanged}"
             IsBackButtonVisible="Collapsed"                    
                         >
             <NavigationView.MenuItems >
@@ -55,14 +55,17 @@
             </NavigationView.MenuItems>
 
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem Tapped="NavigationViewItem_User_Tapped" x:Uid="UserPage" Tag="UserPage" >
+                <NavigationViewItem Tapped="NavigationViewItem_User_Tapped" x:Uid="UserPage" Tag="UserPage"  >
+                    <NavigationViewItem.DataContext>
+                        <viewModel:UserViewModel/>
+                    </NavigationViewItem.DataContext>
                     <FlyoutBase.AttachedFlyout>
                         <Flyout>
-                            <view:UserPage></view:UserPage>
+                            <Frame x:Name="UserFrame"/>
                         </Flyout>
                     </FlyoutBase.AttachedFlyout>
                     <NavigationViewItem.Icon>
-                        <ImageIcon Source="/Assets/DefaultUser.jpg"></ImageIcon>
+                        <ImageIcon Source="{Binding User.Avatar}"></ImageIcon>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.FooterMenuItems>

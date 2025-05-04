@@ -19,6 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Static\Audio\" />
+    <Folder Include="Static\Image\" />
     <Folder Include="Utils\" />
   </ItemGroup>
 

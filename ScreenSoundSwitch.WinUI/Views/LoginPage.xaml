@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="ScreenSoundSwitch.WinUI.Views.LoginPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ScreenSoundSwitch.WinUI.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:ScreenSoundSwitch.WinUI.Controls"
+    xmlns:viewModel="using:ScreenSoundSwitch.WinUI.ViewModels"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.DataContext>
+        <viewModel:UserViewModel/>
+    </Page.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel x:Name="UserLoginStackPanel" Grid.Row="1" Grid.Column="0" Orientation="Vertical" >
+            <controls:ContentControl>
+                <controls:ContentControl.Icon>
+                    <FontIcon Glyph="&#xE77B;" />
+                </controls:ContentControl.Icon>
+                <controls:ContentControl.LeftContent>
+                    <TextBlock x:Uid="UserNameTextBlock" />
+                </controls:ContentControl.LeftContent>
+                <controls:ContentControl.RightContent>
+                    <TextBox x:Uid="UserNameInputTextBox" x:Name="UserNameInput" Text="{ Binding User.Username }"/>
+                </controls:ContentControl.RightContent>
+            </controls:ContentControl>
+            <controls:ContentControl>
+                <controls:ContentControl.Icon>
+                    <FontIcon Glyph="&#xE9A8;" />
+                </controls:ContentControl.Icon>
+                <controls:ContentControl.LeftContent>
+                    <TextBlock x:Uid="PasswordTextBlock" />
+                </controls:ContentControl.LeftContent>
+                <controls:ContentControl.RightContent>
+                    <PasswordBox x:Uid="PasswordInputPasswordBox" x:Name="PasswordInput" PasswordChar="*" Password="{Binding User.Password}" />
+                </controls:ContentControl.RightContent>
+            </controls:ContentControl>
+            <controls:ContentControl>
+                <controls:ContentControl.LeftContent>
+                    <Button Content="注册" Click="RegisterButton_Click"></Button>
+                </controls:ContentControl.LeftContent>
+                <controls:ContentControl.RightContent>
+                    <Button x:Name="LoginButton" x:Uid="LoginButton"  Click="LoginButton_Click" />
+                </controls:ContentControl.RightContent>
+            </controls:ContentControl>
+        </StackPanel>
+        <StackPanel x:Name="UserInfoStackPanel" Grid.Row="2" Orientation="Vertical" HorizontalAlignment="Center">
+        </StackPanel>
+    </Grid>
+</Page>

@@ -20,7 +20,7 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
         [ObservableProperty]
         public partial MediaPlaybackList PlaybackList { get; set; }
         [ObservableProperty]
-        public ObservableCollection<StorageFile> playListFiles=new();
+        public ObservableCollection<AudioFileModel> playListFiles=new();
         public AudioPlayerViewModel()
         {
             PlaybackList = new MediaPlaybackList();
@@ -32,11 +32,12 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
             PlaybackList = playbackList;
             
         }
-        public void AddAudioFlie(StorageFile file)
+        public void PlayListItem_DoubleTapped(AudioFileModel audioFileModel)
         {        
-            PlaybackList.Items.Add(new MediaPlaybackItem(MediaSource.CreateFromStorageFile(file)));
-            PlayListFiles.Add(file);
+            PlaybackList.Items.Add(new MediaPlaybackItem(MediaSource.CreateFromStorageFile(audioFileModel.File)));
+            PlayListFiles.Add(audioFileModel);
         }
+        
         [RelayCommand]
         private void NextTrack()
         {
@@ -46,6 +47,15 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
         private void PreviousTrack()
         {
             PlaybackList.MovePrevious();
+        }
+        [RelayCommand]
+        private void Play_PlayList()
+        {
+        }
+        [RelayCommand]
+        private void Remove_PlayList()
+        {
+
         }
         //[RelayCommand]
         //private void PlaylistButton()

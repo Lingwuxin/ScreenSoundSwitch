@@ -18,6 +18,7 @@
     <None Remove="Controls\AudioMediaTransportControls\AudioPlayer.xaml" />
     <None Remove="Views\AudioDeviceControl.xaml" />
     <None Remove="Views\AudioPage.xaml" />
+    <None Remove="Views\Control\RegisterPage.xaml" />
     <None Remove="Views\Control\ScreenControl.xaml" />
     <None Remove="Views\ProcessControl.xaml" />
     <None Remove="Views\SelectDevicePage.xaml" />
@@ -58,6 +59,16 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\UserPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\Control\RegisterPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\LoginPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

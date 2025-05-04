@@ -45,6 +45,7 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
             Screen[] screens = Screen.AllScreens;
             double width = screens.Max(e => e.Bounds.X + e.Bounds.Width);
             double height = screens.Max(e => e.Bounds.Y + e.Bounds.Height);
+
             Elements.Clear();
             if(Screen.AllScreens.Length == 0)
             {

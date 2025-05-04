@@ -1,9 +1,11 @@
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using ScreenSoundSwitch.WinUI.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -43,11 +45,11 @@ namespace ScreenSoundSwitch.WinUI.Controls
         }
         //添加设置播放列表MediaPlaybackList 
         public static readonly DependencyProperty MediaPlayListProperty =
-            DependencyProperty.Register("MediaPlayList", typeof(ObservableCollection<StorageFile>), typeof(AudioMediaTransportControls), new PropertyMetadata(null));
+            DependencyProperty.Register("MediaPlayList", typeof(ObservableCollection<AudioFileModel>), typeof(AudioMediaTransportControls), new PropertyMetadata(null));
 
-        public ObservableCollection<StorageFile> MediaPlayList
+        public ObservableCollection<AudioFileModel> MediaPlayList
         {
-            get { return (ObservableCollection<StorageFile>)GetValue(MediaPlayListProperty); }
+            get { return (ObservableCollection<AudioFileModel>)GetValue(MediaPlayListProperty); }
             set { SetValue(MediaPlayListProperty, value); }
         }
 
@@ -80,6 +82,6 @@ namespace ScreenSoundSwitch.WinUI.Controls
             get { return (ICommand)GetValue(PreviousTrackCommandProperty); }
             set { SetValue(PreviousTrackCommandProperty, value); }
         }
-       
+
     }
 }

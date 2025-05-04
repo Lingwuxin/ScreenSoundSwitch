@@ -335,6 +335,8 @@
                         Margin="0,2,0,0"
                         Visibility="Collapsed" />
                                         <Grid x:Name="TimeTextGrid" Margin="7,0,7,2" Grid.Row="1" Height="16">
+                                            <!--显示歌曲名称-->
+                                            <!--待完成-->
                                             <TextBlock x:Name="TimeElapsedElement" Style="{StaticResource CaptionTextBlockStyle}" Margin="0" Text="00:00" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
                                             <TextBlock x:Name="TimeRemainingElement" Style="{StaticResource CaptionTextBlockStyle}" Text="00:00" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
                                         </Grid>
@@ -512,14 +514,21 @@
                                             <AppBarButton x:Name='PlayListButton'
                                                           Visibility="{TemplateBinding IsPlaylistButtonVisible}"
                                                           Command="{TemplateBinding PlaylistButtonCommand}"
-                          Style='{StaticResource AppBarButtonStyle}'
-                          MediaTransportControlsHelper.DropoutOrder='24'>
+                                                          Style='{StaticResource AppBarButtonStyle}'
+                                                          MediaTransportControlsHelper.DropoutOrder='24'>
                                                 <AppBarButton.Flyout>
                                                     <Flyout>
                                                         <ListView ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, Path=MediaPlayList}">
                                                             <ListView.ItemTemplate>
                                                                 <DataTemplate>
-                                                                    <TextBlock Text="{Binding  DisplayName}" />
+                                                                    <TextBlock Text="{Binding File.DisplayName}">
+                                                                        <TextBlock.ContextFlyout>
+                                                                            <MenuFlyout>
+                                                                                <MenuFlyoutItem Text="播放"/>
+                                                                                <MenuFlyoutItem Text="移除" />
+                                                                            </MenuFlyout>
+                                                                        </TextBlock.ContextFlyout>
+                                                                        </TextBlock>
                                                                 </DataTemplate>
                                                             </ListView.ItemTemplate>
                                                         </ListView>

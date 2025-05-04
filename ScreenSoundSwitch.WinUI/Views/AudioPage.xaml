@@ -7,7 +7,6 @@
     xmlns:viewModels="using:ScreenSoundSwitch.WinUI.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls" 
     xmlns:myControls="using:ScreenSoundSwitch.WinUI.Controls"
     mc:Ignorable="d"
     NavigationCacheMode="Enabled"
@@ -17,6 +16,7 @@
     </Page.DataContext>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
@@ -38,42 +38,96 @@
          <FontIcon Glyph="&#xE893;" />
      </Button>
  </StackPanel> -->
-
-        <ListView 
-            Grid.Row="0"
+        <TextBox x:Name="SearchBox"
+            PlaceholderText="搜索音乐"
+            TextChanged="SearchBox_TextChanged"
+            Margin="20,0,20,0"
+            Grid.Row="0" />
+        <ListView
+            Grid.Row="1"
             x:Name="AudioListView"
             ItemsSource="{Binding AudioFileModels}" DoubleTapped="ContentControl_DoubleTapped">
             <ListView.DataContext>
                 <viewModels:AudioViewModel/>
             </ListView.DataContext>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <myControls:ContentControl>
-                        <myControls:ContentControl.Icon>
-                            <Image Source="{Binding CoverImage}" />
-                        </myControls:ContentControl.Icon>
-                        <myControls:ContentControl.LeftContent>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding File.DisplayName}"></TextBlock>
-                                <TextBlock Grid.Column="1" Text="{Binding Author}"></TextBlock>
-                            </Grid>
-                            
-                        </myControls:ContentControl.LeftContent>
-                        <myControls:ContentControl.RightContent>
-                            <TextBlock Text="{Binding FormattedDuration}"></TextBlock>
-                        </myControls:ContentControl.RightContent>
+            <ListView.Header>
+                <Grid Padding="16,12"
+                  ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="60" />
+                        <ColumnDefinition Width="60" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="100" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           Text="封面" />
+                    <TextBlock Grid.Column="1"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           Text="名称" />
+                    <TextBlock Grid.Column="2"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           Text="歌手" />
+                    <TextBlock Grid.Column="3"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           Text="上传" />
+                    <TextBlock Grid.Column="4"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           Text="共享" />
+                    <TextBlock Grid.Column="6"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           Text="时长" />
+                </Grid>
+            </ListView.Header>
 
-                    </myControls:ContentControl>
-                    
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="models:AudioFileModel">
+                    <Grid ColumnSpacing="16">
+                        <Grid.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Text="播放" />
+                                <MenuFlyoutItem Text="添加到播放队列" />
+                                <MenuFlyoutItem Text="下载" />
+                                <MenuFlyoutItem Text="上传"/>
+                                <MenuFlyoutItem Text="分享" />
+                                <MenuFlyoutItem Text="删除" Foreground="Red"/>
+                            </MenuFlyout>
+                         </Grid.ContextFlyout>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="100" />
+                        </Grid.ColumnDefinitions>
+                        <ImageIcon Grid.Column="0"
+                           Source="{x:Bind CoverImage}"
+                           Width="30" Height="30" />
+                        <TextBlock Grid.Column="1"
+                               Text="{x:Bind Title}" />
+                        <TextBlock Grid.Column="2"
+                               Text="{x:Bind Author}" />
+
+                        <TextBlock Grid.Column="3"
+                                   Text="{x:Bind Local}" />
+                        <TextBlock Grid.Column="6"
+                               Text="{x:Bind FormattedDuration}" />
+
+                    </Grid>
                 </DataTemplate>
+
             </ListView.ItemTemplate>
+            <ListView.ItemContainerStyle>
+                <Style BasedOn="{StaticResource DefaultListViewItemStyle}"
+                   TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.ItemContainerStyle>
+
         </ListView>
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
             <MediaPlayerElement                 
                 x:Name="AudioMediaPlayerElement"
             Source="{Binding PlaybackList}"             
@@ -88,6 +142,7 @@
                         NextTrackCommand="{Binding NextTrackCommand}"
                         PreviousTrackCommand="{Binding PreviousTrackCommand}"
                         MediaPlayList="{Binding PlayListFiles}"
+                        x:Name="MyAudioMediaTransportControls"
                         >
 
                     </myControls:AudioMediaTransportControls>

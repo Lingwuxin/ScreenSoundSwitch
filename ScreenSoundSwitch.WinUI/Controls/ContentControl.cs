@@ -20,7 +20,17 @@ namespace ScreenSoundSwitch.WinUI.Controls
         {
             this.DefaultStyleKey = typeof(ContentControl);
         }
-
+        //public static readonly DependencyProperty ContextFlyoutProperty=
+        //    DependencyProperty.Register(
+        //        "ContextFlyout",
+        //        typeof(UIElement),
+        //        typeof(ContentControl),
+        //        new PropertyMetadata(null));
+        //public Flyout ContextFlyout
+        //{
+        //    get => (Flyout)GetValue(ContextFlyoutProperty);
+        //    set => SetValue(ContextFlyoutProperty, value);
+        //}
 
         // Õº±Í Ù–‘
         public static readonly DependencyProperty IconProperty =

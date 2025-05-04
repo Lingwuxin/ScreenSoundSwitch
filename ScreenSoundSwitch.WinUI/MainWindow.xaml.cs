@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Windows.Storage;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -35,11 +36,14 @@ namespace ScreenSoundSwitch.WinUI
             this.Title = "ScreenSoundSwicth";
             this.AppWindow.Resize(new Windows.Graphics.SizeInt32(1200, 750));
             ExtendsContentIntoTitleBar = true;
+            
+
+            UserFrame.Navigate(typeof(LoginPage));
             //nav.SelectedItem = nav.MenuItems[0];
             //当窗口实例化完成后，初始化各个页面
             //navContentFrame.Navigate(typeof(SelectDevicePage));
         }
-
+        
 
         private void NavigationSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
