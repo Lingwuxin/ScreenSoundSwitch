@@ -10,6 +10,7 @@ namespace ScreenSoundSwitch.WinUI.Models
     {
         public string Title { get; private set; }
         public string Author { get; private set; }
+        public string Album { get; private set; }
         public TimeSpan Duration { get; private set; }
         public string FormattedDuration => Duration.ToString(@"mm\:ss");
         public StorageFile File { get; private set; }
@@ -52,6 +53,7 @@ namespace ScreenSoundSwitch.WinUI.Models
             // 读取音乐元数据
             audioFile.Title = string.IsNullOrEmpty(musicProperties.Title) ? storageFile.DisplayName : musicProperties.Title;
             audioFile.Author = string.IsNullOrEmpty(musicProperties.Artist) ? "Unknown" : musicProperties.Artist;
+            audioFile.Album = string.IsNullOrEmpty(musicProperties.Album) ?"":musicProperties.Album;
             audioFile.Duration = musicProperties.Duration;
 
             // 获取封面图

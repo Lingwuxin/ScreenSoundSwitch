@@ -54,11 +54,10 @@
                 <Grid Padding="16,12"
                   ColumnSpacing="16">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="60" />
                         <ColumnDefinition Width="150" />
                         <ColumnDefinition Width="80" />
-                        <ColumnDefinition Width="60" />
-                        <ColumnDefinition Width="60" />
+                        <ColumnDefinition Width="180" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="100" />
                     </Grid.ColumnDefinitions>
@@ -72,11 +71,11 @@
                            Text="歌手" />
                     <TextBlock Grid.Column="3"
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                           Text="上传" />
+                           Text="专辑" />
                     <TextBlock Grid.Column="4"
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                           Text="共享" />
-                    <TextBlock Grid.Column="6"
+                           Text="上传" />
+                    <TextBlock Grid.Column="5"
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                            Text="时长" />
                 </Grid>
@@ -96,22 +95,26 @@
                             </MenuFlyout>
                          </Grid.ContextFlyout>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60" />
+                            <ColumnDefinition Width="150" />
                             <ColumnDefinition Width="80" />
-                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="180" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="100" />
                         </Grid.ColumnDefinitions>
-                        <ImageIcon Grid.Column="0"
+                        <ImageIcon Grid.Column="0" HorizontalAlignment="left"
                            Source="{x:Bind CoverImage}"
-                           Width="30" Height="30" />
+                           Width="35" Height="35" />
                         <TextBlock Grid.Column="1"
                                Text="{x:Bind Title}" />
                         <TextBlock Grid.Column="2"
                                Text="{x:Bind Author}" />
 
                         <TextBlock Grid.Column="3"
+                                   Text="{x:Bind Album}" />
+                        <TextBlock Grid.Column="4"
                                    Text="{x:Bind Local}" />
-                        <TextBlock Grid.Column="6"
+                        <TextBlock Grid.Column="5"
                                Text="{x:Bind FormattedDuration}" />
 
                     </Grid>
