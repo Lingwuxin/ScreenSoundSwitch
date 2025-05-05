@@ -16,16 +16,21 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
         {
             User = new UserModel();
         }
-        public async Task<UserModel> UserLogin(string username,string password)
+        public async Task<UserModel> UserLogin(string email,string password)
         {
-            User.Username = username;
+            User.Email = email;
             User.Password = password;
-            await webAPIHttpHelper.Login(User);
+            var res=await webAPIHttpHelper.Login(User);
+            if (res.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                User.LoginStatus = true;
+                
+            }
             return User;
         }
-        public async Task<UserModel> UserRegister(string username, string password)
+        public async Task<UserModel> UserRegister(string email, string password)
         {
-            User.Username = username;
+            User.Email = email;
             User.Password = password;
             await webAPIHttpHelper.Register(User);
             return User;

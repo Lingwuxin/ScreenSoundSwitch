@@ -129,4 +129,10 @@
   <data name="UserPage.Content" xml:space="preserve">
     <value>User</value>
   </data>
+  <data name="EmailTextBlock.Text" xml:space="preserve">
+    <value />
+  </data>
+  <data name="EmailInputTextBox.PlaceholderText" xml:space="preserve">
+    <value />
+  </data>
 </root>

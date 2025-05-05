@@ -20,9 +20,9 @@ namespace ScreenSoundSwitch.WinUI.Views
             _userViewModel=this.DataContext as UserViewModel;
         }
 
-        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            _userViewModel.UserLogin(UserNameInput.Text, PasswordInput.Password);
+            await _userViewModel.UserLogin(EmailInput.Text, PasswordInput.Password);
             if (_userViewModel.User.LoginStatus)
             {
                 Frame.Navigate(typeof(UserPage));

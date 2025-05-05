@@ -171,4 +171,10 @@
   <data name="LoginButton.Content" xml:space="preserve">
     <value>登录</value>
   </data>
+  <data name="EmailTextBlock.Text" xml:space="preserve">
+    <value>电子邮箱</value>
+  </data>
+  <data name="EmailInputTextBox.PlaceholderText" xml:space="preserve">
+    <value>输入电子邮箱</value>
+  </data>
 </root>

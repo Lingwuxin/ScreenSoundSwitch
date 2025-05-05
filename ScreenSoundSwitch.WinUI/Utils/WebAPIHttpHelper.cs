@@ -16,7 +16,7 @@ namespace ScreenSoundSwitch.WinUI.Utils
 
         public static WebAPIHttpHelper Instance => lazyInstance.Value;
 
-        private readonly string baseUrl = "http://localhost:5000/api/";
+        private readonly string baseUrl = "http://localhost:5253/api/";
         private readonly HttpClient httpClient;
         private string token;
 
@@ -38,7 +38,7 @@ namespace ScreenSoundSwitch.WinUI.Utils
             string json = JsonSerializer.Serialize(loginData);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync($"{baseUrl}login", content);
+            var response = await httpClient.PostAsync($"{baseUrl}User/login", content);
             return response;
         }
 

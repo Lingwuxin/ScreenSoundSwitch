@@ -29,10 +29,10 @@
                     <FontIcon Glyph="&#xE77B;" />
                 </controls:ContentControl.Icon>
                 <controls:ContentControl.LeftContent>
-                    <TextBlock x:Uid="UserNameTextBlock" />
+                    <TextBlock x:Uid="EmailTextBlock" />
                 </controls:ContentControl.LeftContent>
                 <controls:ContentControl.RightContent>
-                    <TextBox x:Uid="UserNameInputTextBox" x:Name="UserNameInput" Text="{ Binding User.Username }"/>
+                    <TextBox x:Uid="EmailInputTextBox" x:Name="EmailInput" Text="{ Binding User.Username }"/>
                 </controls:ContentControl.RightContent>
             </controls:ContentControl>
             <controls:ContentControl>

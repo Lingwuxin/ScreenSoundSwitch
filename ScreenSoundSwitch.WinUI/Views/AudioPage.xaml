@@ -86,11 +86,10 @@
                     <Grid ColumnSpacing="16">
                         <Grid.ContextFlyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem Text="播放" />
+                                <MenuFlyoutItem Text="播放"/>
                                 <MenuFlyoutItem Text="添加到播放队列" />
-                                <MenuFlyoutItem Text="下载" />
-                                <MenuFlyoutItem Text="上传"/>
-                                <MenuFlyoutItem Text="分享" />
+                                <MenuFlyoutItem Text="下载" IsEnabled="{x:Bind IsLocal}"/>
+                                <MenuFlyoutItem Text="上传" IsEnabled="{x:Bind IsLocal, Converter={StaticResource InverseBooleanConverter}}"/>
                                 <MenuFlyoutItem Text="删除" Foreground="Red"/>
                             </MenuFlyout>
                          </Grid.ContextFlyout>
