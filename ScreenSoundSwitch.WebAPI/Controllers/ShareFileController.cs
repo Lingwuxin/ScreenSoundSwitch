@@ -5,7 +5,6 @@ namespace ScreenSoundSwitch.WebAPI.Controllers
 {
     public class ShareFileController
     {
-        [r]
         [Route("admin/[controller]")]
         [ApiController]
         public class ShareAudioReviewController : ControllerBase

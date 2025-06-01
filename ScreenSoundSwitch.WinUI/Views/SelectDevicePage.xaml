@@ -22,19 +22,16 @@
         <ItemsControl x:Name="ScreenItemsControl" ItemsSource="{Binding Elements}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas Background="LightGray" 
-                            Width="650" Height="300"/>
+                    <Canvas Width="650" Height="300" Background="LightGray"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemContainerStyle>
-                <Style TargetType="ContentPresenter">
-
-                    <Setter Property="Canvas.Left" 
-                            Value="{Binding Path=(Canvas.Left)}"/>
-                    <Setter Property="Canvas.Top" 
-                            Value="{Binding Path=(Canvas.Top) }"/>
-                </Style>
-            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Content="{Binding Name}" 
+                        Canvas.Left="{Binding Left}" 
+                    Canvas.Top="{Binding Top}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
         </ItemsControl>
         <control:ContentControl >
              <control:ContentControl.Icon>
