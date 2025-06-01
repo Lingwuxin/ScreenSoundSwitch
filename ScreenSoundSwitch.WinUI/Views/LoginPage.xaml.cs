@@ -17,7 +17,8 @@ namespace ScreenSoundSwitch.WinUI.Views
         public LoginPage()
         {
             this.InitializeComponent();
-            _userViewModel=this.DataContext as UserViewModel;
+            _userViewModel = App.SharedUserViewModel;
+            this.DataContext = _userViewModel;
         }
 
         private async void LoginButton_Click(object sender, RoutedEventArgs e)

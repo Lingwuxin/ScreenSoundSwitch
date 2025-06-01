@@ -13,10 +13,11 @@
     >
     <Window.SystemBackdrop>
         <MicaBackdrop />
-
     </Window.SystemBackdrop>
-
-    <Grid>
+    <Grid x:Name="grid">
+        <Grid.DataContext>
+            <StaticResource ResourceKey="SharedUserViewModel" />
+        </Grid.DataContext>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -39,7 +40,7 @@
                         <FontIcon Glyph="&#xF4C3;" />                    
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem  x:Uid="AudioPage" Icon="Audio" Tag="AudioPage">
+                <NavigationViewItem   x:Uid="AudioPage" Icon="Audio" Tag="AudioPage">
                     <!--
                                         <NavigationViewItem.MenuItems>
                         <NavigationViewItem Content="PlayList" Tag="PlayListPage" >
@@ -51,14 +52,12 @@
                     -->
 
                 </NavigationViewItem>
+                <NavigationViewItem  Visibility="Collapsed" x:Uid="ShareFilePage" Icon="Audio" Tag="ShareFilePage"/>
 
             </NavigationView.MenuItems>
 
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem Tapped="NavigationViewItem_User_Tapped" x:Uid="UserPage" Tag="UserPage"  >
-                    <NavigationViewItem.DataContext>
-                        <viewModel:UserViewModel/>
-                    </NavigationViewItem.DataContext>
+                <NavigationViewItem Tapped="NavigationViewItem_User_Tapped" Content="{Binding User.Role}" Tag="UserPage"  >
                     <FlyoutBase.AttachedFlyout>
                         <Flyout>
                             <Frame x:Name="UserFrame"/>

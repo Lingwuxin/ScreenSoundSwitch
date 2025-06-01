@@ -6,10 +6,57 @@
     xmlns:local="using:ScreenSoundSwitch.WinUI.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:ScreenSoundSwitch.WinUI.Controls"
+    xmlns:viewModel="using:ScreenSoundSwitch.WinUI.ViewModels"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <Page.DataContext>
+        <StaticResource ResourceKey="SharedUserViewModel" />
+    </Page.DataContext>
     <Grid>
-        <Button Content="UserPage" Click="LogoutButton_Click"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel x:Name="UserLoginStackPanel" Grid.Row="1" Grid.Column="0" Orientation="Vertical" >
+            <controls:ContentControl>
+                <controls:ContentControl.Icon>
+                    <FontIcon Glyph="&#xE77B;" />
+                </controls:ContentControl.Icon>
+                <controls:ContentControl.LeftContent>
+                    <TextBlock Text="用户邮箱" />
+                </controls:ContentControl.LeftContent>
+                <controls:ContentControl.RightContent>
+                    <TextBlock  Text="{ Binding User.Email }"/>
+                </controls:ContentControl.RightContent>
+            </controls:ContentControl>
+            <controls:ContentControl>
+                <controls:ContentControl.Icon>
+                    <FontIcon Glyph="&#xE77B;" />
+                </controls:ContentControl.Icon>
+                <controls:ContentControl.LeftContent>
+                    <TextBlock Text="用户名" />
+                </controls:ContentControl.LeftContent>
+                <controls:ContentControl.RightContent>
+                    <TextBlock  Text="{ Binding User.Username }"/>
+                </controls:ContentControl.RightContent>
+            </controls:ContentControl>
+            <controls:ContentControl>
+                <controls:ContentControl.LeftContent>
+                    <Button Content="修改" ></Button>
+                </controls:ContentControl.LeftContent>
+                <controls:ContentControl.RightContent>
+                    <Button Content="退出" Click="LogoutButton_Click"></Button>
+                </controls:ContentControl.RightContent>
+            </controls:ContentControl>
+        </StackPanel>
+        <StackPanel x:Name="UserInfoStackPanel" Grid.Row="2" Orientation="Vertical" HorizontalAlignment="Center">
+        </StackPanel>
     </Grid>
 </Page>

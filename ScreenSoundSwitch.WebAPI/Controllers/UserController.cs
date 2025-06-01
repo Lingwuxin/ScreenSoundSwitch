@@ -12,6 +12,7 @@ namespace ScreenSoundSwitch.WebAPI.Controllers
 {
 
     [Route("api/[controller]")]
+    [Authorize(Roles ="admin")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -65,7 +66,7 @@ namespace ScreenSoundSwitch.WebAPI.Controllers
             // 生成 JWT 令牌
             var token = GenerateJwtToken(user);
 
-            return Ok(new JwtResponseDto { Username = user.Username ,Token = token });
+            return Ok(new JwtResponseDto { Username = user.Username ,Token = token ,Role=user.Role});
         }
 
         // 生成 JWT 令牌
@@ -73,7 +74,10 @@ namespace ScreenSoundSwitch.WebAPI.Controllers
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var claims = new[]{ new Claim(ClaimTypes.Name, user.UserId) };
+            var claims = new[]{ 
+                new Claim(ClaimTypes.Name, user.UserId),
+                 new Claim(ClaimTypes.Role, user.Role),
+            };
             var token = new JwtSecurityToken(
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(100),

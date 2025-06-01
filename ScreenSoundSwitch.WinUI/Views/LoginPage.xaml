@@ -32,7 +32,7 @@
                     <TextBlock x:Uid="EmailTextBlock" />
                 </controls:ContentControl.LeftContent>
                 <controls:ContentControl.RightContent>
-                    <TextBox x:Uid="EmailInputTextBox" x:Name="EmailInput" Text="{ Binding User.Username }"/>
+                    <TextBox MaxWidth="200"  MinWidth="200" x:Uid="EmailInputTextBox" x:Name="EmailInput" Text="{ Binding User.Username }"/>
                 </controls:ContentControl.RightContent>
             </controls:ContentControl>
             <controls:ContentControl>
@@ -43,7 +43,18 @@
                     <TextBlock x:Uid="PasswordTextBlock" />
                 </controls:ContentControl.LeftContent>
                 <controls:ContentControl.RightContent>
-                    <PasswordBox x:Uid="PasswordInputPasswordBox" x:Name="PasswordInput" PasswordChar="*" Password="{Binding User.Password}" />
+                    <PasswordBox  MaxWidth="200"  MinWidth="200" x:Uid="PasswordInputPasswordBox" x:Name="PasswordInput" PasswordChar="*" Password="{Binding User.Password}" />
+                </controls:ContentControl.RightContent>
+            </controls:ContentControl>
+            <controls:ContentControl>
+                <controls:ContentControl.LeftContent>
+                    <TextBlock Text="用户身份"/>
+                </controls:ContentControl.LeftContent>
+                <controls:ContentControl.RightContent>
+                    <RadioButtons MaxColumns="2">
+                        <RadioButton Content="用户" />
+                        <RadioButton Content="管理员" />
+                    </RadioButtons>
                 </controls:ContentControl.RightContent>
             </controls:ContentControl>
             <controls:ContentControl>
@@ -54,6 +65,7 @@
                     <Button x:Name="LoginButton" x:Uid="LoginButton"  Click="LoginButton_Click" />
                 </controls:ContentControl.RightContent>
             </controls:ContentControl>
+
         </StackPanel>
         <StackPanel x:Name="UserInfoStackPanel" Grid.Row="2" Orientation="Vertical" HorizontalAlignment="Center">
         </StackPanel>

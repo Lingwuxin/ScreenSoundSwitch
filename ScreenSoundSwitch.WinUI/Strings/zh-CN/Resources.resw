@@ -121,13 +121,13 @@
     <value>设备</value>
   </data>
   <data name="AudioPage.Content" xml:space="preserve">
-    <value>音乐</value>
+    <value>音频</value>
   </data>
   <data name="VolumePage.Content" xml:space="preserve">
     <value>音量</value>
   </data>
   <data name="UserPage.Content" xml:space="preserve">
-    <value>用户</value>
+    <value>管理员</value>
   </data>
   <data name="Nav.PaneTitle" xml:space="preserve">
     <value>音频管控系统</value>
@@ -176,5 +176,8 @@
   </data>
   <data name="EmailInputTextBox.PlaceholderText" xml:space="preserve">
     <value>输入电子邮箱</value>
+  </data>
+  <data name="ShareFilePage.Content" xml:space="preserve">
+    <value>共享音频</value>
   </data>
 </root>

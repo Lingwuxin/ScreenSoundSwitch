@@ -1,7 +1,10 @@
-﻿using ScreenSoundSwitch.WinUI.Models;
+﻿using ScreenSoundSwitch.WinUI.Data;
+using ScreenSoundSwitch.WinUI.Models;
 using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -26,8 +29,7 @@ namespace ScreenSoundSwitch.WinUI.Utils
             httpClient = new HttpClient();
         }
 
-        // 登录方法，使用 JSON 格式传参
-        public async Task<HttpResponseMessage> Login(UserModel user)
+        public async Task<JwtResponseDto> Login(UserModel user)
         {
             var loginData = new
             {
@@ -38,8 +40,26 @@ namespace ScreenSoundSwitch.WinUI.Utils
             string json = JsonSerializer.Serialize(loginData);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync($"{baseUrl}User/login", content);
-            return response;
+            var response = await httpClient.PostAsync($"{baseUrl}user/login", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                // 登录失败处理
+                Debug.WriteLine($"登录失败: {response.StatusCode}");
+                return null;
+            }
+
+            // 读取响应内容
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // 反序列化为 JWT 响应模型
+            var jwtResponse = JsonSerializer.Deserialize<JwtResponseDto>(responseContent, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+            SetToken(jwtResponse.Token);
+            // 返回 token（或根据需要也可以返回整个对象）
+            return jwtResponse;
         }
 
         // 注册方法
@@ -48,13 +68,15 @@ namespace ScreenSoundSwitch.WinUI.Utils
             var registerData = new
             {
                 user.Email,
+                user.Username,
                 user.Password
             };
-
+            Debug.WriteLine(registerData);
             string json = JsonSerializer.Serialize(registerData);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync($"{baseUrl}register", content);
+            var response = await httpClient.PostAsync($"{baseUrl}user/register", content);
+            Debug.Write(response.Content);
             return response;
         }
 

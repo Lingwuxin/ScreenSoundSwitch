@@ -2,6 +2,7 @@
 using ScreenSoundSwitch.WinUI.Models;
 using ScreenSoundSwitch.WinUI.Utils;
 using System;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,23 +22,39 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
             User.Email = email;
             User.Password = password;
             var res=await webAPIHttpHelper.Login(User);
-            if (res.StatusCode == System.Net.HttpStatusCode.OK)
+            if (res != null)
             {
                 User.LoginStatus = true;
-                
+                User.Username = res.Username;
+                return User;
             }
-            return User;
+            else
+            {
+                User.LoginStatus = false;
+                return null;
+            }
+            
         }
-        public async Task<UserModel> UserRegister(string email, string password)
+        public async Task<bool> UserRegister(string email,string username, string password)
         {
             User.Email = email;
             User.Password = password;
-            await webAPIHttpHelper.Register(User);
-            return User;
+            User.Username = username;
+            HttpResponseMessage res= await webAPIHttpHelper.Register(User);
+            if (res.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                User.LoginStatus = true;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         public async Task<UserModel> UserLogout()
         {
             webAPIHttpHelper.Logout();
+            User.LoginStatus = false;
             return User;
         }
     }

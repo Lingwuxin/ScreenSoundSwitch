@@ -1,17 +1,8 @@
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using NAudio.CoreAudioApi;
-using ScreenSoundSwitch.WinUI.Audio;
+using Microsoft.Win32;
 using ScreenSoundSwitch.WinUI.Data;
-using ScreenSoundSwitch.WinUI.Models;
 using ScreenSoundSwitch.WinUI.ViewModels;
 using System;
-using System.CodeDom;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
 using Application = Microsoft.UI.Xaml.Application;
 
 
@@ -35,15 +26,20 @@ namespace ScreenSoundSwitch.WinUI.Views
             screenToAudioDevice = ScreenToAudioDevice.Instance;
             audioDeviceManager = AudioDeviceManager.Instance;
             screenViewModel=this.DataContext as ScreenViewModel;
+           
             //Canvas canvas = ScreenItemsControl.ItemsPanelRoot as Canvas;
             //UpdateScreenSelection();
-            //UpdateDeviceSelection();
+            //UpdateDeviceSelection(); 
         }
-
+        private void OnDisplaySettingsChanged(object? sender, EventArgs e)
+        {
+            screenViewModel.InitializeElements();
+        }
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             screenViewModel.AudioDeviceSelectionChanged(sender);
         }
+
     }
 
 }

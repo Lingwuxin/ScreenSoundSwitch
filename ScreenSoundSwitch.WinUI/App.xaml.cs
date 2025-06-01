@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using ScreenSoundSwitch.WinUI.Models;
+using ScreenSoundSwitch.WinUI.ViewModels;
 using System;
 using System.Runtime.InteropServices;
 
@@ -17,7 +18,7 @@ namespace ScreenSoundSwitch.WinUI
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
-
+        public static UserViewModel SharedUserViewModel { get; } = new UserViewModel();
         public App()
         {
             this.InitializeComponent();

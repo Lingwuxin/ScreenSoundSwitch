@@ -32,7 +32,7 @@
                     <TextBlock Text="邮箱" />
                 </controls:ContentControl.LeftContent>
                 <controls:ContentControl.RightContent>
-                    <TextBox PlaceholderText="例如：hello@gmail.com" x:Name="EmailInput" Text="{ Binding User.Username }"/>
+                    <TextBox Width="200" PlaceholderText="例如：hello@gmail.com" x:Name="EmailInput" Text="{ Binding User.Email }"/>
                 </controls:ContentControl.RightContent>
             </controls:ContentControl>
             <controls:ContentControl>
@@ -43,7 +43,7 @@
                     <TextBlock Text="用户名" />
                 </controls:ContentControl.LeftContent>
                 <controls:ContentControl.RightContent>
-                    <TextBox PlaceholderText="请输入用户名" x:Name="UserNameInput" Text="{ Binding User.Username }"/>
+                    <TextBox Width="200" PlaceholderText="请输入用户名" x:Name="UserNameInput" Text="{ Binding User.Username }"/>
                 </controls:ContentControl.RightContent>
             </controls:ContentControl>
             <controls:ContentControl>
@@ -54,12 +54,12 @@
                     <TextBlock x:Uid="PasswordTextBlock" />
                 </controls:ContentControl.LeftContent>
                 <controls:ContentControl.RightContent>
-                    <PasswordBox PlaceholderText="请输入密码"  x:Name="PasswordInput" PasswordChar="*" Password="{Binding User.Password}" />
+                    <PasswordBox Width="200" PlaceholderText="请输入密码"  x:Name="PasswordInput" PasswordChar="*" Password="{Binding User.Password}" />
                 </controls:ContentControl.RightContent>
             </controls:ContentControl>
             <controls:ContentControl>
                 <controls:ContentControl.LeftContent>
-                    <TextBlock Text="最后一步"/> 
+                    <Button Content="登录" HorizontalAlignment="Center" VerticalAlignment="Center" Click="LoginButton_Click"/>
                 </controls:ContentControl.LeftContent>
                 <controls:ContentControl.RightContent>
                     <Button Content="注册" HorizontalAlignment="Center" VerticalAlignment="Center" Click="RegisterButton_Click" />

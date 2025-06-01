@@ -12,6 +12,8 @@ namespace ScreenSoundSwitch.WinUI.Models
         public string Password { get; set; }
         public string Email { get; set; }
         public bool LoginStatus { get; set; }
+        public string Role { get; set; } = "用户";
+
         public BitmapImage Avatar { get; set; }
 
         public UserModel()
