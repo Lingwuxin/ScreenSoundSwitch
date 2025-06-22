@@ -15,9 +15,6 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
     <Grid x:Name="grid">
-        <Grid.DataContext>
-            <StaticResource ResourceKey="SharedUserViewModel" />
-        </Grid.DataContext>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -33,11 +30,11 @@
                 <NavigationViewItem x:Uid="SelectDevicePage" Tag="SelectDevicePage" >
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xEC77;" />
-                    </NavigationViewItem.Icon>                    
+                    </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem  x:Uid="VolumePage" Tag="VolumePage" >
                     <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xF4C3;" />                    
+                        <FontIcon Glyph="&#xF4C3;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem   x:Uid="AudioPage" Icon="Audio" Tag="AudioPage">
@@ -52,22 +49,8 @@
                     -->
 
                 </NavigationViewItem>
-                <NavigationViewItem  Visibility="Collapsed" x:Uid="ShareFilePage" Icon="Audio" Tag="ShareFilePage"/>
-
+                
             </NavigationView.MenuItems>
-
-            <NavigationView.FooterMenuItems>
-                <NavigationViewItem Tapped="NavigationViewItem_User_Tapped" Content="{Binding User.Role}" Tag="UserPage"  >
-                    <FlyoutBase.AttachedFlyout>
-                        <Flyout>
-                            <Frame x:Name="UserFrame"/>
-                        </Flyout>
-                    </FlyoutBase.AttachedFlyout>
-                    <NavigationViewItem.Icon>
-                        <ImageIcon Source="{Binding User.Avatar}"></ImageIcon>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-            </NavigationView.FooterMenuItems>
             <Frame x:Name="navContentFrame" Margin="0,20,0,0"/>
         </NavigationView>
 

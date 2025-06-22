@@ -1,11 +1,9 @@
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using NAudio.CoreAudioApi;
 using ScreenSoundSwitch.WinUI.Data;
 using SoundSwitch.Audio.Manager;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
