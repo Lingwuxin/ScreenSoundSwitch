@@ -5,10 +5,6 @@ using Microsoft.UI.Xaml.Input;
 using NAudio.CoreAudioApi;
 using ScreenSoundSwitch.WinUI.ViewModels;
 using System;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-using CommunityToolkit.WinUI.UI.Controls;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -18,8 +14,6 @@ namespace ScreenSoundSwitch.WinUI.Views
     public sealed partial class AudioDeviceControl : UserControl
     {
         private AudioDeviceControlViewModel viewModel;
-        private CancellationTokenSource _scrollCancellationTokenSource;
-        private bool _isScrolling = false; // 记录是否正在滚动
         MMDevice device;
         bool block = false;
         private AudioEndpointVolume audioEndpointVolume;
