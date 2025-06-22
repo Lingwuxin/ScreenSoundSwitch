@@ -15,7 +15,6 @@ namespace ScreenSoundSwitch.WinUI.Views
     {
         private AudioDeviceControlViewModel viewModel;
         MMDevice device;
-        bool block = false;
         private AudioEndpointVolume audioEndpointVolume;
         public StackPanel _ProcessStackPanel;
         
@@ -57,10 +56,6 @@ namespace ScreenSoundSwitch.WinUI.Views
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                if (block)
-                {
-                    return;
-                }
                 try
                 {
                     if (sender.GetType() == typeof(Slider))
@@ -85,10 +80,6 @@ namespace ScreenSoundSwitch.WinUI.Views
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                if (block)
-                {
-                    return;
-                }
                 try
                 {
                     if (sender.GetType() == typeof(Slider))
@@ -114,10 +105,6 @@ namespace ScreenSoundSwitch.WinUI.Views
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                if (block)
-                {
-                    return;
-                }
                 try
                 {
                     if (sender.GetType() == typeof(Slider))
@@ -138,32 +125,36 @@ namespace ScreenSoundSwitch.WinUI.Views
         {
             audioEndpointVolume = device.AudioEndpointVolume;
             viewModel.SetDeviceName(device.FriendlyName) ;
-            MainVolumeSlider.Value = device.AudioEndpointVolume.MasterVolumeLevelScalar * 100;
-            if (device.AudioEndpointVolume.Channels.Count == 2)
+            DispatcherQueue.TryEnqueue(() =>
             {
-                LeftChannelSlider.Value = device.AudioEndpointVolume.Channels[0].VolumeLevelScalar * 100;
-                RightChannelSlider.Value = device.AudioEndpointVolume.Channels[1].VolumeLevelScalar * 100;
-            }
+                MainVolumeSlider.Value = device.AudioEndpointVolume.MasterVolumeLevelScalar * 100;
+                if (device.AudioEndpointVolume.Channels.Count == 2)
+                {
+                    LeftChannelSlider.Value = device.AudioEndpointVolume.Channels[0].VolumeLevelScalar * 100;
+                    RightChannelSlider.Value = device.AudioEndpointVolume.Channels[1].VolumeLevelScalar * 100;
+                }
+            });
             audioEndpointVolume.OnVolumeNotification += MasterVolumeChanged;
 
         }
 
         public void MasterVolumeChanged(AudioVolumeNotificationData data)
         {
-            block = true;
             DispatcherQueue.TryEnqueue(() =>
             {
                 // 安全地更新 UI 组件
-
-                MainVolumeSlider.Value = audioEndpointVolume.MasterVolumeLevelScalar * 100;
-
-                if (data.Channels == 2)
+                if (data.EventContext != Guid.Empty)
                 {
-                    LeftChannelSlider.Value = audioEndpointVolume.Channels[0].VolumeLevelScalar * 100;
-                    RightChannelSlider.Value = audioEndpointVolume.Channels[1].VolumeLevelScalar * 100;
+                    //由自身引起的音量变化不做响应
+                    MainVolumeSlider.Value = audioEndpointVolume.MasterVolumeLevelScalar * 100;
+
+                    if (data.Channels == 2)
+                    {
+                        LeftChannelSlider.Value = audioEndpointVolume.Channels[0].VolumeLevelScalar * 100;
+                        RightChannelSlider.Value = audioEndpointVolume.Channels[1].VolumeLevelScalar * 100;
+                    }
                 }
             });
-            block = false;
 
         }
     }
