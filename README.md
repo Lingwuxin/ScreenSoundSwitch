@@ -24,7 +24,7 @@
 ![alt text](image-5.png)
 获取正在使用播放设备的进程
 ![alt text](image-6.png)
-播放音乐
-![alt text](image-7.png)
+音乐播放
+![alt text](image.png)
 ## 当前存在的问题
 - 项目初期并未按照MVVM的架构开发，导致项目结构混乱，将在功能完成后逐步对各个页面进行重构。
