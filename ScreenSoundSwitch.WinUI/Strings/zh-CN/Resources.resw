@@ -130,7 +130,7 @@
     <value>管理员</value>
   </data>
   <data name="Nav.PaneTitle" xml:space="preserve">
-    <value>音频管控系统</value>
+    <value>ScreenSoundSwitch</value>
   </data>
   <data name="SelectDeviceTextBlock.Text" xml:space="preserve">
     <value>为当前屏幕分配播放设备</value>
