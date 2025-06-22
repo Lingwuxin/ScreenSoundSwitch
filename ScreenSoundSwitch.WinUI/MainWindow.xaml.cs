@@ -36,10 +36,10 @@ namespace ScreenSoundSwitch.WinUI
             this.Title = "ScreenSoundSwicth";
             this.AppWindow.Resize(new Windows.Graphics.SizeInt32(1200, 750));
             ExtendsContentIntoTitleBar = true;
-            UserFrame.Navigate(typeof(LoginPage));
+            //UserFrame.Navigate(typeof(LoginPage));
             //nav.SelectedItem = nav.MenuItems[0];
             //当窗口实例化完成后，初始化各个页面
-            //navContentFrame.Navigate(typeof(SelectDevicePage));
+            navContentFrame.Navigate(typeof(VolumePage));
         }
         
 
