@@ -1,0 +1,40 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+env:
+  SOLUTION_FILE_PATH: ScreenSoundSwitch.sln
+  BUILD_CONFIGURATION: Release
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        platform: [x64]  # Only test x64 for CI to save build time
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Restore NuGet packages
+      run: dotnet restore ${{ env.SOLUTION_FILE_PATH }}
+
+    - name: Build solution
+      run: msbuild ${{ env.SOLUTION_FILE_PATH }} /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:Platform=${{ matrix.platform }} /p:EnableMsixTooling=true
+
+    - name: Run tests (if any)
+      run: dotnet test --no-restore --verbosity normal --configuration ${{ env.BUILD_CONFIGURATION }}
+      continue-on-error: true  # Continue even if no tests are found

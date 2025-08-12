@@ -1,0 +1,85 @@
+name: Build and Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      build_configuration:
+        description: 'Build configuration'
+        required: false
+        default: 'Release'
+        type: choice
+        options:
+        - Release
+        - Debug
+        - Nightly
+
+env:
+  SOLUTION_FILE_PATH: ScreenSoundSwitch.sln
+  BUILD_CONFIGURATION: ${{ github.event.inputs.build_configuration || 'Release' }}
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        platform: [x86, x64, ARM64]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Restore NuGet packages
+      run: dotnet restore ${{ env.SOLUTION_FILE_PATH }}
+
+    - name: Build solution
+      run: msbuild ${{ env.SOLUTION_FILE_PATH }} /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:Platform=${{ matrix.platform }} /p:EnableMsixTooling=true /p:UapAppxPackageBuildMode=SideloadOnly
+
+    - name: Create package (MSIX)
+      run: msbuild ScreenSoundSwitch.WinUI/ScreenSoundSwitch.WinUI.csproj /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:Platform=${{ matrix.platform }} /p:UapAppxPackageBuildMode=SideloadOnly /p:AppxBundle=Never /p:GenerateAppxPackageOnBuild=true
+
+    - name: Upload package artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ScreenSoundSwitch-${{ matrix.platform }}-${{ env.BUILD_CONFIGURATION }}
+        path: |
+          ScreenSoundSwitch.WinUI/AppPackages/**/*.msix
+          ScreenSoundSwitch.WinUI/AppPackages/**/*.msixbundle
+          ScreenSoundSwitch.WinUI/bin/${{ matrix.platform }}/${{ env.BUILD_CONFIGURATION }}/**/*.exe
+        retention-days: 30
+
+  create-release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          artifacts/**/*.msix
+          artifacts/**/*.msixbundle
+          artifacts/**/*.exe
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
