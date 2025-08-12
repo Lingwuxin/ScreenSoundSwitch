@@ -26,5 +26,21 @@
 ![alt text](image-6.png)
 音乐播放
 ![alt text](image.png)
+## 构建和发布
+
+项目已配置GitHub Actions自动化工作流程：
+
+### 自动打包
+- 推送版本标签时自动构建和打包：`git tag v1.0.0 && git push origin v1.0.0`
+- 支持x86、x64、ARM64多架构构建
+- 自动生成MSIX安装包
+- 自动创建GitHub发布版本
+
+### 持续集成
+- 每次推送和Pull Request都会自动验证构建
+- 确保代码质量和构建稳定性
+
+详见 [.github/workflows/README.md](.github/workflows/README.md)
+
 ## 当前存在的问题
 - 项目初期并未按照MVVM的架构开发，导致项目结构混乱，将在功能完成后逐步对各个页面进行重构。
