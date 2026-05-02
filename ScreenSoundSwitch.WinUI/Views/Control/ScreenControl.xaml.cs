@@ -1,10 +1,10 @@
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using ScreenSoundSwitch.WinUI.ViewModels;
 using System.Windows.Forms;
-using UserControl = Microsoft.UI.Xaml.Controls.UserControl;
 using Windows.UI;
 using Application = Microsoft.UI.Xaml.Application;
-using ScreenSoundSwitch.WinUI.ViewModels;
+using UserControl = Microsoft.UI.Xaml.Controls.UserControl;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -14,44 +14,90 @@ namespace ScreenSoundSwitch.WinUI.Views
 
     public sealed partial class ScreenControl : UserControl
     {
-        //当isSelected被设置为true时，将该控件高亮，并通知ViewModel层选中了某个屏幕
-        //当isSelected被设置为false时，将该控件恢复原状
-        public bool IsSelected
+        public static readonly Microsoft.UI.Xaml.DependencyProperty ViewModelProperty =
+            Microsoft.UI.Xaml.DependencyProperty.Register(
+                "ViewModel", typeof(ScreenViewModel), typeof(ScreenControl), new Microsoft.UI.Xaml.PropertyMetadata(null));
+
+        public ScreenViewModel ViewModel
         {
-            get => _isSelected;
+            get { return (ScreenViewModel)GetValue(ViewModelProperty); }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        public static readonly Microsoft.UI.Xaml.DependencyProperty ScreenProperty =
+            Microsoft.UI.Xaml.DependencyProperty.Register(
+                "Screen", typeof(Screen), typeof(ScreenControl), new Microsoft.UI.Xaml.PropertyMetadata(null));
+
+        public Screen Screen
+        {
+            get { return (Screen)GetValue(ScreenProperty); }
+            set { SetValue(ScreenProperty, value); }
+        }
+
+        public static readonly Microsoft.UI.Xaml.DependencyProperty ScaleProperty =
+            Microsoft.UI.Xaml.DependencyProperty.Register(
+                "Scale", typeof(double), typeof(ScreenControl), new Microsoft.UI.Xaml.PropertyMetadata(1.0));
+
+        public double Scale
+        {
+            get { return (double)GetValue(ScaleProperty); }
             set
             {
-                if (_isSelected != value)
+                SetValue(ScaleProperty, value);
+                if (Screen != null)
                 {
-                    _isSelected = value;
-                    if (_isSelected)
-                    {
-                        // 高亮显示控件
-                        HighlightControl();
-                        // 通知ViewModel选中了某个屏幕
-                        ViewModel.SelectScreen(screen);
-                    }
-                    else
-                    {
-                        // 恢复控件原状
-                        ResetControl();
-                    }
+                    ScreenRect.Width = Screen.Bounds.Width * value;
+                    ScreenRect.Height = Screen.Bounds.Height * value;
                 }
             }
         }
-        private bool _isSelected = false;
-        public string DeviceNameText { get; set; }
-        private ScreenViewModel ViewModel { get; set; }
-        public Screen screen;
-        public ScreenControl(Screen screen,ScreenViewModel viewModel,double scale)
+
+        public static readonly Microsoft.UI.Xaml.DependencyProperty IsSelectedProperty =
+            Microsoft.UI.Xaml.DependencyProperty.Register(
+                "IsSelected", typeof(bool), typeof(ScreenControl), new Microsoft.UI.Xaml.PropertyMetadata(false, OnIsSelectedChanged));
+
+        public bool IsSelected
+        {
+            get { return (bool)GetValue(IsSelectedProperty); }
+            set { SetValue(IsSelectedProperty, value); }
+        }
+
+        private static void OnIsSelectedChanged(Microsoft.UI.Xaml.DependencyObject d, Microsoft.UI.Xaml.DependencyPropertyChangedEventArgs e)
+        {
+            var control = (ScreenControl)d;
+            if ((bool)e.NewValue)
+            {
+                control.HighlightControl();
+                if (control.ViewModel != null && control.Screen != null)
+                {
+                    control.ViewModel.SelectScreen(control.Screen);
+                }
+            }
+            else
+            {
+                control.ResetControl();
+            }
+        }
+
+        public static readonly Microsoft.UI.Xaml.DependencyProperty DeviceNameTextProperty =
+            Microsoft.UI.Xaml.DependencyProperty.Register(
+                "DeviceNameText", typeof(string), typeof(ScreenControl), new Microsoft.UI.Xaml.PropertyMetadata(string.Empty, OnDeviceNameTextChanged));
+
+        public string DeviceNameText
+        {
+            get { return (string)GetValue(DeviceNameTextProperty); }
+            set { SetValue(DeviceNameTextProperty, value); }
+        }
+
+        private static void OnDeviceNameTextChanged(Microsoft.UI.Xaml.DependencyObject d, Microsoft.UI.Xaml.DependencyPropertyChangedEventArgs e)
+        {
+            var control = (ScreenControl)d;
+            control.DeviceName.Text = (string)e.NewValue;
+        }
+
+        public ScreenControl()
         {
             this.InitializeComponent();
-            this.screen=screen;
-            ViewModel =viewModel;
-            DeviceNameText = screen.DeviceName;
-            DeviceName.Text=screen.DeviceName;
-            ScreenRect.Width = screen.Bounds.Width* scale;
-            ScreenRect.Height = screen.Bounds.Height* scale;
         }
         private void HighlightControl()
         {
@@ -63,19 +109,19 @@ namespace ScreenSoundSwitch.WinUI.Views
             ScreenRect.Fill = new SolidColorBrush((Color)Application.Current.Resources["SystemAccentColor"]);
         }
         private void ScreenControl_PointerEntered(object sender, PointerRoutedEventArgs e)
-        {      
+        {
             if (!IsSelected)
-            ScreenRect.Fill = new SolidColorBrush((Color)Application.Current.Resources["SystemAccentColorDark1"]);
+                ScreenRect.Fill = new SolidColorBrush((Color)Application.Current.Resources["SystemAccentColorDark1"]);
         }
         private void ScreenControl_PointerExited(object sender, PointerRoutedEventArgs e)
         {
             if (!IsSelected)
-             ResetControl();            
+                ResetControl();
         }
         private void ScreenControl_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             IsSelected = true;
             //通知ViewModel层选中了某个屏幕
         }
-    } 
+    }
 }

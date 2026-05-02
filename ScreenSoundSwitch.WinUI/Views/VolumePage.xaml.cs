@@ -24,7 +24,7 @@ namespace ScreenSoundSwitch.WinUI.Views
         public VolumePage()
         {
             this.InitializeComponent();
-            screenToAudioDevice = ScreenToAudioDevice.Instance;
+            screenToAudioDevice = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<ScreenToAudioDevice>(App.Current.Services);
             windowMonitor = new WindowMonitor();
             windowMonitor.ForegroundChanged += WindowMonitor_ForegroundChanged;
             windowMonitor.MouseWheelScrolled += WindowMonitor_KeyIsDown;
@@ -106,29 +106,44 @@ namespace ScreenSoundSwitch.WinUI.Views
         {
             Debug.WriteLine($"Into ForegroundMovedHandle: hwnd={hwnd},pid={processId}");
             if (hwnd == IntPtr.Zero) return;
-            if (foregroundProcessControl == null)
+
+            // 每次发生移动时重新去寻找对应进程的 ProcessControl
+            ProcessControl targetProcessControl = null;
+            foreach (var audioDeviceControl in DevicesStackPanel.Children.OfType<AudioDeviceControl>())
             {
-                Debug.WriteLine("foregroundProcessControl==null");
+                foreach (var processControl in audioDeviceControl._ProcessStackPanel.Children.OfType<ProcessControl>())
+                {
+                    if (processId == processControl.ProcessId)
+                    {
+                        targetProcessControl = processControl;
+                        break;
+                    }
+                }
+                if (targetProcessControl != null) break;
+            }
+
+            if (targetProcessControl == null)
+            {
+                Debug.WriteLine($"targetProcessControl==null for pid={processId}");
                 return;
             }
-            if (processId != foregroundProcessControl.ProcessId)
-            {
-                Debug.WriteLine($"Process:{processId} is not using Audio Devices ");
-                return;
-            }
+
             Screen screen = Screen.FromHandle(hwnd);
 
             if (screen == null) return;
-            if (!foregroundProcessControl.IsScreenChange(screen)) return;
+
+            // 只要进程的屏幕确实发生了变化，并且我们在设置里指派了音频设备，就开始切换。
+            if (!targetProcessControl.IsScreenChange(screen)) return;
             if (screenToAudioDevice.ContainsKey(screen))
             {
-                foregroundProcessControl.ChangeAudioDevice(screenToAudioDevice[screen]);
+                targetProcessControl.ChangeAudioDevice(screenToAudioDevice[screen]);
             }
         }
 
         private void UpdateDevices()
         {
-            var currentDevices = AudioDeviceManager.Instance.Devices;
+            var audioDeviceManager = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<AudioDeviceManager>(App.Current.Services);
+            var currentDevices = audioDeviceManager.Devices;
 
             // 如果 previousDevices 已存在并且与 currentDevices 相同，就直接返回
             if (previousDevices != null && previousDevices.Count == currentDevices.Count &&
@@ -144,12 +159,12 @@ namespace ScreenSoundSwitch.WinUI.Views
             foreach (var device in currentDevices)
             {
                 AudioDeviceControl audioDeviceControl = new AudioDeviceControl(device);
-                
+
                 DevicesStackPanel.Children.Add(audioDeviceControl);
             }
         }
 
-        
+
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);

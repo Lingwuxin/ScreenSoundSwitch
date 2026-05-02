@@ -1,7 +1,6 @@
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Input;
 using NAudio.CoreAudioApi;
 using ScreenSoundSwitch.WinUI.ViewModels;
 using System;
@@ -17,11 +16,12 @@ namespace ScreenSoundSwitch.WinUI.Views
         MMDevice device;
         private AudioEndpointVolume audioEndpointVolume;
         public StackPanel _ProcessStackPanel;
-        
+
         public AudioDeviceControl()
         {
             this.InitializeComponent();
-            viewModel=this.DataContext as AudioDeviceControlViewModel;
+            viewModel = this.DataContext as AudioDeviceControlViewModel;
+            this.Unloaded += AudioDeviceControl_Unloaded;
         }
         public AudioDeviceControl(MMDevice device)
         {
@@ -31,6 +31,22 @@ namespace ScreenSoundSwitch.WinUI.Views
             this._ProcessStackPanel = ProcessStackPanel;
             UpdateDeviceMsg();
             UpdateProcessSession();
+            this.Unloaded += AudioDeviceControl_Unloaded;
+        }
+
+        private void AudioDeviceControl_Unloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            if (audioEndpointVolume != null)
+            {
+                try
+                {
+                    audioEndpointVolume.OnVolumeNotification -= MasterVolumeChanged;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to unsubscribe from OnVolumeNotification: {ex.Message}");
+                }
+            }
         }
 
         private void SessionList_Expanded(Expander sender, ExpanderExpandingEventArgs args)
@@ -68,9 +84,9 @@ namespace ScreenSoundSwitch.WinUI.Views
                         }
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
-                    throw new Exception("Error: RightChannelSlider_ValueChanged");
+                    System.Diagnostics.Debug.WriteLine($"Error in RightChannelSlider_ValueChanged: {ex.Message}");
                 }
             });
 
@@ -92,9 +108,9 @@ namespace ScreenSoundSwitch.WinUI.Views
                     }
 
                 }
-                catch
+                catch (Exception ex)
                 {
-                    throw new Exception("Error: LeftChannelSlider_ValueChanged");
+                    System.Diagnostics.Debug.WriteLine($"Error in LeftChannelSlider_ValueChanged: {ex.Message}");
                 }
             });
 
@@ -112,9 +128,9 @@ namespace ScreenSoundSwitch.WinUI.Views
                         device.AudioEndpointVolume.MasterVolumeLevelScalar = (float)(e.NewValue / 100);
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
-                    throw new NotImplementedException("Error: MainVolumeSlider_ValueChanged");
+                    System.Diagnostics.Debug.WriteLine($"Error in MainVolumeSlider_ValueChanged: {ex.Message}");
                 }
             });
 
@@ -124,7 +140,7 @@ namespace ScreenSoundSwitch.WinUI.Views
         public void UpdateDeviceMsg()
         {
             audioEndpointVolume = device.AudioEndpointVolume;
-            viewModel.SetDeviceName(device.FriendlyName) ;
+            viewModel.SetDeviceName(device.FriendlyName);
             DispatcherQueue.TryEnqueue(() =>
             {
                 MainVolumeSlider.Value = device.AudioEndpointVolume.MasterVolumeLevelScalar * 100;

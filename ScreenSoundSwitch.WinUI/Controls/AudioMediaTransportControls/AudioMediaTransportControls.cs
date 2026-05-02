@@ -1,22 +1,8 @@
-using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Documents;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
 using ScreenSoundSwitch.WinUI.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Windows.Input;
-using Windows.Media.Core;
-using Windows.Media.Playback;
-using Windows.Storage;
 using WinRT;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -32,7 +18,7 @@ namespace ScreenSoundSwitch.WinUI.Controls
             this.DefaultStyleKey = typeof(AudioMediaTransportControls);
             this.IsNextTrackButtonVisible = true;
             this.IsPreviousTrackButtonVisible = true;
-            this.IsZoomButtonVisible = false;           
+            this.IsZoomButtonVisible = false;
         }
         //播放列表按钮的显示属性
         public static readonly DependencyProperty IsPlaylistButtonVisibleProperty =
@@ -67,7 +53,7 @@ namespace ScreenSoundSwitch.WinUI.Controls
         //ControlTemplate中有
         public static readonly DependencyProperty NextTrackCommandProperty =
             DependencyProperty.Register("NextTrackCommand", typeof(ICommand), typeof(AudioMediaTransportControls), new PropertyMetadata(null));
-       
+
         public ICommand NextTrackCommand
         {
             get { return (ICommand)GetValue(NextTrackCommandProperty); }

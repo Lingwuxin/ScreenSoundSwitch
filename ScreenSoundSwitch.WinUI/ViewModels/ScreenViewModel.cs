@@ -1,15 +1,11 @@
-﻿using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Windows.Forms;
-using ScreenSoundSwitch.WinUI.Data;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using NAudio.CoreAudioApi;
+using ScreenSoundSwitch.WinUI.Data;
+using ScreenSoundSwitch.WinUI.Models;
+using System;
+using System.Collections.ObjectModel;
 using System.Linq;
-using ListView = Microsoft.UI.Xaml.Controls.ListView;
-using ComboBox = Microsoft.UI.Xaml.Controls.ComboBox;
-using ScreenSoundSwitch.WinUI.Views;
-
+using System.Windows.Forms;
 
 namespace ScreenSoundSwitch.WinUI.ViewModels
 {
@@ -19,7 +15,7 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
     public partial class ScreenViewModel : ObservableObject
     {
         [ObservableProperty]
-        private ObservableCollection<ScreenControl> elements = new();
+        private ObservableCollection<ScreenControlModel> elements = new();
         [ObservableProperty]
         private MMDeviceCollection audioDevices;
         [ObservableProperty]
@@ -28,11 +24,11 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
         public partial MMDevice SelectedAudioDevice { get; set; }
         private ScreenToAudioDevice screenToAudioDevice;
         private AudioDeviceManager audioDeviceManager;
-        public ScreenViewModel()
+        public ScreenViewModel(AudioDeviceManager audioManager, ScreenToAudioDevice screenToDeviceMap)
         {
-            audioDeviceManager = AudioDeviceManager.Instance;
+            audioDeviceManager = audioManager;
             audioDevices = audioDeviceManager.Devices;
-            screenToAudioDevice = ScreenToAudioDevice.Instance;
+            screenToAudioDevice = screenToDeviceMap;
             InitializeElements();
         }
 
@@ -45,11 +41,11 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
             Screen[] screens = Screen.AllScreens;
             double minX = screens.Min(e => e.Bounds.X);
             double minY = screens.Min(e => e.Bounds.Y);
-            double width = screens.Max(e => e.Bounds.X + e.Bounds.Width)-minX;
-            double height = screens.Max(e => e.Bounds.Y + e.Bounds.Height)-minY;
+            double width = screens.Max(e => e.Bounds.X + e.Bounds.Width) - minX;
+            double height = screens.Max(e => e.Bounds.Y + e.Bounds.Height) - minY;
 
             Elements.Clear();
-            if(Screen.AllScreens.Length == 0)
+            if (Screen.AllScreens.Length == 0)
             {
                 return;
             }
@@ -58,28 +54,36 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
             //double scaleX = 650 / width;
             //double scaleY = 300 / height;
             //上面这个是非等比例缩放，下面这个是等比例缩放
-            double scale=Math.Min(650/width,300/height);
-            double centerX = width / 2*scale;
-            double centerY = height / 2*scale;
+            double scale = Math.Min(650 / width, 300 / height);
+            double centerX = width / 2 * scale;
+            double centerY = height / 2 * scale;
             //默认为每个显示器分配系统使用的音频设备
-            
+
             foreach (var screen in Screen.AllScreens)
             {
-                var rect = new ScreenControl(screen, this,scale);
+                //默认为每个显示器分配系统使用的音频设备
                 screenToAudioDevice.Add(screen, audioDeviceManager.GetDefaultAudioEndpoint());
-                if (rect.screen.Primary)
-                {
-                    rect.IsSelected = true;
-                }
-                double x = (screen.Bounds.X-minX) * scale - centerX;//当前显示器到中心点的距离
-                double y = (screen.Bounds.Y-minY) * scale - centerY;
-                double sitX = x  + 325;
-                double sitY = y  + 150;
-                Canvas.SetLeft(rect, sitX);
-                Canvas.SetTop(rect, sitY);
 
-                Elements.Add(rect);
-                
+                double x = (screen.Bounds.X - minX) * scale - centerX;//当前显示器到中心点的距离
+                double y = (screen.Bounds.Y - minY) * scale - centerY;
+                double sitX = x + 325;
+                double sitY = y + 150;
+
+                var model = new ScreenControlModel(0, screen.Bounds)
+                {
+                    Name = screen.DeviceName,
+                    DeviceNameText = screen.DeviceName,
+                    Left = sitX,
+                    Top = sitY,
+                    Width = screen.Bounds.Width * scale,
+                    Height = screen.Bounds.Height * scale,
+                    IsSelected = screen.Primary,
+                    Screen = screen,
+                    Scale = scale,
+                    ViewModel = this
+                };
+
+                Elements.Add(model);
             }
         }
         public void SelectScreen(Screen screen)
@@ -88,36 +92,45 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
             //遍历其他屏幕控件，将当前屏幕控件的选中状态设置为false
             foreach (var element in Elements)
             {
-                if (!element.DeviceNameText.Equals(screen.DeviceName) )
+                if (!element.DeviceNameText.Equals(screen.DeviceName))
                 {
                     element.IsSelected = false;
                 }
+                else
+                {
+                    element.IsSelected = true;
+                }
             }
             //根据当前选中的屏幕，获取对应的音频设备
-            if (screenToAudioDevice.ContainsKey(screen) && screenToAudioDevice[screen]!= null)
+            if (screenToAudioDevice.ContainsKey(screen) && screenToAudioDevice[screen] != null)
             {
-                AudioDeviceSelectionChanged(screenToAudioDevice[screen]);          
+                // Ensure reference equality by fetching from the existing audioDevices collection
+                var deviceId = screenToAudioDevice[screen].ID;
+                var matchedDevice = audioDevices.FirstOrDefault(d => d.ID == deviceId) ?? screenToAudioDevice[screen];
+                SelectedAudioDevice = matchedDevice;
             }
         }
-        public void AudioDeviceSelectionChanged(object sender)
+
+        partial void OnSelectedAudioDeviceChanged(MMDevice value)
         {
-            if (sender is ComboBox comboBox && comboBox.SelectedItem is MMDevice mMDevice)
+            // Whenever SelectedAudioDevice changes (either via code or UI Combobox selection),
+            // update the mapping for the currently selected screen.
+            if (SelectedScreen != null && value != null)
             {
-                   SelectedAudioDevice = mMDevice;
                 if (!screenToAudioDevice.ContainsKey(SelectedScreen))
                 {
-                    screenToAudioDevice.Add(SelectedScreen, mMDevice);
+                    screenToAudioDevice.Add(SelectedScreen, value);
                 }
                 else
                 {
-                    screenToAudioDevice[SelectedScreen] = mMDevice;
+                    screenToAudioDevice[SelectedScreen] = value;
                 }
             }
-            if (sender is MMDevice _mMDevice)
-            {
-                SelectedAudioDevice = _mMDevice;
-                screenToAudioDevice[SelectedScreen] = _mMDevice;
-            }
+        }
+
+        public void AudioDeviceSelectionChanged(object sender)
+        {
+            // 兼容之前代码保留该空方法，实际逻辑已转移到 OnSelectedAudioDeviceChanged 中被动响应。
         }
 
     }

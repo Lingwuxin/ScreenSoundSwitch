@@ -5,7 +5,6 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using ScreenSoundSwitch.WinUI.Models;
 using ScreenSoundSwitch.WinUI.ViewModels;
-using System.Diagnostics;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -25,7 +24,7 @@ namespace ScreenSoundSwitch.WinUI.Views
         {
             this.InitializeComponent();
             audioPlayerViewModel = (AudioPlayerViewModel)this.DataContext;
-            audioViewModel = (AudioViewModel) this.AudioListView.DataContext;
+            audioViewModel = (AudioViewModel)this.AudioListView.DataContext;
             //AudioMsgListView.ItemsSource = AudioFileMsg.GetContactsAsync();
         }
 
@@ -39,7 +38,7 @@ namespace ScreenSoundSwitch.WinUI.Views
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-           
+
         }
 
         private void SearchBox_Tapped(object sender, TappedRoutedEventArgs e)
@@ -69,4 +68,4 @@ namespace ScreenSoundSwitch.WinUI.Views
 
         }
     }
-} 
+}

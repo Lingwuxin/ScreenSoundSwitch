@@ -1,12 +1,9 @@
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media.Imaging;
 using NAudio.CoreAudioApi;
-using NAudio.Wave;
 using ScreenSoundSwitch.WinUI.ViewModels;
 using SoundSwitch.Audio.Manager;
 using SoundSwitch.Audio.Manager.Interop.Enum;
-using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -30,7 +27,7 @@ namespace ScreenSoundSwitch.WinUI.Views
         public ProcessControl(AudioSessionControl session)
         {
             this.InitializeComponent();
-            viewModel=this.DataContext as ProcessControlViewModel;
+            viewModel = this.DataContext as ProcessControlViewModel;
             this.session = session;
             audioSwitcher = AudioSwitcher.Instance;
             SetProcess();
@@ -68,15 +65,21 @@ namespace ScreenSoundSwitch.WinUI.Views
             viewModel.SetProcessName(process.ProcessName);
             screen = Screen.FromHandle(process.Handle);
             SimpleVolumeSlider.Value = session.SimpleAudioVolume.Volume * 100;
-            var icon = Icon.ExtractAssociatedIcon(process.MainModule?.FileName);
-            
-            if (icon != null)
-            {
-                // 将Icon转换为BitmapImage
-                BitmapImage bitmapImage = ConvertIconToBitmapImage(icon);
 
-                viewModel.SetImage(bitmapImage);
-                
+            try
+            {
+                var icon = Icon.ExtractAssociatedIcon(process.MainModule?.FileName);
+                if (icon != null)
+                {
+                    // 将Icon转换为BitmapImage
+                    BitmapImage bitmapImage = ConvertIconToBitmapImage(icon);
+                    viewModel.SetImage(bitmapImage);
+                }
+            }
+            catch (System.ComponentModel.Win32Exception)
+            {
+                // Fallback for when a 32-bit process tries to access a 64-bit process module
+                // Ignore the exception, the process will just not have an icon
             }
         }
         private BitmapImage ConvertIconToBitmapImage(Icon icon)

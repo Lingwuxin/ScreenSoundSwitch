@@ -2,27 +2,20 @@
 using CommunityToolkit.Mvvm.Input;
 using ScreenSoundSwitch.WinUI.Models;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Media.Audio;
 using Windows.Media.Core;
 using Windows.Media.Playback;
-using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 namespace ScreenSoundSwitch.WinUI.ViewModels
 {
-    public partial class AudioPlayerViewModel:ObservableObject
+    public partial class AudioPlayerViewModel : ObservableObject
     {
 
         [ObservableProperty]
         public partial MediaPlaybackList PlaybackList { get; set; }
         [ObservableProperty]
-        public ObservableCollection<AudioFileModel> playListFiles=new();
+        public ObservableCollection<AudioFileModel> playListFiles = new();
         public AudioPlayerViewModel()
         {
             PlaybackList = new MediaPlaybackList();
@@ -32,7 +25,7 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
         public void SetPlaybackList(MediaPlaybackList playbackList)
         {
             PlaybackList = playbackList;
-            
+
         }
         async public void PlayListItem_DoubleTapped(AudioFileModel audioFileModel)
         {
@@ -52,7 +45,7 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
             PlaybackList.Items.Add(playbackItem);
             PlayListFiles.Add(audioFileModel);
         }
-        
+
         [RelayCommand]
         private void NextTrack()
         {

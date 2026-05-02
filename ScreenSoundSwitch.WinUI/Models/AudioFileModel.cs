@@ -15,25 +15,26 @@ namespace ScreenSoundSwitch.WinUI.Models
         public string FormattedDuration => Duration.ToString(@"mm\:ss");
         public StorageFile File { get; private set; }
         public BitmapImage? CoverImage { get; private set; } // 封面图
-        public string Local {get{ return _local; } }
+        public string Local { get { return _local; } }
         private string _shared;
         private string _local;
         private bool _isLocal;
-        public bool IsLocal 
-        { 
-            get { return _isLocal; } 
-            set { 
+        public bool IsLocal
+        {
+            get { return _isLocal; }
+            set
+            {
                 _isLocal = value;
                 if (_isLocal)
                 {
                     _local = "本地";
                 }
                 _local = "未下载";
-            } 
+            }
         }
         public bool IsSelected { get; set; }
         public bool IsPlaying { get; set; }
-        public bool IsShared  { get; set; }
+        public bool IsShared { get; set; }
 
 
         private AudioFileModel(StorageFile storageFile)
@@ -53,7 +54,7 @@ namespace ScreenSoundSwitch.WinUI.Models
             // 读取音乐元数据
             audioFile.Title = string.IsNullOrEmpty(musicProperties.Title) ? storageFile.DisplayName : musicProperties.Title;
             audioFile.Author = string.IsNullOrEmpty(musicProperties.Artist) ? "Unknown" : musicProperties.Artist;
-            audioFile.Album = string.IsNullOrEmpty(musicProperties.Album) ?"":musicProperties.Album;
+            audioFile.Album = string.IsNullOrEmpty(musicProperties.Album) ? "" : musicProperties.Album;
             audioFile.Duration = musicProperties.Duration;
 
             // 获取封面图

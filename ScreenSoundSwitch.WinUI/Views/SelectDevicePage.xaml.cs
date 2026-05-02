@@ -1,9 +1,7 @@
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Win32;
 using ScreenSoundSwitch.WinUI.Data;
 using ScreenSoundSwitch.WinUI.ViewModels;
 using System;
-using Application = Microsoft.UI.Xaml.Application;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -18,15 +16,18 @@ namespace ScreenSoundSwitch.WinUI.Views
     {
         private ScreenToAudioDevice screenToAudioDevice;
         private AudioDeviceManager audioDeviceManager;
-       ScreenViewModel screenViewModel;
+        ScreenViewModel screenViewModel;
         public SelectDevicePage()
         {
-            
+
             this.InitializeComponent();
-            screenToAudioDevice = ScreenToAudioDevice.Instance;
-            audioDeviceManager = AudioDeviceManager.Instance;
-            screenViewModel=this.DataContext as ScreenViewModel;
-           
+            screenToAudioDevice = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<ScreenToAudioDevice>(App.Current.Services);
+            audioDeviceManager = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<AudioDeviceManager>(App.Current.Services);
+
+            // Assign the bound DataContext to the DI resolved instance
+            this.DataContext = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<ScreenViewModel>(App.Current.Services);
+            screenViewModel = this.DataContext as ScreenViewModel;
+
             //Canvas canvas = ScreenItemsControl.ItemsPanelRoot as Canvas;
             //UpdateScreenSelection();
             //UpdateDeviceSelection(); 
@@ -34,10 +35,6 @@ namespace ScreenSoundSwitch.WinUI.Views
         private void OnDisplaySettingsChanged(object? sender, EventArgs e)
         {
             screenViewModel.InitializeElements();
-        }
-        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            screenViewModel.AudioDeviceSelectionChanged(sender);
         }
 
     }

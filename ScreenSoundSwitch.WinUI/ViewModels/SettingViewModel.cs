@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using ScreenSoundSwitch.WinUI.Models;
 using Windows.Storage;
 
 namespace ScreenSoundSwitch.WinUI.ViewModels
 {
-    public partial class SettingViewModel:ObservableObject
+    public partial class SettingViewModel : ObservableObject
     {
         [ObservableProperty]
         public partial SettingModel SettingModel { get; set; }

@@ -1,13 +1,5 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Documents;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Storage;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -41,7 +33,7 @@ namespace ScreenSoundSwitch.WinUI.Controls
 
         // Using a DependencyProperty as the backing store for AudioFile.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty AudioFileProperty =
-            DependencyProperty.Register("AudioFile", typeof(StorageFile), typeof(AudioFileControl), new PropertyMetadata(string.Empty)); 
+            DependencyProperty.Register("AudioFile", typeof(StorageFile), typeof(AudioFileControl), new PropertyMetadata(string.Empty));
 
     }
 }

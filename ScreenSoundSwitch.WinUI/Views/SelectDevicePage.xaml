@@ -8,28 +8,32 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:local1="using:ScreenSoundSwitch.WinUI.Models" 
     xmlns:control="using:ScreenSoundSwitch.WinUI.Controls"
+    xmlns:local2="using:ScreenSoundSwitch.WinUI.Views"
     mc:Ignorable="d"
     NavigationCacheMode="Enabled"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    >
-    <Page.DataContext>
-        <local:ScreenViewModel />
-    </Page.DataContext>
-
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <StackPanel>
         <!-- 元素展示区域 -->
         <ItemsControl x:Name="ScreenItemsControl" ItemsSource="{Binding Elements}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas Width="650" Height="300" Background="LightGray"/>
+                    <Grid Width="650" Height="300" Background="LightGray"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button Content="{Binding Name}" 
-                        Canvas.Left="{Binding Left}" 
-                    Canvas.Top="{Binding Top}" />
+                    <local2:ScreenControl 
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="{Binding Margin}"
+                        ViewModel="{Binding ViewModel}"
+                        Screen="{Binding Screen}"
+                        Scale="{Binding Scale}"
+                        IsSelected="{Binding IsSelected, Mode=TwoWay}"
+                        DeviceNameText="{Binding DeviceNameText, Mode=TwoWay}"
+                        Width="{Binding Width}"
+                        Height="{Binding Height}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
@@ -56,7 +60,7 @@
                 <TextBlock x:Uid="SelectAudioDeviceTextBlock"/>
             </control:ContentControl.LeftContent>
             <control:ContentControl.RightContent>
-                <ComboBox  ItemsSource ="{Binding AudioDevices}" SelectionChanged="ListView_SelectionChanged" Width="300" >
+                <ComboBox  ItemsSource ="{Binding AudioDevices}" SelectedItem="{Binding SelectedAudioDevice, Mode=TwoWay}" Width="300" >
                     <!--音频设备列表-->
                     <ComboBox.ItemTemplate>
                         <DataTemplate>

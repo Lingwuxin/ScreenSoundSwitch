@@ -2,14 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using ScreenSoundSwitch.WinUI.Views;
-using SoundSwitch.Audio.Manager;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Windows.Storage;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -21,7 +14,7 @@ namespace ScreenSoundSwitch.WinUI
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        
+
         //private SelectDevicePage selectDevicePage;
         //private VolumePage volumePage;
         //private ProcessPage processPage;
@@ -40,7 +33,7 @@ namespace ScreenSoundSwitch.WinUI
             //当窗口实例化完成后，初始化各个页面
             navContentFrame.Navigate(typeof(VolumePage));
         }
-        
+
 
         private void NavigationSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
@@ -51,7 +44,7 @@ namespace ScreenSoundSwitch.WinUI
             }
         }
         private void GetAllMenuItems(IList<object> items)
-        {            
+        {
             foreach (NavigationViewItem item in items)
             {
                 navigationViewItems.Add(item.Tag.ToString(), item);
@@ -77,7 +70,7 @@ namespace ScreenSoundSwitch.WinUI
                     break;
                 case "Settings":
                     navContentFrame.Navigate(typeof(SettingPage));
-                    break; 
+                    break;
 
             }
         }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Win32;
-using System.Windows.Forms;
 using System;
+using System.Windows.Forms;
 
 public class DisplayWatcher : IDisposable
 {

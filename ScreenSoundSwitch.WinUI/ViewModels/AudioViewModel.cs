@@ -1,12 +1,10 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using ScreenSoundSwitch.WinUI.Models;
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using ScreenSoundSwitch.WinUI.Models;
 using Windows.Storage;
-using Windows.System;
-using Microsoft.UI.Dispatching;
 using DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue;
 
 namespace ScreenSoundSwitch.WinUI.ViewModels
@@ -45,7 +43,7 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
                 {
                     if (file.FileType == ".mp3" || file.FileType == ".wav" || file.FileType == ".wma")
                     {
-                        AudioFileModel audioFile = await AudioFileModel.CreateAsync(file);                   
+                        AudioFileModel audioFile = await AudioFileModel.CreateAsync(file);
                         AudioFileModels.Add(audioFile);
                         Debug.WriteLine($"Loaded: {audioFile.Title}, {audioFile.Author}, {audioFile.Duration}");
                     }
