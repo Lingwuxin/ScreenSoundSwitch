@@ -1,30 +1,69 @@
 # ScreenSoundSwitch
-- A C#  playback device management application that enable to switches audio playback devices based on the screen where the process window is located.
-- 一个能够根据进程窗口所在屏幕来切换播放设备的C#播放设备管理应用
-## 环境
-- OS: Windows 10
-- Dev: .NET 8.0
-## 概述
-该项目是为了在最新版本的windows上实现更便捷的音频播放设备管理器
-## 功能与实现
-- 切换播放设备的功能实现来自[SoundSwitch](https://github.com/Belphemur/SoundSwitch/tree/dev/SoundSwitch)
-- 监听其他窗口活动通过Win32 API [setWinEventHook](https://learn.microsoft.com/zh-cn/windows/win32/api/winuser/nf-winuser-setwineventhook)，监听聚焦窗口是否发生切换的功能在SoundSwitch项目中已有封装,详见[WindowMonitor.cs](https://github.com/Belphemur/SoundSwitch/blob/dev/SoundSwitch.Audio.Manager/WindowMonitor.cs)，在此基础上添加了[ForegroundWindowMoved](https://github.com/Lingwuxin/ScreenSoundSwitch/blob/master/SoundSwitch.Audio.Manager/WindowMonitor.cs)事务委托，以便监听判断窗口是否移动到其他显示器的显示区域上。
-### 可使用的功能
-- 使用LCtrl+LAlt+鼠标滚轮可调节当前聚焦窗口相关的会话音量。
-- 可为每个显示器指定一个音频播放设备，当需要播放音频的进程窗口在显示器之间移动时，会自动切换进程所使用的播放设备
-### 开发中的功能
-- <del>通过对NAudio库中的AudioSessionControl类型的继承并拓展IChannelAudioVolume相关接口，得到SAudioSessionControl类型，以便能够访问指定进程与音频终结点设备的会话，进而以进程为单位控制音频各通道的音量大小等细节。</del>针对进程调整音量功能已完成，由于IChannelAudioVolume相关接口Windows api文档中并未给出具体的实例化方法，针对进程音频通道调整音量的功能暂无法继续进行。
-### 待实现功能
-- 当新的会话被创建时，自动将其添加到监听序列中
-- 程序最小化到系统托盘运行
-- 程序开机自启动功能
-- 程序启动时自动获取上一次的配置信息
-### 功能预览
+
+ScreenSoundSwitch 是一个基于 C# / .NET 8 的 Windows 桌面应用，用于根据应用窗口所在显示器，自动切换该应用使用的音频播放设备。
+
+ScreenSoundSwitch is a C# / .NET 8 Windows desktop app that routes an application's playback device based on which monitor its window is currently on.
+
+## 环境要求
+
+- OS: Windows 10/11
+- SDK: .NET 8.0 SDK
+- IDE: Visual Studio 2022/2026 (WinUI 3 开发环境)
+
+## 项目概述
+
+本项目聚焦于「多显示器 + 多音响设备」场景：
+
+- 为每个显示器指定一个播放设备
+- 监听窗口移动事件
+- 当应用窗口跨屏移动时，将该进程的音频会话切换到目标显示器绑定的播放设备
+
+核心实现基于 SoundSwitch 的音频切换能力与窗口事件监听能力，并结合本项目的跨屏路由逻辑扩展。
+
+## 当前能力
+
+- 为每个显示器绑定独立播放设备
+- 监听窗口移动并尝试切换对应进程的播放设备
+- 使用 `LCtrl + LAlt + MouseWheel` 调节当前聚焦进程会话音量
+- 显示当前活跃音频设备及对应进程会话
+
+## 已知限制（请务必阅读）
+
+- 某些第三方播放器（例如部分音乐播放器）对系统级“进程默认音频端点”切换并非即时响应。
+- 在这类应用中，路由策略可能已写入成功，但实际生效可能依赖播放器内部重建音频流（如切歌、暂停/恢复、重建会话）。
+- 这属于目标应用自身音频引擎行为差异，而非本项目可完全强制控制的范围。
+
+## 构建与运行
+
+```powershell
+dotnet restore
+dotnet build ScreenSoundSwitch.WinUI/ScreenSoundSwitch.WinUI.csproj
+```
+
+在 Visual Studio 中将 `ScreenSoundSwitch.WinUI` 设为启动项目后运行。
+
+## 使用说明
+
+1. 打开“显示器设备选择”页面。
+2. 分别为每个显示器选择目标播放设备。
+3. 打开目标音频应用（如音乐播放器），并确保已创建音频会话。
+4. 将应用窗口拖动到其他显示器，观察是否切换到该显示器绑定设备。
+
+## 待推进事项
+
+- 新会话自动发现与自动纳入路由管理
+- 托盘常驻与最小化到系统托盘
+- 开机自启动
+- 配置持久化与启动自动恢复
+- 支持浏览器（如 Edge）多窗口/子窗口级别的独立音频设备绑定（当前仅能按进程级别切换）
+
+## 功能预览
+
 同步系统设置中的显示器布局
 ![alt text](image-5.png)
+
 获取正在使用播放设备的进程
 ![alt text](image-6.png)
+
 音乐播放
 ![alt text](image.png)
-## 当前存在的问题
-- 项目初期并未按照MVVM的架构开发，导致项目结构混乱，将在功能完成后逐步对各个页面进行重构。
