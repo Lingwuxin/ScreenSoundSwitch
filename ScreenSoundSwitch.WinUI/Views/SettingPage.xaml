@@ -57,6 +57,54 @@
 
         <control:ContentControl>
             <control:ContentControl.Icon>
+                <FontIcon Glyph="&#xE7B7;" />
+            </control:ContentControl.Icon>
+            <control:ContentControl.LeftContent>
+                <StackPanel>
+                    <TextBlock x:Uid="EnableAutoStartTextBlock"/>
+                    <TextBlock x:Uid="EnableAutoStartDescriptionTextBlock"/>
+                </StackPanel>
+            </control:ContentControl.LeftContent>
+            <control:ContentControl.RightContent>
+                <ToggleSwitch x:Name="EnableAutoStartToggleSwitch"
+                              Toggled="EnableAutoStartToggleSwitch_Toggled"/>
+            </control:ContentControl.RightContent>
+        </control:ContentControl>
+
+        <control:ContentControl>
+            <control:ContentControl.Icon>
+                <FontIcon Glyph="&#xE91F;" />
+            </control:ContentControl.Icon>
+            <control:ContentControl.LeftContent>
+                <StackPanel>
+                    <TextBlock x:Uid="EnableTrayIconTextBlock"/>
+                    <TextBlock x:Uid="EnableTrayIconDescriptionTextBlock"/>
+                </StackPanel>
+            </control:ContentControl.LeftContent>
+            <control:ContentControl.RightContent>
+                <ToggleSwitch x:Name="EnableTrayIconToggleSwitch"
+                              Toggled="EnableTrayIconToggleSwitch_Toggled"/>
+            </control:ContentControl.RightContent>
+        </control:ContentControl>
+
+        <control:ContentControl>
+            <control:ContentControl.Icon>
+                <FontIcon Glyph="&#xE8D7;" />
+            </control:ContentControl.Icon>
+            <control:ContentControl.LeftContent>
+                <StackPanel>
+                    <TextBlock x:Uid="EnableAutoRestoreConfigTextBlock"/>
+                    <TextBlock x:Uid="EnableAutoRestoreConfigDescriptionTextBlock"/>
+                </StackPanel>
+            </control:ContentControl.LeftContent>
+            <control:ContentControl.RightContent>
+                <ToggleSwitch x:Name="EnableAutoRestoreConfigToggleSwitch"
+                              Toggled="EnableAutoRestoreConfigToggleSwitch_Toggled"/>
+            </control:ContentControl.RightContent>
+        </control:ContentControl>
+
+        <control:ContentControl>
+            <control:ContentControl.Icon>
                 <FontIcon Glyph="&#xE7F8;" />
             </control:ContentControl.Icon>
             <control:ContentControl.LeftContent>

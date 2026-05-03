@@ -23,6 +23,21 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
                 SettingModel.EnableScreenPositionChannelBalance = (bool)localSettings.Values["EnableScreenPositionChannelBalance"];
             }
 
+            if (localSettings.Values.ContainsKey("EnableAutoStart"))
+            {
+                SettingModel.EnableAutoStart = (bool)localSettings.Values["EnableAutoStart"];
+            }
+
+            if (localSettings.Values.ContainsKey("EnableTrayIcon"))
+            {
+                SettingModel.EnableTrayIcon = (bool)localSettings.Values["EnableTrayIcon"];
+            }
+
+            if (localSettings.Values.ContainsKey("EnableAutoRestoreConfig"))
+            {
+                SettingModel.EnableAutoRestoreConfig = (bool)localSettings.Values["EnableAutoRestoreConfig"];
+            }
+
             if (localSettings.Values.ContainsKey("ScreenPositionChannelBalanceStrength"))
             {
                 SettingModel.ScreenPositionChannelBalanceStrength = Convert.ToDouble(localSettings.Values["ScreenPositionChannelBalanceStrength"]);
@@ -45,6 +60,24 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
         {
             SettingModel.EnableScreenPositionChannelBalance = enabled;
             localSettings.Values["EnableScreenPositionChannelBalance"] = enabled;
+        }
+
+        internal void SetEnableAutoStart(bool enabled)
+        {
+            SettingModel.EnableAutoStart = enabled;
+            localSettings.Values["EnableAutoStart"] = enabled;
+        }
+
+        internal void SetEnableTrayIcon(bool enabled)
+        {
+            SettingModel.EnableTrayIcon = enabled;
+            localSettings.Values["EnableTrayIcon"] = enabled;
+        }
+
+        internal void SetEnableAutoRestoreConfig(bool enabled)
+        {
+            SettingModel.EnableAutoRestoreConfig = enabled;
+            localSettings.Values["EnableAutoRestoreConfig"] = enabled;
         }
 
         internal void SetScreenPositionChannelBalanceStrength(double strength)

@@ -46,6 +46,25 @@ namespace ScreenSoundSwitch.WinUI.Views
             }
 
             EnableDebugToggleSwitch.IsOn = ViewModel.SettingModel.EnableDebugPage;
+            var autoStartToggle = this.FindName("EnableAutoStartToggleSwitch") as ToggleSwitch;
+            if (autoStartToggle != null)
+            {
+                autoStartToggle.IsOn = StartupManager.IsEnabled();
+                ViewModel.SetEnableAutoStart(autoStartToggle.IsOn);
+            }
+
+            var trayToggle = this.FindName("EnableTrayIconToggleSwitch") as ToggleSwitch;
+            if (trayToggle != null)
+            {
+                trayToggle.IsOn = ViewModel.SettingModel.EnableTrayIcon;
+            }
+
+            var autoRestoreToggle = this.FindName("EnableAutoRestoreConfigToggleSwitch") as ToggleSwitch;
+            if (autoRestoreToggle != null)
+            {
+                autoRestoreToggle.IsOn = ViewModel.SettingModel.EnableAutoRestoreConfig;
+            }
+
             var channelBalanceToggle = this.FindName("EnableScreenPositionChannelBalanceToggleSwitch") as ToggleSwitch;
             if (channelBalanceToggle != null)
             {
@@ -105,6 +124,53 @@ namespace ScreenSoundSwitch.WinUI.Views
 
             SettingStatusInfoBar.Severity = InfoBarSeverity.Informational;
             SettingStatusInfoBar.Message = isEnabled ? "已开启调试页面。" : "已关闭调试页面。";
+        }
+
+        private void EnableAutoStartToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            var toggle = this.FindName("EnableAutoStartToggleSwitch") as ToggleSwitch;
+            if (toggle == null)
+            {
+                return;
+            }
+
+            var isEnabled = toggle.IsOn;
+            ViewModel.SetEnableAutoStart(isEnabled);
+            StartupManager.SetEnabled(isEnabled);
+
+            SettingStatusInfoBar.Severity = InfoBarSeverity.Informational;
+            SettingStatusInfoBar.Message = isEnabled ? "已开启开机自启。" : "已关闭开机自启。";
+        }
+
+        private void EnableTrayIconToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            var toggle = this.FindName("EnableTrayIconToggleSwitch") as ToggleSwitch;
+            if (toggle == null)
+            {
+                return;
+            }
+
+            var isEnabled = toggle.IsOn;
+            ViewModel.SetEnableTrayIcon(isEnabled);
+            TrayIconState.SetEnabled(isEnabled);
+
+            SettingStatusInfoBar.Severity = InfoBarSeverity.Informational;
+            SettingStatusInfoBar.Message = isEnabled ? "已开启托盘模式。" : "已关闭托盘模式。";
+        }
+
+        private void EnableAutoRestoreConfigToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            var toggle = this.FindName("EnableAutoRestoreConfigToggleSwitch") as ToggleSwitch;
+            if (toggle == null)
+            {
+                return;
+            }
+
+            var isEnabled = toggle.IsOn;
+            ViewModel.SetEnableAutoRestoreConfig(isEnabled);
+
+            SettingStatusInfoBar.Severity = InfoBarSeverity.Informational;
+            SettingStatusInfoBar.Message = isEnabled ? "已开启启动自动恢复配置入口。" : "已关闭启动自动恢复配置入口。";
         }
 
         private void EnableScreenPositionChannelBalanceToggleSwitch_Toggled(object sender, RoutedEventArgs e)

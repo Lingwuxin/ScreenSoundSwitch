@@ -156,6 +156,24 @@
   <data name="EnableDebugPageDescriptionTextBlock.Text" xml:space="preserve">
     <value>Show a debug page in navigation for runtime logs</value>
   </data>
+  <data name="EnableAutoStartTextBlock.Text" xml:space="preserve">
+    <value>Auto Start</value>
+  </data>
+  <data name="EnableAutoStartDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Launch ScreenSoundSwitch automatically after Windows sign-in</value>
+  </data>
+  <data name="EnableTrayIconTextBlock.Text" xml:space="preserve">
+    <value>Enable Tray Icon</value>
+  </data>
+  <data name="EnableTrayIconDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Show a tray icon with quick actions for open, hide, and exit</value>
+  </data>
+  <data name="EnableAutoRestoreConfigTextBlock.Text" xml:space="preserve">
+    <value>Startup Restore Entry</value>
+  </data>
+  <data name="EnableAutoRestoreConfigDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Open Volume page on startup (otherwise open device selection page)</value>
+  </data>
   <data name="RefreshDebugLogButton.Content" xml:space="preserve">
     <value>Refresh</value>
   </data>

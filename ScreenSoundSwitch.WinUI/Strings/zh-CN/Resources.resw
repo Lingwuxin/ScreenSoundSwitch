@@ -198,6 +198,24 @@
   <data name="EnableDebugPageDescriptionTextBlock.Text" xml:space="preserve">
     <value>在导航栏显示调试页面以查看程序运行日志</value>
   </data>
+  <data name="EnableAutoStartTextBlock.Text" xml:space="preserve">
+    <value>开机自启</value>
+  </data>
+  <data name="EnableAutoStartDescriptionTextBlock.Text" xml:space="preserve">
+    <value>登录 Windows 后自动启动 ScreenSoundSwitch</value>
+  </data>
+  <data name="EnableTrayIconTextBlock.Text" xml:space="preserve">
+    <value>启用托盘</value>
+  </data>
+  <data name="EnableTrayIconDescriptionTextBlock.Text" xml:space="preserve">
+    <value>在系统托盘显示图标，可快速打开、隐藏或退出程序</value>
+  </data>
+  <data name="EnableAutoRestoreConfigTextBlock.Text" xml:space="preserve">
+    <value>启动自动恢复入口</value>
+  </data>
+  <data name="EnableAutoRestoreConfigDescriptionTextBlock.Text" xml:space="preserve">
+    <value>启动时直接进入音量管理页面（关闭后进入设备选择页）</value>
+  </data>
   <data name="RefreshDebugLogButton.Content" xml:space="preserve">
     <value>刷新日志</value>
   </data>
