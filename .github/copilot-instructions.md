@@ -165,4 +165,7 @@ Always reference these instructions first and fallback to search or bash command
 - **Authentication failures**: Check JWT configuration in appsettings.json
 - **Audio device access**: Requires Windows environment for full functionality
 
+### Git Commit Messages
+- Use clear, well-written commit messages to describe changes made in the codebase. Aim for concise summaries that provide context and rationale for the changes.
+
 Always build and exercise your changes manually. Run the WebAPI after modifications to ensure functionality remains intact.

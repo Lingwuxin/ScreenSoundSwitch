@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
@@ -21,7 +21,6 @@
   <ItemGroup>
     <None Remove="Controls\AudioMediaTransportControls\AudioPlayer.xaml" />
     <None Remove="Views\AudioDeviceControl.xaml" />
-    <None Remove="Views\AudioPage.xaml" />
     <None Remove="Views\Control\RegisterPage.xaml" />
     <None Remove="Views\Control\ScreenControl.xaml" />
     <None Remove="Views\ProcessControl.xaml" />

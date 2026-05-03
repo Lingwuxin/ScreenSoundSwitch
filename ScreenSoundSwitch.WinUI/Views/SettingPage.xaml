@@ -3,9 +3,8 @@
     x:Class="ScreenSoundSwitch.WinUI.Views.SettingPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:ScreenSoundSwitch.WinUI.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModel="using:ScreenSoundSwitch.WinUI.ViewModels"
     xmlns:control="using:ScreenSoundSwitch.WinUI.Controls"
     mc:Ignorable="d"
@@ -14,29 +13,85 @@
     <Page.DataContext>
         <viewModel:SettingViewModel/>
     </Page.DataContext>
-    <StackPanel>
-        <control:ContentControl 
-            >
+    <StackPanel Spacing="12">
+        <InfoBar x:Name="SettingStatusInfoBar"
+                 IsOpen="True"
+                 IsClosable="False"
+                 Severity="Informational"
+                 Message="请填写音频文件保存路径"/>
+
+        <control:ContentControl>
             <control:ContentControl.Icon>
                 <FontIcon Glyph="&#xEC50;" />
             </control:ContentControl.Icon>
             <control:ContentControl.LeftContent>
                 <StackPanel>
-                    <TextBlock Text="Open a folder to load audio files"/>
-                    <TextBlock x:Name="AudioFolderPathTextBlock" Text="Path"/>
+                    <TextBlock x:Uid="OpenAudioFolderTextBlock"/>
+                    <TextBlock x:Name="AudioFolderPathTextBlock" Text="路径"/>
                 </StackPanel>
             </control:ContentControl.LeftContent>
             <control:ContentControl.RightContent>
                 <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
-                    <Button Content="Open a folder"
-                        Click="PickFolderButton_Click" 
+                    <Button x:Uid="OpenAudioFolderButton"
+                            Click="PickFolderButton_Click"
                             Margin="0,0,0,10"/>
-                    
                 </StackPanel>
             </control:ContentControl.RightContent>
         </control:ContentControl>
 
-        
+        <control:ContentControl>
+            <control:ContentControl.Icon>
+                <FontIcon Glyph="&#xE946;" />
+            </control:ContentControl.Icon>
+            <control:ContentControl.LeftContent>
+                <StackPanel>
+                    <TextBlock x:Uid="EnableDebugPageTextBlock"/>
+                    <TextBlock x:Uid="EnableDebugPageDescriptionTextBlock"/>
+                </StackPanel>
+            </control:ContentControl.LeftContent>
+            <control:ContentControl.RightContent>
+                <ToggleSwitch x:Name="EnableDebugToggleSwitch"
+                              Toggled="EnableDebugToggleSwitch_Toggled"/>
+            </control:ContentControl.RightContent>
+        </control:ContentControl>
 
+        <control:ContentControl>
+            <control:ContentControl.Icon>
+                <FontIcon Glyph="&#xE7F8;" />
+            </control:ContentControl.Icon>
+            <control:ContentControl.LeftContent>
+                <StackPanel>
+                    <TextBlock x:Uid="EnableScreenPositionChannelBalanceTextBlock"/>
+                    <TextBlock x:Uid="EnableScreenPositionChannelBalanceDescriptionTextBlock"/>
+                </StackPanel>
+            </control:ContentControl.LeftContent>
+            <control:ContentControl.RightContent>
+                <ToggleSwitch x:Name="EnableScreenPositionChannelBalanceToggleSwitch"
+                              Toggled="EnableScreenPositionChannelBalanceToggleSwitch_Toggled"/>
+            </control:ContentControl.RightContent>
+        </control:ContentControl>
+
+        <control:ContentControl>
+            <control:ContentControl.Icon>
+                <FontIcon Glyph="&#xE9E9;" />
+            </control:ContentControl.Icon>
+            <control:ContentControl.LeftContent>
+                <StackPanel>
+                    <TextBlock x:Uid="ChannelBalanceStrengthTextBlock"/>
+                    <TextBlock x:Uid="ChannelBalanceStrengthDescriptionTextBlock"/>
+                </StackPanel>
+            </control:ContentControl.LeftContent>
+            <control:ContentControl.RightContent>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+                    <Slider x:Name="ChannelBalanceStrengthSlider"
+                            Width="180"
+                            Minimum="0"
+                            Maximum="50"
+                            StepFrequency="1"
+                            ValueChanged="ChannelBalanceStrengthSlider_ValueChanged"/>
+                    <TextBlock x:Name="ChannelBalanceStrengthValueTextBlock" MinWidth="28" Text="20"/>
+                </StackPanel>
+            </control:ContentControl.RightContent>
+        </control:ContentControl>
     </StackPanel>
 </Page>

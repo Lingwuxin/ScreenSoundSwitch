@@ -4,15 +4,43 @@ using ScreenSoundSwitch.WinUI.Audio.inter;
 using System;
 using System.Runtime.InteropServices;
 
+#nullable enable
+
 namespace ScreenSoundSwitch.WinUI.Audio
 {
     public class ChannelAudioVolume
     {
-        readonly IChannelAudioVolume channelAudioVolumeInterface;
+        readonly IChannelAudioVolume? channelAudioVolumeInterface;
         public ChannelAudioVolume(AudioSessionControl sessionControl)
         {
-            var sessionControlIUnknown = Marshal.GetIUnknownForObject((IAudioSessionControl)sessionControl.SimpleAudioVolume);
-            channelAudioVolumeInterface = Marshal.GetTypedObjectForIUnknown(sessionControlIUnknown, typeof(IChannelAudioVolume)) as IChannelAudioVolume;
+            IntPtr sessionControlIUnknown = IntPtr.Zero;
+            IntPtr channelAudioVolumePtr = IntPtr.Zero;
+
+            try
+            {
+                sessionControlIUnknown = Marshal.GetIUnknownForObject(sessionControl);
+                var interfaceId = typeof(IChannelAudioVolume).GUID;
+                var hr = Marshal.QueryInterface(sessionControlIUnknown, ref interfaceId, out channelAudioVolumePtr);
+
+                if (hr != 0 || channelAudioVolumePtr == IntPtr.Zero)
+                {
+                    throw new InvalidOperationException("IChannelAudioVolume interface not available for current audio session.");
+                }
+
+                channelAudioVolumeInterface = (IChannelAudioVolume)Marshal.GetObjectForIUnknown(channelAudioVolumePtr);
+            }
+            finally
+            {
+                if (channelAudioVolumePtr != IntPtr.Zero)
+                {
+                    Marshal.Release(channelAudioVolumePtr);
+                }
+
+                if (sessionControlIUnknown != IntPtr.Zero)
+                {
+                    Marshal.Release(sessionControlIUnknown);
+                }
+            }
         }
         // 实现 GetAllVolumes 方法
         public int GetAllVolumes(uint channelCount, float[] volumes)

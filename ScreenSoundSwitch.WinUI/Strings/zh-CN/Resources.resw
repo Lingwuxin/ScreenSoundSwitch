@@ -180,4 +180,40 @@
   <data name="ShareFilePage.Content" xml:space="preserve">
     <value>共享音频</value>
   </data>
+  <data name="OutputDevicesTextBlock.Text" xml:space="preserve">
+    <value>输出设备</value>
+  </data>
+  <data name="OpenAudioFolderTextBlock.Text" xml:space="preserve">
+    <value>打开文件夹以加载音频文件</value>
+  </data>
+  <data name="OpenAudioFolderButton.Content" xml:space="preserve">
+    <value>打开文件夹</value>
+  </data>
+  <data name="DebugPage.Content" xml:space="preserve">
+    <value>调试</value>
+  </data>
+  <data name="EnableDebugPageTextBlock.Text" xml:space="preserve">
+    <value>启用调试页面</value>
+  </data>
+  <data name="EnableDebugPageDescriptionTextBlock.Text" xml:space="preserve">
+    <value>在导航栏显示调试页面以查看程序运行日志</value>
+  </data>
+  <data name="RefreshDebugLogButton.Content" xml:space="preserve">
+    <value>刷新日志</value>
+  </data>
+  <data name="ClearDebugLogButton.Content" xml:space="preserve">
+    <value>清空日志</value>
+  </data>
+  <data name="EnableScreenPositionChannelBalanceTextBlock.Text" xml:space="preserve">
+    <value>按屏幕位置调整左右声道</value>
+  </data>
+  <data name="EnableScreenPositionChannelBalanceDescriptionTextBlock.Text" xml:space="preserve">
+    <value>窗口靠右时提高右声道，靠左时提高左声道；开启时所有设备频道初始化为50</value>
+  </data>
+  <data name="ChannelBalanceStrengthTextBlock.Text" xml:space="preserve">
+    <value>左右偏置强度</value>
+  </data>
+  <data name="ChannelBalanceStrengthDescriptionTextBlock.Text" xml:space="preserve">
+    <value>数值越大，窗口左右位置导致的声道偏置越明显</value>
+  </data>
 </root>

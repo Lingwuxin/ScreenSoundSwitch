@@ -1,0 +1,31 @@
+<Page
+    x:Class="ScreenSoundSwitch.WinUI.Views.DebugPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    NavigationCacheMode="Enabled"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid RowSpacing="12" Padding="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <InfoBar x:Name="DebugStatusInfoBar"
+                 IsOpen="True"
+                 IsClosable="False"
+                 Severity="Informational"
+                 Message="Runtime logs"/>
+
+        <ListView Grid.Row="1" x:Name="LogListView"/>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button x:Uid="RefreshDebugLogButton" Click="RefreshButton_Click"/>
+            <Button x:Uid="ClearDebugLogButton" Click="ClearButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Page>

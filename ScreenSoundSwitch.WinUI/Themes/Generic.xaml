@@ -15,7 +15,7 @@
                         BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         >
-                        <Grid Height="55">
+                        <Grid Height="52">
 
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>

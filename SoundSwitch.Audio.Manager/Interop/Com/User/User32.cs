@@ -135,6 +135,37 @@ namespace SoundSwitch.Audio.Manager.Interop.Com.User
             [DllImport("user32.dll", CharSet = CharSet.Ansi)]
             public static extern HWND GetForegroundWindow();
 
+            [DllImport("user32.dll", ExactSpelling = true)]
+            public static extern HWND GetAncestor(HWND hwnd, uint flags);
+
+            [DllImport("user32.dll", SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool GetWindowRect(HWND hwnd, out RECT lpRect);
+
+            [StructLayout(LayoutKind.Sequential)]
+            public struct RECT : IEquatable<RECT>
+            {
+                public int Left;
+                public int Top;
+                public int Right;
+                public int Bottom;
+
+                public bool Equals(RECT other)
+                {
+                    return Left == other.Left && Top == other.Top && Right == other.Right && Bottom == other.Bottom;
+                }
+
+                public override bool Equals(object obj)
+                {
+                    return obj is RECT other && Equals(other);
+                }
+
+                public override int GetHashCode()
+                {
+                    return HashCode.Combine(Left, Top, Right, Bottom);
+                }
+            }
+
             [DllImport("user32", EntryPoint = "GetWindowTextA", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]
             public static extern int GetWindowText(HWND hwnd, StringBuilder lpString, int cch);
 
@@ -153,6 +184,10 @@ namespace SoundSwitch.Audio.Manager.Interop.Com.User
             [DllImport("user32.dll")]
             public static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
 
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool UnhookWinEvent(IntPtr hWinEventHook);
+
             internal const uint WINEVENT_OUTOFCONTEXT = 0;
             internal const int EVENT_OBJECT_DESTROY = 0x8001;
             internal const uint EVENT_SYSTEM_FOREGROUND = 0x0003;
@@ -160,6 +195,7 @@ namespace SoundSwitch.Audio.Manager.Interop.Com.User
             internal const uint EVENT_OBJECT_LOCATIONCHANGE = 0x800B;
             internal const uint EVENT_SYSTEM_MOVESIZEEND = 0x000B;
             internal const uint EVENT_SYSTEM_MOVESIZESTART = 0x000A;
+            internal const uint GA_ROOT = 2;
             internal const int MAX_PATH = 260;
             //
             // Window text

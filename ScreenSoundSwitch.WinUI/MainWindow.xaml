@@ -37,19 +37,11 @@
                         <FontIcon Glyph="&#xF4C3;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem   x:Uid="AudioPage" Icon="Audio" Tag="AudioPage">
-                    <!--
-                                        <NavigationViewItem.MenuItems>
-                        <NavigationViewItem Content="PlayList" Tag="PlayListPage" >
-                            <NavigationViewItem.Icon>
-                                <FontIcon Glyph="&#xE728;" />
-                            </NavigationViewItem.Icon>
-                        </NavigationViewItem>
-                    </NavigationViewItem.MenuItems>
-                    -->
-
+                <NavigationViewItem x:Name="DebugPageNavItem" x:Uid="DebugPage" Tag="DebugPage" Visibility="Collapsed">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE946;" />
+                    </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                
             </NavigationView.MenuItems>
             <Frame x:Name="navContentFrame" Margin="0,20,0,0"/>
         </NavigationView>

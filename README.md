@@ -56,6 +56,7 @@ dotnet build ScreenSoundSwitch.WinUI/ScreenSoundSwitch.WinUI.csproj
 - 开机自启动
 - 配置持久化与启动自动恢复
 - 支持浏览器（如 Edge）多窗口/子窗口级别的独立音频设备绑定（当前仅能按进程级别切换）
+- 支持用户手动配置播放设备的空间位置（如 3D 拖拽布局），以适配复杂声道拓扑（例如 5.0/5.1、多声道顺序非 0/1 左右对应）
 
 ## 功能预览
 
@@ -64,6 +65,3 @@ dotnet build ScreenSoundSwitch.WinUI/ScreenSoundSwitch.WinUI.csproj
 
 获取正在使用播放设备的进程
 ![alt text](image-6.png)
-
-音乐播放
-![alt text](image.png)

@@ -138,4 +138,40 @@
   <data name="ShareFilePage.Content" xml:space="preserve">
     <value />
   </data>
+  <data name="OutputDevicesTextBlock.Text" xml:space="preserve">
+    <value>Output Devices</value>
+  </data>
+  <data name="OpenAudioFolderTextBlock.Text" xml:space="preserve">
+    <value>Open a folder to load audio files</value>
+  </data>
+  <data name="OpenAudioFolderButton.Content" xml:space="preserve">
+    <value>Open Folder</value>
+  </data>
+  <data name="DebugPage.Content" xml:space="preserve">
+    <value>Debug</value>
+  </data>
+  <data name="EnableDebugPageTextBlock.Text" xml:space="preserve">
+    <value>Enable Debug Page</value>
+  </data>
+  <data name="EnableDebugPageDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Show a debug page in navigation for runtime logs</value>
+  </data>
+  <data name="RefreshDebugLogButton.Content" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="ClearDebugLogButton.Content" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="EnableScreenPositionChannelBalanceTextBlock.Text" xml:space="preserve">
+    <value>Balance channels by screen position</value>
+  </data>
+  <data name="EnableScreenPositionChannelBalanceDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Boost right channel on right screens and left channel on left screens; initialize all channels to 50 when enabled</value>
+  </data>
+  <data name="ChannelBalanceStrengthTextBlock.Text" xml:space="preserve">
+    <value>Channel Bias Strength</value>
+  </data>
+  <data name="ChannelBalanceStrengthDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Higher value creates stronger left/right channel bias by window position</value>
+  </data>
 </root>

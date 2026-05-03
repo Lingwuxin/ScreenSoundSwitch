@@ -25,6 +25,7 @@ namespace ScreenSoundSwitch.WinUI
         {
             Services = ConfigureServices();
             this.InitializeComponent();
+            DebugLogStore.Initialize();
         }
 
         private static IServiceProvider ConfigureServices()

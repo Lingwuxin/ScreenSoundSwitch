@@ -10,12 +10,28 @@
     NavigationCacheMode="Enabled"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <ScrollView>
-        <StackPanel Orientation="Vertical" >
-            <TextBlock Text="Output Devices"/>
-            <StackPanel x:Name="DevicesStackPanel" Orientation="Vertical">
+        <Grid Padding="20,12,20,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="980" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
+            <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="12">
+                <InfoBar x:Name="VolumeStatusInfoBar"
+                         IsOpen="True"
+                         IsClosable="False"
+                         Severity="Informational"
+                         Message="正在初始化音频设备会话..."/>
+
+                <StackPanel Spacing="2">
+                    <TextBlock x:Uid="OutputDevicesTextBlock" Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                    <TextBlock Text="管理每个输出设备及其会话音量" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                </StackPanel>
+
+                <StackPanel x:Name="DevicesStackPanel" Orientation="Vertical" Spacing="8"/>
             </StackPanel>
-        </StackPanel>
+        </Grid>
     </ScrollView>
 
 </Page>

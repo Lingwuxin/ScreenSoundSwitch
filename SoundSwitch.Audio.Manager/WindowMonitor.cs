@@ -68,6 +68,11 @@ namespace SoundSwitch.Audio.Manager
         public event EventHandler<MouseWheelEventArgs> MouseWheelScrolled;
         private readonly User32.NativeMethods.WinEventDelegate _foregroundWindowChanged;
         private readonly User32.NativeMethods.WinEventDelegate _foregroundWindowMoved;
+        private IntPtr _foregroundWindowMoveEndHook = IntPtr.Zero;
+        private IntPtr _foregroundWindowLocationHook = IntPtr.Zero;
+        private User32.NativeMethods.HWND _foregroundWindow = User32.NativeMethods.HWND.NULL;
+        private User32.NativeMethods.RECT _lastForegroundWindowRect;
+        private bool _hasLastForegroundWindowRect;
         private readonly User32.NativeMethods.HookProc _mouseProc;
         private IntPtr _keyboardHookID = IntPtr.Zero;
         private IntPtr _mouseHookID = IntPtr.Zero;
@@ -94,6 +99,9 @@ namespace SoundSwitch.Audio.Manager
                     return;
                 }
 
+                _foregroundWindow = GetRootWindow(hwnd);
+                UpdateLastForegroundWindowRect(_foregroundWindow);
+
                 Task.Factory.StartNew(() =>
                 {
                     if (_cancellationTokenSource.Token.IsCancellationRequested)
@@ -116,11 +124,40 @@ namespace SoundSwitch.Audio.Manager
                 if (idObject != User32.NativeMethods.OBJID_WINDOW)
                     return;
 
+                if (child != User32.NativeMethods.CHILDID_SELF)
+                    return;
+
                 // Ignore if this is a bogus hwnd (shouldn't happen)
                 if (hwnd == IntPtr.Zero)
                     return;
 
-                var (processId, windowText, windowClass) = ProcessWindowInformation(hwnd);
+                var rootWindow = GetRootWindow(hwnd);
+                if (rootWindow == User32.NativeMethods.HWND.NULL)
+                    return;
+
+                if (type == User32.NativeMethods.EVENT_OBJECT_LOCATIONCHANGE)
+                {
+                    if (_foregroundWindow == User32.NativeMethods.HWND.NULL)
+                    {
+                        _foregroundWindow = GetRootWindow(User32.NativeMethods.GetForegroundWindow());
+                    }
+
+                    if (rootWindow != _foregroundWindow)
+                    {
+                        return;
+                    }
+
+                    if (!HasRootWindowRectChanged(rootWindow))
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    UpdateLastForegroundWindowRect(rootWindow);
+                }
+
+                var (processId, windowText, windowClass) = ProcessWindowInformation(rootWindow);
 
                 // Couldn't find the processId of the window
                 if (processId == 0) return;
@@ -140,7 +177,7 @@ namespace SoundSwitch.Audio.Manager
                     {
                         var process = Process.GetProcessById((int)processId);
                         var processName = process.MainModule?.FileName ?? "N/A";
-                        ForegroundWindowMoved?.Invoke(this, new Event(processId, processName, windowText, windowClass, hwnd));
+                        ForegroundWindowMoved?.Invoke(this, new Event(processId, processName, windowText, windowClass, rootWindow));
                     }
                     catch (Exception)
                     {
@@ -152,12 +189,13 @@ namespace SoundSwitch.Audio.Manager
 
             ComThread.Invoke(() =>
             {
-                User32.NativeMethods.SetWinEventHook(User32.NativeMethods.EVENT_SYSTEM_MOVESIZEEND,
+                _foregroundWindowMoveEndHook = User32.NativeMethods.SetWinEventHook(User32.NativeMethods.EVENT_SYSTEM_MOVESIZEEND,
                     User32.NativeMethods.EVENT_SYSTEM_MOVESIZEEND,
                     IntPtr.Zero, _foregroundWindowMoved,
                     0,
                     0,
                     User32.NativeMethods.WINEVENT_OUTOFCONTEXT);
+
             });
 
             ComThread.Invoke(() =>
@@ -189,6 +227,82 @@ namespace SoundSwitch.Audio.Manager
             using (var curModule = curProcess.MainModule)
             {
                 return SetWindowsHookEx(evenType, proc, GetModuleHandle(curModule.ModuleName), 0);
+            }
+        }
+
+        public void SetLocationChangeTracking(bool enabled)
+        {
+            ComThread.Invoke(() =>
+            {
+                if (enabled)
+                {
+                    if (_foregroundWindowLocationHook != IntPtr.Zero)
+                    {
+                        return;
+                    }
+
+                    _foregroundWindow = GetRootWindow(User32.NativeMethods.GetForegroundWindow());
+                    UpdateLastForegroundWindowRect(_foregroundWindow);
+                    _foregroundWindowLocationHook = User32.NativeMethods.SetWinEventHook(User32.NativeMethods.EVENT_OBJECT_LOCATIONCHANGE,
+                        User32.NativeMethods.EVENT_OBJECT_LOCATIONCHANGE,
+                        IntPtr.Zero, _foregroundWindowMoved,
+                        0,
+                        0,
+                        User32.NativeMethods.WINEVENT_OUTOFCONTEXT);
+                }
+                else if (_foregroundWindowLocationHook != IntPtr.Zero)
+                {
+                    User32.NativeMethods.UnhookWinEvent(_foregroundWindowLocationHook);
+                    _foregroundWindowLocationHook = IntPtr.Zero;
+                }
+            });
+        }
+
+        private static User32.NativeMethods.HWND GetRootWindow(User32.NativeMethods.HWND hwnd)
+        {
+            if (hwnd == User32.NativeMethods.HWND.NULL)
+            {
+                return User32.NativeMethods.HWND.NULL;
+            }
+
+            var rootWindow = User32.NativeMethods.GetAncestor(hwnd, User32.NativeMethods.GA_ROOT);
+            return rootWindow == User32.NativeMethods.HWND.NULL ? hwnd : rootWindow;
+        }
+
+        private bool HasRootWindowRectChanged(User32.NativeMethods.HWND hwnd)
+        {
+            if (!User32.NativeMethods.GetWindowRect(hwnd, out var currentRect))
+            {
+                // 某些窗口无法稳定获取窗口矩形，避免因此完全丢失位置变化事件。
+                return true;
+            }
+
+            if (_hasLastForegroundWindowRect && currentRect.Equals(_lastForegroundWindowRect))
+            {
+                return false;
+            }
+
+            _lastForegroundWindowRect = currentRect;
+            _hasLastForegroundWindowRect = true;
+            return true;
+        }
+
+        private void UpdateLastForegroundWindowRect(User32.NativeMethods.HWND hwnd)
+        {
+            if (hwnd == User32.NativeMethods.HWND.NULL)
+            {
+                _hasLastForegroundWindowRect = false;
+                return;
+            }
+
+            if (User32.NativeMethods.GetWindowRect(hwnd, out var currentRect))
+            {
+                _lastForegroundWindowRect = currentRect;
+                _hasLastForegroundWindowRect = true;
+            }
+            else
+            {
+                _hasLastForegroundWindowRect = false;
             }
         }
 
@@ -269,6 +383,21 @@ namespace SoundSwitch.Audio.Manager
             {
                 _cancellationTokenSource.Cancel();
             }
+
+            ComThread.Invoke(() =>
+            {
+                if (_foregroundWindowMoveEndHook != IntPtr.Zero)
+                {
+                    User32.NativeMethods.UnhookWinEvent(_foregroundWindowMoveEndHook);
+                    _foregroundWindowMoveEndHook = IntPtr.Zero;
+                }
+
+                if (_foregroundWindowLocationHook != IntPtr.Zero)
+                {
+                    User32.NativeMethods.UnhookWinEvent(_foregroundWindowLocationHook);
+                    _foregroundWindowLocationHook = IntPtr.Zero;
+                }
+            });
         }
 
         public void Dispose()

@@ -6,16 +6,18 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
+#nullable enable
+
 namespace ScreenSoundSwitch
 {
     //单例类型
     public class AudioDeviceManager : IDisposable
     {
-        private static AudioDeviceManager _instance;
+        private static AudioDeviceManager? _instance;
         private readonly MMDeviceEnumerator _enumerator;
         private readonly AudioDeviceNotificationClient _notificationClient;
         private MMDeviceCollection _devices;
-        private List<AudioSessionControl> _audioSessionControls;
+        private List<AudioSessionControl>? _audioSessionControls;
 
         private AudioDeviceManager()
         {
@@ -59,9 +61,9 @@ namespace ScreenSoundSwitch
         {
             return _enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Console);
         }
-        public MMDevice GetDeviceByFriendlyName(string _FriendlyName)
+        public MMDevice? GetDeviceByFriendlyName(string _FriendlyName)
         {
-            MMDevice targetDevice = null;
+            MMDevice? targetDevice = null;
             foreach (MMDevice device in Devices)
             {
                 if (device.FriendlyName == _FriendlyName)

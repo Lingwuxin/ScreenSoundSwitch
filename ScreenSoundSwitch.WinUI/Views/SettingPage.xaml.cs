@@ -1,5 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using ScreenSoundSwitch.WinUI.Data;
 using ScreenSoundSwitch.WinUI.ViewModels;
 using System;
 using System.Diagnostics;
@@ -34,6 +36,31 @@ namespace ScreenSoundSwitch.WinUI.Views
             {
                 ViewModel.SetAudioFileFolder(StorageFolder.GetFolderFromPathAsync(localSettings.Values["AudioFilePath"].ToString()).AsTask().Result);
                 AudioFolderPathTextBlock.Text = localSettings.Values["AudioFilePath"].ToString();
+                SettingStatusInfoBar.Severity = InfoBarSeverity.Success;
+                SettingStatusInfoBar.Message = $"当前目录：{AudioFolderPathTextBlock.Text}";
+            }
+            else
+            {
+                SettingStatusInfoBar.Severity = InfoBarSeverity.Informational;
+                SettingStatusInfoBar.Message = "尚未设置音频文件目录。";
+            }
+
+            EnableDebugToggleSwitch.IsOn = ViewModel.SettingModel.EnableDebugPage;
+            var channelBalanceToggle = this.FindName("EnableScreenPositionChannelBalanceToggleSwitch") as ToggleSwitch;
+            if (channelBalanceToggle != null)
+            {
+                channelBalanceToggle.IsOn = ViewModel.SettingModel.EnableScreenPositionChannelBalance;
+            }
+
+            var strengthSlider = this.FindName("ChannelBalanceStrengthSlider") as Slider;
+            var strengthTextBlock = this.FindName("ChannelBalanceStrengthValueTextBlock") as TextBlock;
+            if (strengthSlider != null)
+            {
+                strengthSlider.Value = ViewModel.SettingModel.ScreenPositionChannelBalanceStrength;
+                if (strengthTextBlock != null)
+                {
+                    strengthTextBlock.Text = ((int)strengthSlider.Value).ToString();
+                }
             }
         }
         private async void PickFolderButton_Click(object sender, RoutedEventArgs e)
@@ -68,6 +95,45 @@ namespace ScreenSoundSwitch.WinUI.Views
             }
             //re-enable the button
             senderButton.IsEnabled = true;
+        }
+
+        private void EnableDebugToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            var isEnabled = EnableDebugToggleSwitch.IsOn;
+            ViewModel.SetEnableDebugPage(isEnabled);
+            DebugPageState.SetEnabled(isEnabled);
+
+            SettingStatusInfoBar.Severity = InfoBarSeverity.Informational;
+            SettingStatusInfoBar.Message = isEnabled ? "已开启调试页面。" : "已关闭调试页面。";
+        }
+
+        private void EnableScreenPositionChannelBalanceToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            var channelBalanceToggle = this.FindName("EnableScreenPositionChannelBalanceToggleSwitch") as ToggleSwitch;
+            if (channelBalanceToggle == null)
+            {
+                return;
+            }
+
+            var isEnabled = channelBalanceToggle.IsOn;
+            ViewModel.SetEnableScreenPositionChannelBalance(isEnabled);
+            ChannelBalanceState.SetEnabled(isEnabled);
+
+            SettingStatusInfoBar.Severity = InfoBarSeverity.Informational;
+            SettingStatusInfoBar.Message = isEnabled
+                ? "已开启按屏幕位置调整左右声道。"
+                : "已关闭按屏幕位置调整左右声道。";
+        }
+
+        private void ChannelBalanceStrengthSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            var rounded = Math.Round(e.NewValue);
+            var strengthTextBlock = this.FindName("ChannelBalanceStrengthValueTextBlock") as TextBlock;
+            if (strengthTextBlock != null)
+            {
+                strengthTextBlock.Text = ((int)rounded).ToString();
+            }
+            ViewModel.SetScreenPositionChannelBalanceStrength(rounded);
         }
         /// <summary>
         /// 读取本地设置，并初始化控件状态

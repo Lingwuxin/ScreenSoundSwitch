@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using ScreenSoundSwitch.WinUI.Data;
 using ScreenSoundSwitch.WinUI.Views;
 using System.Collections.Generic;
 using Windows.Storage;
@@ -29,9 +30,25 @@ namespace ScreenSoundSwitch.WinUI
             this.Title = "ScreenSoundSwicth";
             this.AppWindow.Resize(new Windows.Graphics.SizeInt32(1200, 750));
             ExtendsContentIntoTitleBar = true;
+
+            var debugEnabled = localSettings.Values.ContainsKey("EnableDebugPage") &&
+                               localSettings.Values["EnableDebugPage"] is bool enabled &&
+                               enabled;
+            DebugPageNavItem.Visibility = debugEnabled ? Visibility.Visible : Visibility.Collapsed;
+            DebugPageState.SetEnabled(debugEnabled);
+            DebugPageState.VisibilityChanged += DebugPageState_VisibilityChanged;
+
             //nav.SelectedItem = nav.MenuItems[0];
             //当窗口实例化完成后，初始化各个页面
             navContentFrame.Navigate(typeof(VolumePage));
+        }
+
+        private void DebugPageState_VisibilityChanged(bool isEnabled)
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                DebugPageNavItem.Visibility = isEnabled ? Visibility.Visible : Visibility.Collapsed;
+            });
         }
 
 
@@ -65,8 +82,8 @@ namespace ScreenSoundSwitch.WinUI
                 case "VolumePage":
                     navContentFrame.Navigate(typeof(VolumePage));
                     break;
-                case "AudioPage":
-                    navContentFrame.Navigate(typeof(AudioPage));
+                case "DebugPage":
+                    navContentFrame.Navigate(typeof(DebugPage));
                     break;
                 case "Settings":
                     navContentFrame.Navigate(typeof(SettingPage));

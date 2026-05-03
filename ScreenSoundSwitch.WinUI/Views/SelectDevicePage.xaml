@@ -13,7 +13,13 @@
     NavigationCacheMode="Enabled"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <StackPanel>
+    <StackPanel Spacing="12">
+        <InfoBar
+            Margin="0,0,0,4"
+            IsOpen="True"
+            IsClosable="False"
+            Severity="Informational"
+            Message="{Binding StatusMessage}" />
         <!-- 元素展示区域 -->
         <ItemsControl x:Name="ScreenItemsControl" ItemsSource="{Binding Elements}">
             <ItemsControl.ItemsPanel>
@@ -60,7 +66,7 @@
                 <TextBlock x:Uid="SelectAudioDeviceTextBlock"/>
             </control:ContentControl.LeftContent>
             <control:ContentControl.RightContent>
-                <ComboBox  ItemsSource ="{Binding AudioDevices}" SelectedItem="{Binding SelectedAudioDevice, Mode=TwoWay}" Width="300" >
+                <ComboBox  ItemsSource ="{Binding AudioDevices}" SelectedItem="{Binding SelectedAudioDevice, Mode=TwoWay}" Width="300" IsEnabled="{Binding CanSelectAudioDevice}">
                     <!--音频设备列表-->
                     <ComboBox.ItemTemplate>
                         <DataTemplate>

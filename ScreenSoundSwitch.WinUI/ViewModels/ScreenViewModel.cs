@@ -19,6 +19,10 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
         [ObservableProperty]
         private MMDeviceCollection audioDevices;
         [ObservableProperty]
+        private string statusMessage = "请先选择显示器";
+        [ObservableProperty]
+        private bool canSelectAudioDevice;
+        [ObservableProperty]
         public partial Screen SelectedScreen { get; set; }
         [ObservableProperty]
         public partial MMDevice SelectedAudioDevice { get; set; }
@@ -29,6 +33,7 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
             audioDeviceManager = audioManager;
             audioDevices = audioDeviceManager.Devices;
             screenToAudioDevice = screenToDeviceMap;
+            canSelectAudioDevice = false;
             InitializeElements();
         }
 
@@ -62,7 +67,7 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
             foreach (var screen in Screen.AllScreens)
             {
                 //默认为每个显示器分配系统使用的音频设备
-                screenToAudioDevice.Add(screen, audioDeviceManager.GetDefaultAudioEndpoint());
+                screenToAudioDevice.SetDevice(screen, audioDeviceManager.GetDefaultAudioEndpoint());
 
                 double x = (screen.Bounds.X - minX) * scale - centerX;//当前显示器到中心点的距离
                 double y = (screen.Bounds.Y - minY) * scale - centerY;
@@ -89,6 +94,7 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
         public void SelectScreen(Screen screen)
         {
             SelectedScreen = screen;
+            CanSelectAudioDevice = true;
             //遍历其他屏幕控件，将当前屏幕控件的选中状态设置为false
             foreach (var element in Elements)
             {
@@ -102,12 +108,17 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
                 }
             }
             //根据当前选中的屏幕，获取对应的音频设备
-            if (screenToAudioDevice.ContainsKey(screen) && screenToAudioDevice[screen] != null)
+            if (screenToAudioDevice.TryGetDevice(screen, out var mappedDevice))
             {
                 // Ensure reference equality by fetching from the existing audioDevices collection
-                var deviceId = screenToAudioDevice[screen].ID;
-                var matchedDevice = audioDevices.FirstOrDefault(d => d.ID == deviceId) ?? screenToAudioDevice[screen];
+                var deviceId = mappedDevice.ID;
+                var matchedDevice = audioDevices.FirstOrDefault(d => d.ID == deviceId) ?? mappedDevice;
                 SelectedAudioDevice = matchedDevice;
+                StatusMessage = $"已选择显示器：{screen.DeviceName}";
+            }
+            else
+            {
+                StatusMessage = $"已选择显示器：{screen.DeviceName}，请继续选择播放设备";
             }
         }
 
@@ -115,16 +126,20 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
         {
             // Whenever SelectedAudioDevice changes (either via code or UI Combobox selection),
             // update the mapping for the currently selected screen.
-            if (SelectedScreen != null && value != null)
+            if (SelectedScreen == null || value == null)
             {
-                if (!screenToAudioDevice.ContainsKey(SelectedScreen))
-                {
-                    screenToAudioDevice.Add(SelectedScreen, value);
-                }
-                else
-                {
-                    screenToAudioDevice[SelectedScreen] = value;
-                }
+                return;
+            }
+
+            try
+            {
+                screenToAudioDevice.SetDevice(SelectedScreen, value);
+
+                StatusMessage = $"{SelectedScreen.DeviceName} 已绑定到：{value.FriendlyName}";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"绑定播放设备失败：{ex.Message}";
             }
         }
 
