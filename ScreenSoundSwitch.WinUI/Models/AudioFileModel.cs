@@ -16,7 +16,6 @@ namespace ScreenSoundSwitch.WinUI.Models
         public StorageFile File { get; private set; }
         public BitmapImage? CoverImage { get; private set; } // 封面图
         public string Local { get { return _local; } }
-        private string _shared;
         private string _local;
         private bool _isLocal;
         public bool IsLocal

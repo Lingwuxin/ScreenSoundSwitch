@@ -25,7 +25,7 @@ namespace ScreenSoundSwitch.WinUI
         //private AudioPage audioPage;
         //private SettingPage settingPage;
         ApplicationDataContainer localSettings;
-        Dictionary<string, NavigationViewItem> navigationViewItems;
+        readonly Dictionary<string, NavigationViewItem> navigationViewItems = new();
         private readonly TrayIconManager _trayIconManager = new TrayIconManager();
         private bool _isClosingFromTray;
         public MainWindow()

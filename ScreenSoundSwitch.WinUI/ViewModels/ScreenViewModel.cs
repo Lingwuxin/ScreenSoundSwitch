@@ -112,7 +112,7 @@ namespace ScreenSoundSwitch.WinUI.ViewModels
             {
                 // Ensure reference equality by fetching from the existing audioDevices collection
                 var deviceId = mappedDevice.ID;
-                var matchedDevice = audioDevices.FirstOrDefault(d => d.ID == deviceId) ?? mappedDevice;
+                var matchedDevice = AudioDevices.FirstOrDefault(d => d.ID == deviceId) ?? mappedDevice;
                 SelectedAudioDevice = matchedDevice;
                 StatusMessage = $"已选择显示器：{screen.DeviceName}";
             }

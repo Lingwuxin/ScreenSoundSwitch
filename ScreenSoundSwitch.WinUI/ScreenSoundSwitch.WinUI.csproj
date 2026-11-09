@@ -8,12 +8,16 @@
     <Platforms>x64;ARM64;AnyCPU</Platforms>
     <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)')) &gt;= 8">win-x64;win-arm64</RuntimeIdentifiers>
     <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)')) &lt; 8">win10-x64;win10-arm64</RuntimeIdentifiers>
-    <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
-    <PublishProfile>Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
     <UseWindowsForms>False</UseWindowsForms>
     <DefaultLanguage>zh-CN</DefaultLanguage>
+    <!-- Enable nullable annotations project-wide without turning on nullable warnings, so the existing
+         "?" annotations are meaningful and CS8632 ("annotation outside a '#nullable' context") stops firing. -->
+    <Nullable>annotations</Nullable>
+    <!-- MVVMTK0045 reports [ObservableProperty] on fields as not AOT-compatible for WinRT. Converting the
+         remaining fields to partial properties is a separate change; this app is not published with AOT. -->
+    <NoWarn>$(NoWarn);MVVMTK0045</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="Assets\logo.jpg" />
