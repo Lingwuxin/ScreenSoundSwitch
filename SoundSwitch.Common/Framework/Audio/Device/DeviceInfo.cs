@@ -12,9 +12,10 @@ namespace SoundSwitch.Common.Framework.Audio.Device
         private static readonly Regex NameCleanerRegex = new(@"\s?\(\d\)|^\d+\s?-\s?", RegexOptions.Compiled | RegexOptions.Singleline);
 
         private string _nameClean;
+        private readonly string _name;
 
         [Obsolete("Use " + nameof(NameClean))]
-        public string Name { get; }
+        public string Name => _name;
 
         public string Id { get; }
         public DataFlow Type { get; }
@@ -32,11 +33,11 @@ namespace SoundSwitch.Common.Framework.Audio.Device
                     return _nameClean;
                 }
 
-                var match = NameSplitterRegex.Match(Name);
+                var match = NameSplitterRegex.Match(_name);
                 //Old naming, can't do anything about this
                 if (!match.Success)
                 {
-                    return _nameClean = Name;
+                    return _nameClean = _name;
                 }
 
                 var friendlyName = match.Groups["friendlyName"].Value;
@@ -47,7 +48,7 @@ namespace SoundSwitch.Common.Framework.Audio.Device
 
         public DeviceInfo(MMDevice device)
         {
-            Name = device.FriendlyName;
+            _name = device.FriendlyName;
             Id = device.ID;
             Type = device.DataFlow;
             var deviceProperties = device.Properties;
@@ -58,7 +59,7 @@ namespace SoundSwitch.Common.Framework.Audio.Device
         [JsonConstructor]
         public DeviceInfo(string name, string id, DataFlow type, bool isUsb, DateTime discoveredAt)
         {
-            Name = name;
+            _name = name;
             Id = id;
             Type = type;
             IsUsb = isUsb;
