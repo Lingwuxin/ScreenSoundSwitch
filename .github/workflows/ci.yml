@@ -56,3 +56,8 @@ jobs:
 
       - name: Build
         run: msbuild ScreenSoundSwitch.sln -t:build -p:Configuration=Release -p:Platform=x64
+
+      # The test project targets net8.0 and only references the platform-neutral
+      # SoundSwitch.Common, so it runs with the .NET SDK rather than VS MSBuild.
+      - name: Test
+        run: dotnet test ScreenSoundSwitch.Tests/ScreenSoundSwitch.Tests.csproj -c Release --logger "console;verbosity=normal"
