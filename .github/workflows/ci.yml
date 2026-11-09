@@ -29,19 +29,30 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      # WinUI 3 needs the MSBuild that ships with Visual Studio: the Windows App
+      # SDK PRI targets load Microsoft.Build.Packaging.Pri.Tasks.dll from the VS
+      # MSBuild extensions directory, which the .NET SDK alone does not provide.
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
       - name: Cache NuGet packages
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/*.sln') }}
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/*.sln', 'global.json') }}
           restore-keys: |
             nuget-${{ runner.os }}-
 
       - name: Toolchain info
-        run: dotnet --info
+        shell: pwsh
+        run: |
+          Write-Host "dotnet:  $(dotnet --version)"
+          Write-Host "msbuild: $((Get-Command msbuild).Source)"
+          Get-ChildItem "C:\Program Files\Microsoft Visual Studio\*\*\MSBuild\Microsoft\VisualStudio\*\AppxPackage\Microsoft.Build.Packaging.Pri.Tasks.dll" -ErrorAction SilentlyContinue |
+            Select-Object -ExpandProperty FullName
 
       - name: Restore
-        run: dotnet restore ScreenSoundSwitch.sln -p:Platform=x64
+        run: msbuild ScreenSoundSwitch.sln -t:restore -p:Configuration=Release -p:Platform=x64
 
       - name: Build
-        run: dotnet build ScreenSoundSwitch.sln -c Release -p:Platform=x64 --no-restore
+        run: msbuild ScreenSoundSwitch.sln -t:build -p:Configuration=Release -p:Platform=x64
