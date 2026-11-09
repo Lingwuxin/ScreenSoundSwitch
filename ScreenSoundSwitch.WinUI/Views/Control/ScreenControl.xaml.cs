@@ -38,7 +38,7 @@ namespace ScreenSoundSwitch.WinUI.Views
             Microsoft.UI.Xaml.DependencyProperty.Register(
                 "Scale", typeof(double), typeof(ScreenControl), new Microsoft.UI.Xaml.PropertyMetadata(1.0));
 
-        public double Scale
+        public new double Scale
         {
             get { return (double)GetValue(ScaleProperty); }
             set
