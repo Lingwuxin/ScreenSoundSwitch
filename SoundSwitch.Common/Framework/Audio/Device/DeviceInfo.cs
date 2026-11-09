@@ -1,4 +1,4 @@
-﻿using NAudio.CoreAudioApi;
+using NAudio.CoreAudioApi;
 using Newtonsoft.Json;
 using System;
 using System.Text.RegularExpressions;
@@ -117,7 +117,10 @@ namespace SoundSwitch.Common.Framework.Audio.Device
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Type, NameClean, Id);
+            // Equals() considers two devices equal when they share a Type and either the same Id or
+            // the same clean name, so Type is the only member that equal instances are guaranteed to
+            // share. Hashing the Id as well would give equal instances different hash codes.
+            return Type.GetHashCode();
         }
     }
 }
