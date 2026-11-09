@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScreenSoundSwitch.WinUI", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenSoundSwitch.WinUI.Audio", "ScreenSoundSwitch.WinUI.Audio\ScreenSoundSwitch.WinUI.Audio.csproj", "{4FDAA71D-4D7D-4447-9722-E0E4E36477B1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenSoundSwitch.Tests", "ScreenSoundSwitch.Tests\ScreenSoundSwitch.Tests.csproj", "{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -215,6 +217,46 @@ Global
 		{4FDAA71D-4D7D-4447-9722-E0E4E36477B1}.Release-Unpackaged|x64.Build.0 = Release|Any CPU
 		{4FDAA71D-4D7D-4447-9722-E0E4E36477B1}.Release-Unpackaged|x86.ActiveCfg = Release|Any CPU
 		{4FDAA71D-4D7D-4447-9722-E0E4E36477B1}.Release-Unpackaged|x86.Build.0 = Release|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Debug|x64.Build.0 = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Debug|x86.Build.0 = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Debug-Unpackaged|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Debug-Unpackaged|Any CPU.Build.0 = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Debug-Unpackaged|ARM64.ActiveCfg = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Debug-Unpackaged|ARM64.Build.0 = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Debug-Unpackaged|x64.ActiveCfg = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Debug-Unpackaged|x64.Build.0 = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Debug-Unpackaged|x86.ActiveCfg = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Debug-Unpackaged|x86.Build.0 = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Nightly|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Nightly|Any CPU.Build.0 = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Nightly|ARM64.ActiveCfg = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Nightly|ARM64.Build.0 = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Nightly|x64.ActiveCfg = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Nightly|x64.Build.0 = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Nightly|x86.ActiveCfg = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Nightly|x86.Build.0 = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Release|ARM64.Build.0 = Release|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Release|x64.ActiveCfg = Release|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Release|x64.Build.0 = Release|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Release|x86.ActiveCfg = Release|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Release|x86.Build.0 = Release|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Release-Unpackaged|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Release-Unpackaged|Any CPU.Build.0 = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Release-Unpackaged|ARM64.ActiveCfg = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Release-Unpackaged|ARM64.Build.0 = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Release-Unpackaged|x64.ActiveCfg = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Release-Unpackaged|x64.Build.0 = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Release-Unpackaged|x86.ActiveCfg = Debug|Any CPU
+		{EAC0DD99-A254-4EEA-B16F-2FBE00123C7C}.Release-Unpackaged|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
