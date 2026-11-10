@@ -102,7 +102,7 @@ namespace ScreenSoundSwitch.WinUI.Views
                 }
 
                 _lastChannelBalanceApplyUtc = now;
-                ForegroundMovedHandle(e.Hwnd, e.ProcessId);
+                ForegroundMovedHandle(e.Hwnd, e.ProcessId, e.ExecutablePath);
             });
         }
         /// <summary>
@@ -126,7 +126,7 @@ namespace ScreenSoundSwitch.WinUI.Views
                 }
 
                 Debug.WriteLine("Into MindowMonitor_ForegroundChanged");
-                UpdataForegroundProcess(e.ProcessId);
+                UpdataForegroundProcess(e.ProcessId, e.ExecutablePath);
             });
 
         }
@@ -154,22 +154,35 @@ namespace ScreenSoundSwitch.WinUI.Views
                 UpdataForegroundVolume(e.Delta);
             });
         }
-        public void UpdataForegroundProcess(uint processId)//更新当前聚焦窗口的pid
+        public void UpdataForegroundProcess(uint processId, string executablePath)//更新当前聚焦窗口的pid
         {
-            foreach (var audioDeviceControl in DevicesStackPanel.Children.OfType<AudioDeviceControl>())
+            var processControl = FindProcessControl(processId, executablePath);
+            if (processControl == null)
             {
-                foreach (var processControl in audioDeviceControl._ProcessStackPanel.Children.OfType<ProcessControl>())
-                {
-                    Debug.WriteLine($"processControl.ProcessId={processControl.ProcessId} ForegroundProcessId={processId}");
-                    if (processId == processControl.ProcessId)//processControl是当前已经与音频设备建立seesion的进程控件
-                    {
-                        foregroundProcessControl = processControl;//当前聚焦的进程与
-                        Debug.WriteLine(processControl.ProcessId);
-                    }
-
-                }
+                foregroundProcessControl = null;
+                Debug.WriteLine($"No ProcessControl found for foreground pid={processId}.");
+                return;
             }
 
+            foregroundProcessControl = processControl;//当前聚焦的进程与
+            Debug.WriteLine($"processControl.ProcessId={processControl.ProcessId} ForegroundProcessId={processId}");
+        }
+
+        /// <summary>
+        /// 找到拥有该窗口音频会话的 ProcessControl。
+        /// 普通应用窗口与会话属于同一 PID；Edge 等多进程应用由同 exe 的音频辅助进程创建会话，
+        /// 因此 PID 不同，需要按可执行文件身份匹配。
+        /// </summary>
+        private ProcessControl FindProcessControl(uint processId, string executablePath)
+        {
+            var processControls = DevicesStackPanel.Children
+                .OfType<AudioDeviceControl>()
+                .SelectMany(audioDeviceControl => audioDeviceControl._ProcessStackPanel.Children.OfType<ProcessControl>())
+                .ToList();
+
+            // 优先精确匹配 PID，保证单进程应用维持原有行为。
+            return processControls.FirstOrDefault(processControl => processControl.SessionProcessId == processId)
+                   ?? processControls.FirstOrDefault(processControl => processControl.MatchesWindowProcess(processId, executablePath));
         }
         public void UpdataForegroundVolume(int delta)
         {
@@ -199,26 +212,15 @@ namespace ScreenSoundSwitch.WinUI.Views
         /// 处理进程所对应的窗口的移动事件，判断进程是否从当前所处的显示器上移动到另一个显示器上，如是则根据processModel中提供的设备组合来切换该进程的播放设备
         /// </summary>
         /// <param name="hwnd">当前正在被移动的被聚焦的窗口的句柄</param>
-        /// <param name="pid">对应窗口的进程id</param>
-        public void ForegroundMovedHandle(IntPtr hwnd, uint processId)
+        /// <param name="processId">对应窗口的进程id</param>
+        /// <param name="executablePath">对应窗口进程的可执行文件路径</param>
+        public void ForegroundMovedHandle(IntPtr hwnd, uint processId, string executablePath)
         {
             Debug.WriteLine($"Into ForegroundMovedHandle: hwnd={hwnd},pid={processId}");
             if (hwnd == IntPtr.Zero) return;
 
             // 每次发生移动时重新去寻找对应进程的 ProcessControl
-            ProcessControl targetProcessControl = null;
-            foreach (var audioDeviceControl in DevicesStackPanel.Children.OfType<AudioDeviceControl>())
-            {
-                foreach (var processControl in audioDeviceControl._ProcessStackPanel.Children.OfType<ProcessControl>())
-                {
-                    if (processId == processControl.ProcessId)
-                    {
-                        targetProcessControl = processControl;
-                        break;
-                    }
-                }
-                if (targetProcessControl != null) break;
-            }
+            var targetProcessControl = FindProcessControl(processId, executablePath);
 
             if (targetProcessControl == null)
             {
@@ -228,7 +230,7 @@ namespace ScreenSoundSwitch.WinUI.Views
                 DebugLogStore.Add($"Process {processId} has no switchable audio session.");
                 return;
             }
-            DebugLogStore.Add($"Matched ProcessControl for pid={processId}.");
+            DebugLogStore.Add($"Matched ProcessControl for pid={processId} (session pid={targetProcessControl.SessionProcessId}, exe={targetProcessControl.ExecutablePath}).");
 
             Screen screen = Screen.FromHandle(hwnd);
 
@@ -255,7 +257,7 @@ namespace ScreenSoundSwitch.WinUI.Views
                 if (screenChanged)
                 {
                     targetProcessControl.ChangeAudioDevice(targetDevice);
-                    DebugLogStore.Add($"SwitchProcessTo requested: pid={processId}, device={targetDevice.FriendlyName}, screen={screen.DeviceName}");
+                    DebugLogStore.Add($"SwitchProcessTo requested: window pid={processId}, session pid={targetProcessControl.SessionProcessId}, device={targetDevice.FriendlyName}, screen={screen.DeviceName}");
                 }
 
                 if (channelBalanceEnabled)

@@ -6,6 +6,7 @@ using ScreenSoundSwitch.WinUI.ViewModels;
 using SoundSwitch.Audio.Manager;
 using SoundSwitch.Audio.Manager.Interop.Com.User;
 using SoundSwitch.Audio.Manager.Interop.Enum;
+using SoundSwitch.Common.Framework.Process;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -33,15 +34,43 @@ namespace ScreenSoundSwitch.WinUI.Views
             this.InitializeComponent();
             viewModel = this.DataContext as ProcessControlViewModel;
             this.session = session;
+            SessionProcessId = session.GetProcessID;
             audioSwitcher = AudioSwitcher.Instance;
             SetProcess();
             this.PointerEntered += ProcessControl_PointerEntered;
             this.PointerExited += ProcessControl_PointerExited;
         }
+
+        /// <summary>
+        /// PID of the process that owns the audio session. For multi-process applications
+        /// (for example Edge) this can differ from the PID of the window producing the audio.
+        /// </summary>
         public int ProcessId
         {
             get { return process.Id; }
         }
+
+        /// <summary>
+        /// PID of the process that owns the audio session, used when switching its endpoint.
+        /// </summary>
+        public uint SessionProcessId { get; }
+
+        /// <summary>
+        /// Full path of the executable that owns the audio session, or null when it cannot be read.
+        /// </summary>
+        public string ExecutablePath { get; private set; }
+
+        /// <summary>
+        /// Whether the window with the given PID belongs to the same application as this audio
+        /// session. Windows routes audio per executable, so a browser window (owned by the
+        /// browser process) matches the session created by the browser's audio utility process
+        /// even though the two processes have different PIDs.
+        /// </summary>
+        public bool MatchesWindowProcess(uint windowProcessId, string windowExecutablePath)
+        {
+            return ProcessIdentity.IsSameApplication(windowProcessId, windowExecutablePath, SessionProcessId, ExecutablePath);
+        }
+
         /// <summary>
         /// 该进程控件对应的进程所处的屏幕是否发生改变，如发生改变则更新screen属性
         /// </summary>
@@ -62,7 +91,7 @@ namespace ScreenSoundSwitch.WinUI.Views
         }
         public void ChangeAudioDevice(MMDevice mMDevice)
         {
-            audioSwitcher.SwitchProcessTo(mMDevice.ID, ERole.ERole_enum_count, EDataFlow.eRender, (uint)ProcessId);//ERole_enum_count，将该设备分配所有角色任务
+            audioSwitcher.SwitchProcessTo(mMDevice.ID, ERole.ERole_enum_count, EDataFlow.eRender, SessionProcessId);//ERole_enum_count，将该设备分配所有角色任务
         }
 
         public void ApplyScreenPositionChannelBalance(Screen targetScreen, MMDevice targetDevice, IntPtr hwnd)
@@ -135,14 +164,20 @@ namespace ScreenSoundSwitch.WinUI.Views
 
         private void SetProcess()
         {
-            process = Process.GetProcessById((int)session.GetProcessID);
+            process = Process.GetProcessById((int)SessionProcessId);
             viewModel.SetProcessName(process.ProcessName);
             screen = Screen.FromHandle(process.Handle);
             SimpleVolumeSlider.Value = session.SimpleAudioVolume.Volume * 100;
 
             try
             {
-                var icon = Icon.ExtractAssociatedIcon(process.MainModule?.FileName);
+                ExecutablePath = process.MainModule?.FileName;
+                if (string.IsNullOrEmpty(ExecutablePath))
+                {
+                    return;
+                }
+
+                var icon = Icon.ExtractAssociatedIcon(ExecutablePath);
                 if (icon != null)
                 {
                     // 将Icon转换为BitmapImage
