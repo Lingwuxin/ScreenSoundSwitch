@@ -19,9 +19,18 @@ namespace SoundSwitch.Audio.Manager
             public uint ProcessId { get; }
 
             /// <summary>
-            /// Name of the process that is active
+            /// Name of the process that is active. Kept for compatibility; the value is the
+            /// executable path, see <see cref="ExecutablePath"/>.
             /// </summary>
             public string ProcessName { get; }
+
+            /// <summary>
+            /// Full path of the executable that owns the window. This is what identifies the
+            /// application for multi-process programs such as Chromium-based browsers: the
+            /// window belongs to the browser process while the audio session is created by an
+            /// audio utility process running the same executable with a different PID.
+            /// </summary>
+            public string ExecutablePath { get; }
 
             /// <summary>
             /// Name of the active window
@@ -38,10 +47,11 @@ namespace SoundSwitch.Audio.Manager
             /// </summary>
             public User32.NativeMethods.HWND Hwnd { get; }
 
-            public Event(uint processId, string processName, string windowName, string windowClass, User32.NativeMethods.HWND hwnd)
+            public Event(uint processId, string executablePath, string windowName, string windowClass, User32.NativeMethods.HWND hwnd)
             {
                 ProcessId = processId;
-                ProcessName = processName;
+                ProcessName = executablePath;
+                ExecutablePath = executablePath;
                 WindowName = windowName;
                 WindowClass = windowClass;
                 Hwnd = hwnd;
@@ -109,8 +119,8 @@ namespace SoundSwitch.Audio.Manager
                     try
                     {
                         var process = Process.GetProcessById((int)processId);
-                        var processName = process.MainModule?.FileName ?? "N/A";
-                        ForegroundChanged?.Invoke(this, new Event(processId, processName, windowText, windowClass, hwnd));
+                        var executablePath = process.MainModule?.FileName;
+                        ForegroundChanged?.Invoke(this, new Event(processId, executablePath, windowText, windowClass, hwnd));
                     }
                     catch (Exception)
                     {
@@ -176,8 +186,8 @@ namespace SoundSwitch.Audio.Manager
                     try
                     {
                         var process = Process.GetProcessById((int)processId);
-                        var processName = process.MainModule?.FileName ?? "N/A";
-                        ForegroundWindowMoved?.Invoke(this, new Event(processId, processName, windowText, windowClass, rootWindow));
+                        var executablePath = process.MainModule?.FileName;
+                        ForegroundWindowMoved?.Invoke(this, new Event(processId, executablePath, windowText, windowClass, rootWindow));
                     }
                     catch (Exception)
                     {
