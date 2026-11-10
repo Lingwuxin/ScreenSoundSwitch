@@ -2,7 +2,8 @@ name: Release
 
 # Build the MSIX packages for a published GitHub release and attach them to it.
 # The app is MSIX-only: it calls ApplicationData.Current, so it needs package identity.
-# The packages are built unsigned; signing can be added later with a certificate secret.
+# Packages are signed with the certificate in MSIX_CERT_PFX_BASE64/MSIX_CERT_PASSWORD;
+# without those secrets the build still succeeds but produces unsigned packages.
 
 on:
   release:
@@ -20,6 +21,12 @@ jobs:
     name: MSIX (${{ matrix.platform }})
     runs-on: windows-latest
     timeout-minutes: 45
+    env:
+      # A base64 PKCS#12 holding a code-signing certificate whose subject matches the
+      # manifest Publisher (CN=16124), plus its password. When they are missing the
+      # packages stay unsigned, which Windows refuses to install.
+      MSIX_CERT_PFX_BASE64: ${{ secrets.MSIX_CERT_PFX_BASE64 }}
+      MSIX_CERT_PASSWORD: ${{ secrets.MSIX_CERT_PASSWORD }}
     strategy:
       fail-fast: false
       matrix:
@@ -113,8 +120,46 @@ jobs:
           Copy-Item $msix.FullName $target
           "Artifact: $target ($([math]::Round($msix.Length / 1MB, 2)) MB)"
 
+      - name: Sign the package
+        if: env.MSIX_CERT_PFX_BASE64 != ''
+        shell: pwsh
+        run: |
+          $pfx = Join-Path $env:RUNNER_TEMP 'msix-signing.pfx'
+          [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:MSIX_CERT_PFX_BASE64))
+
+          $signtool = Get-ChildItem 'C:\Program Files (x86)\Windows Kits\10\bin\*\x64\signtool.exe' -ErrorAction SilentlyContinue |
+                      Sort-Object FullName -Descending | Select-Object -First 1
+          if (-not $signtool) { throw 'signtool.exe was not found in the Windows SDK' }
+
+          $msix = Get-ChildItem -Path out -Filter *.msix | Select-Object -First 1
+          & $signtool.FullName sign /fd SHA256 /f $pfx /p $env:MSIX_CERT_PASSWORD `
+              /tr http://timestamp.digicert.com /td SHA256 $msix.FullName
+          if ($LASTEXITCODE -ne 0) { throw "signtool sign failed with exit code $LASTEXITCODE" }
+
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $zip = [IO.Compression.ZipFile]::OpenRead($msix.FullName)
+          $signed = [bool]($zip.Entries | Where-Object { $_.FullName -like 'AppxSignature*' })
+          $zip.Dispose()
+          if (-not $signed) { throw 'The package does not carry AppxSignature.p7x after signing' }
+
+          # Publish the public certificate so users can trust the publisher first.
+          $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($pfx, $env:MSIX_CERT_PASSWORD)
+          [IO.File]::WriteAllBytes(
+              "out/ScreenSoundSwitch-${{ github.event.release.tag_name }}.cer",
+              $cert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert))
+          Remove-Item $pfx
+          Write-Host "Signed $($msix.Name) and exported the public certificate."
+
       - name: Attach to the release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release upload "${{ github.event.release.tag_name }}" "out/*.msix" --clobber
+
+      # The same certificate is exported by both matrix jobs; attach it once.
+      - name: Attach the signing certificate
+        if: env.MSIX_CERT_PFX_BASE64 != '' && matrix.platform == 'x64'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" "out/*.cer" --clobber
