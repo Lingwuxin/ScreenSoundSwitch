@@ -53,6 +53,39 @@ jobs:
       - name: Restore
         run: msbuild ScreenSoundSwitch.sln -t:restore -p:Configuration=Release -p:Platform=${{ matrix.platform }}
 
+      # An MSIX takes its version from Package.appxmanifest, so derive it from the release tag
+      # (v1.2.3 -> 1.2.3.0). A tag without a usable version keeps the manifest's own version.
+      - name: Set the package version from the release tag
+        shell: pwsh
+        run: |
+          $tag = "${{ github.event.release.tag_name }}"
+          $core = (($tag -replace '^[vV]', '') -split '-')[0]
+          $numbers = foreach ($part in ($core -split '\.')) {
+            $digits = $part -replace '[^0-9]', ''
+            $value = 0
+            if ($digits -and [int]::TryParse($digits, [ref]$value)) {
+              [Math]::Min([Math]::Max($value, 0), 65535)
+            } else { 0 }
+          }
+          $numbers = @($numbers)
+          while ($numbers.Count -lt 4) { $numbers += 0 }
+          $numbers = $numbers[0..3]
+          if (($numbers | Measure-Object -Sum).Sum -eq 0) {
+            Write-Host "Tag '$tag' carries no usable version; keeping the manifest version."
+            exit 0
+          }
+          $version = $numbers -join '.'
+
+          $path = "ScreenSoundSwitch.WinUI/Package.appxmanifest"
+          [xml]$manifest = Get-Content -Path $path -Raw
+          $ns = New-Object System.Xml.XmlNamespaceManager($manifest.NameTable)
+          $ns.AddNamespace('appx', 'http://schemas.microsoft.com/appx/manifest/foundation/windows10')
+          $identity = $manifest.SelectSingleNode('//appx:Identity', $ns)
+          if (-not $identity) { throw "No Identity element found in $path" }
+          $identity.SetAttribute('Version', $version)
+          $manifest.Save((Resolve-Path $path).Path)
+          Write-Host "Package version set to $version (from tag '$tag')"
+
       - name: Build MSIX
         run: >
           msbuild ScreenSoundSwitch.WinUI/ScreenSoundSwitch.WinUI.csproj
