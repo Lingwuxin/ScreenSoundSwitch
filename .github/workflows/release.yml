@@ -1,0 +1,87 @@
+name: Release
+
+# Build the MSIX packages for a published GitHub release and attach them to it.
+# The app is MSIX-only: it calls ApplicationData.Current, so it needs package identity.
+# The packages are built unsigned; signing can be added later with a certificate secret.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  msix:
+    name: MSIX (${{ matrix.platform }})
+    runs-on: windows-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: x64
+          - platform: ARM64
+
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # WinUI 3 packaging needs the Visual Studio MSBuild and its MSIX tooling.
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/*.sln', 'global.json') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Restore
+        run: msbuild ScreenSoundSwitch.sln -t:restore -p:Configuration=Release -p:Platform=${{ matrix.platform }}
+
+      - name: Build MSIX
+        run: >
+          msbuild ScreenSoundSwitch.WinUI/ScreenSoundSwitch.WinUI.csproj
+          -t:publish
+          -p:Configuration=Release
+          -p:Platform=${{ matrix.platform }}
+          -p:UapAppxPackageBuildMode=SideloadOnly
+          -p:AppxBundle=Never
+          -p:AppxPackageSigningEnabled=false
+          -p:GenerateAppxPackageOnBuild=true
+
+      - name: Collect the package
+        shell: pwsh
+        run: |
+          $msix = Get-ChildItem -Path ScreenSoundSwitch.WinUI -Recurse -Filter *.msix -ErrorAction SilentlyContinue |
+                  Select-Object -First 1
+          if (-not $msix) {
+            Write-Host "Packaging output that was produced:"
+            Get-ChildItem -Path ScreenSoundSwitch.WinUI -Recurse -Include *.msix, *.appx, *.msixupload, *.appxupload -ErrorAction SilentlyContinue |
+              Select-Object -ExpandProperty FullName
+            throw "No .msix package was produced"
+          }
+          New-Item -ItemType Directory -Force -Path out | Out-Null
+          $target = "out/ScreenSoundSwitch-${{ github.event.release.tag_name }}-${{ matrix.platform }}.msix"
+          Copy-Item $msix.FullName $target
+          "Artifact: $target ($([math]::Round($msix.Length / 1MB, 2)) MB)"
+
+      - name: Attach to the release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" "out/*.msix" --clobber
